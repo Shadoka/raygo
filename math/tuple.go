@@ -13,6 +13,7 @@ type Tuple struct {
 
 type Point = Tuple
 type Vector = Tuple
+type Color = Tuple
 
 func CreateVector(x float64, y float64, z float64) Vector {
 	return Vector{X: x,
@@ -26,6 +27,15 @@ func CreatePoint(x float64, y float64, z float64) Point {
 		Y: y,
 		Z: z,
 		W: 1.0}
+}
+
+func CreateColor(x float64, y float64, z float64) Color {
+	return Color{
+		X: x,
+		Y: y,
+		Z: z,
+		W: 0.0,
+	}
 }
 
 func CreateTuple(x float64, y float64, z float64, w float64) Tuple {
@@ -134,4 +144,13 @@ func (v Vector) Cross(other Vector) Vector {
 	y := v.Z*other.X - v.X*other.Z
 	z := v.X*other.Y - v.Y*other.X
 	return CreateVector(x, y, z)
+}
+
+func (c Color) Blend(other Color) Color {
+	return Color{
+		X: c.X * other.X,
+		Y: c.Y * other.Y,
+		Z: c.Z * other.Z,
+		W: c.W * other.W,
+	}
 }

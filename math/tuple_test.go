@@ -264,3 +264,19 @@ func TestCrossProduct(t *testing.T) {
 	assert.Assert(t, expectedCrossProduct.Equals(v1.Cross(v2)))
 	assert.Assert(t, expectedReverseCrossProduct.Equals(v2.Cross(v1)))
 }
+
+func TestCreateColor(t *testing.T) {
+	c := CreateColor(0.9, 0.6, 0.75)
+
+	assert.Assert(t, floatEquals(0.9, c.X))
+	assert.Assert(t, floatEquals(0.6, c.Y))
+	assert.Assert(t, floatEquals(0.75, c.Z))
+}
+
+func TestBlendColor(t *testing.T) {
+	c1 := CreateColor(1.0, 0.2, 0.4)
+	c2 := CreateColor(0.9, 1.0, 0.1)
+	expectedColor := CreateColor(0.9, 0.2, 0.04)
+
+	assert.Assert(t, expectedColor.Equals(c1.Blend(c2)))
+}
