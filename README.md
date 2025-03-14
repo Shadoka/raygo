@@ -9,8 +9,8 @@ Go lang implementation of [The Ray Tracer Challenge](http://raytracerchallenge.c
 3. Matrices ✔
 4. Matrix Transformations ✔
 5. Ray-Sphere Intersections ✔
-6. Light and Shading
-7. Making a Scene
+6. Light and Shading ✔
+7. Making a Scene ✔
 8. Shadows
 9. Planes
 10. Patterns
@@ -30,7 +30,11 @@ Go lang implementation of [The Ray Tracer Challenge](http://raytracerchallenge.c
 Drawing of a sphere via ray-sphere intersections.
 
 ### Chapter 6
-![Exercise 6](exercises/exercise_chapter6.png)
-![Exercise 6 scaled](exercises/exercise_chapter6_scaled.png)
+![Exercise 6](examples/chapter6.png)
 
 Drawings of a sphere with lightning via phong shader.
+
+### Chapter 7
+![Exercise 7](examples/chapter7.png)
+
+Scene drawn from the viewpoint of a camera

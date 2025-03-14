@@ -2,7 +2,9 @@ package ray
 
 import (
 	gomath "math"
+	"raygo/lighting"
 	"raygo/math"
+	"reflect"
 
 	"github.com/google/uuid"
 )
@@ -12,6 +14,8 @@ type Shape interface {
 	GetId() string
 	SetTransform(m math.Matrix)
 	GetTransform() math.Matrix
+	SetMaterial(m lighting.Material)
+	GetMaterial() lighting.Material
 	Intersect(ray Ray) []Intersection
 	NormalAt(p math.Point) math.Vector
 }
@@ -19,17 +23,21 @@ type Shape interface {
 type Sphere struct {
 	Id        string
 	Transform math.Matrix
+	Material  lighting.Material
 }
 
 func CreateSphere() *Sphere {
 	return &Sphere{
 		Id:        uuid.NewString(),
 		Transform: math.IdentityMatrix(),
+		Material:  lighting.DefaultMaterial(),
 	}
 }
 
 func (s *Sphere) Equals(other Shape) bool {
-	return s.Id == other.GetId()
+	return reflect.TypeOf(s) == reflect.TypeOf(other) &&
+		s.Transform.Equals(other.GetTransform()) &&
+		s.Material.Equals(other.GetMaterial())
 }
 
 func (s *Sphere) SetTransform(m math.Matrix) {
@@ -42,6 +50,14 @@ func (s *Sphere) GetId() string {
 
 func (s *Sphere) GetTransform() math.Matrix {
 	return s.Transform
+}
+
+func (s *Sphere) GetMaterial() lighting.Material {
+	return s.Material
+}
+
+func (s *Sphere) SetMaterial(m lighting.Material) {
+	s.Material = m
 }
 
 func (sphere *Sphere) Intersect(ray Ray) []Intersection {

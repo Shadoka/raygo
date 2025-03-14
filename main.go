@@ -1,8 +1,8 @@
 package main
 
-import "raygo/scenes"
+import "raygo/render"
 
 func main() {
-	scene := scenes.CreateRedSphere(100)
-	scene.WriteFile("red_sphere.ppm")
+	scene := render.CreateSceneFromCamera(200, 100)
+	scene.WriteFile("chapter7.ppm")
 }

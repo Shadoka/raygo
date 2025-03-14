@@ -154,3 +154,7 @@ func (c Color) Blend(other Color) Color {
 		W: c.W * other.W,
 	}
 }
+
+func (v Vector) Reflect(n Vector) Vector {
+	return v.Subtract(n.Mul(2.0).Mul(v.Dot(n)))
+}

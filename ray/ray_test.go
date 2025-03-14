@@ -122,3 +122,49 @@ func TestScaleRay(t *testing.T) {
 	assert.Assert(t, expectedOrigin.Equals(r2.Origin))
 	assert.Assert(t, expectedDirection.Equals(r2.Direction))
 }
+
+func TestPrepareComputation(t *testing.T) {
+	r := CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
+	s := CreateSphere()
+	i := CreateIntersection(4.0, s)
+	expected := IntersectionComputations{
+		IntersectionAt: i.IntersectionAt,
+		Object:         i.Object,
+		Point:          math.CreatePoint(0.0, 0.0, -1.0),
+		Eyev:           math.CreateVector(0.0, 0.0, -1.0),
+		Normalv:        math.CreateVector(0.0, 0.0, -1.0),
+		Inside:         false,
+	}
+
+	actual := i.PrepareComputation(r)
+
+	assert.Assert(t, expected.IntersectionAt == actual.IntersectionAt)
+	assert.Assert(t, expected.Object.Equals(actual.Object))
+	assert.Assert(t, expected.Point.Equals(actual.Point))
+	assert.Assert(t, expected.Eyev.Equals(actual.Eyev))
+	assert.Assert(t, expected.Normalv.Equals(actual.Normalv))
+	assert.Assert(t, expected.Inside == actual.Inside)
+}
+
+func TestPrepareComputationRayInside(t *testing.T) {
+	r := CreateRay(math.CreatePoint(0.0, 0.0, 0.0), math.CreateVector(0.0, 0.0, 1.0))
+	s := CreateSphere()
+	i := CreateIntersection(1.0, s)
+	expected := IntersectionComputations{
+		IntersectionAt: i.IntersectionAt,
+		Object:         i.Object,
+		Point:          math.CreatePoint(0.0, 0.0, 1.0),
+		Eyev:           math.CreateVector(0.0, 0.0, -1.0),
+		Normalv:        math.CreateVector(0.0, 0.0, -1.0),
+		Inside:         true,
+	}
+
+	actual := i.PrepareComputation(r)
+
+	assert.Assert(t, expected.IntersectionAt == actual.IntersectionAt)
+	assert.Assert(t, expected.Object.Equals(actual.Object))
+	assert.Assert(t, expected.Point.Equals(actual.Point))
+	assert.Assert(t, expected.Eyev.Equals(actual.Eyev))
+	assert.Assert(t, expected.Normalv.Equals(actual.Normalv))
+	assert.Assert(t, expected.Inside == actual.Inside)
+}

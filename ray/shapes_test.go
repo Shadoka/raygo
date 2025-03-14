@@ -2,6 +2,7 @@ package ray
 
 import (
 	gomath "math"
+	"raygo/lighting"
 	"raygo/math"
 	"testing"
 
@@ -160,4 +161,21 @@ func TestNormalAtSphereTransformed(t *testing.T) {
 
 	n := s.NormalAt(math.CreatePoint(0.0, gomath.Sqrt(2)/2.0, -gomath.Sqrt(2)/2))
 	assert.Assert(t, expected.Equals(n))
+}
+
+func TestDefaultMaterialSphere(t *testing.T) {
+	s := CreateSphere()
+	m := lighting.DefaultMaterial()
+
+	assert.Assert(t, m.Equals(s.GetMaterial()))
+}
+
+func TestSetMaterialSphere(t *testing.T) {
+	s := CreateSphere()
+	m := lighting.DefaultMaterial()
+	m.Ambient = 1.0
+
+	s.SetMaterial(m)
+
+	assert.Assert(t, m.Equals(s.GetMaterial()))
 }

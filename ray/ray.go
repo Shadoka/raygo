@@ -3,6 +3,7 @@ package ray
 import (
 	gomath "math"
 	"raygo/math"
+	"sort"
 )
 
 type Ray struct {
@@ -13,6 +14,15 @@ type Ray struct {
 type Intersection struct {
 	IntersectionAt float64 // t value
 	Object         Shape
+}
+
+type IntersectionComputations struct {
+	IntersectionAt float64 // t value
+	Object         Shape
+	Point          math.Point
+	Eyev           math.Vector
+	Normalv        math.Vector
+	Inside         bool
 }
 
 func CreateRay(origin math.Point, direction math.Vector) Ray {
@@ -65,4 +75,31 @@ func (r Ray) Transform(transformMatrix math.Matrix) Ray {
 	newOrigin := transformMatrix.MulT(r.Origin)
 	newDirection := transformMatrix.MulT(r.Direction)
 	return CreateRay(newOrigin, newDirection)
+}
+
+func SortIntersections(xs []Intersection) {
+	sort.Slice(xs, func(i, j int) bool {
+		return xs[i].IntersectionAt < xs[j].IntersectionAt
+	})
+}
+
+func (i Intersection) PrepareComputation(r Ray) IntersectionComputations {
+	p := r.Position(i.IntersectionAt)
+	normal := i.Object.NormalAt(p)
+	eye := r.Direction.Negate()
+
+	inside := false
+	if normal.Dot(eye) < 0.0 {
+		inside = true
+		normal = normal.Negate()
+	}
+
+	return IntersectionComputations{
+		IntersectionAt: i.IntersectionAt,
+		Object:         i.Object,
+		Point:          p,
+		Eyev:           eye,
+		Normalv:        normal,
+		Inside:         inside,
+	}
 }

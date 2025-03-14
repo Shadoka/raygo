@@ -1,6 +1,7 @@
 package math
 
 import (
+	"fmt"
 	"math"
 	"testing"
 
@@ -178,4 +179,53 @@ func TestTransformsChained(t *testing.T) {
 	expected := CreatePoint(15.0, 0.0, 7.0)
 
 	assert.Assert(t, expected.Equals(transl.MulM(scale).MulM(rot).MulT(p)))
+}
+
+func TestViewTransformDefault(t *testing.T) {
+	from := CreatePoint(0.0, 0.0, 0.0)
+	to := CreatePoint(0.0, 0.0, -1.0)
+	up := CreateVector(0.0, 1.0, 0.0)
+
+	tr := ViewTransform(from, to, up)
+
+	assert.Assert(t, IdentityMatrix().Equals(tr))
+}
+
+func TestViewTransformPositiveZ(t *testing.T) {
+	from := CreatePoint(0.0, 0.0, 0.0)
+	to := CreatePoint(0.0, 0.0, 1.0)
+	up := CreateVector(0.0, 1.0, 0.0)
+	expected := Scaling(-1.0, 1.0, -1.0)
+
+	tr := ViewTransform(from, to, up)
+
+	assert.Assert(t, expected.Equals(tr))
+}
+
+func TestViewTransformMoved(t *testing.T) {
+	from := CreatePoint(0.0, 0.0, 8.0)
+	to := CreatePoint(0.0, 0.0, 0.0)
+	up := CreateVector(0.0, 1.0, 0.0)
+	expected := Translation(0.0, 0.0, -8.0)
+
+	tr := ViewTransform(from, to, up)
+	fmt.Println(tr)
+	assert.Assert(t, expected.Equals(tr))
+}
+
+func TestViewTransformArbitrary(t *testing.T) {
+	from := CreatePoint(1.0, 3.0, 2.0)
+	to := CreatePoint(4.0, -2.0, 8.0)
+	up := CreateVector(1.0, 1.0, 0.0)
+	data := []float64{
+		-0.50709, 0.50709, 0.67612, -2.36643,
+		0.76772, 0.60609, 0.12122, -2.82843,
+		-0.35857, 0.59761, -0.71714, 0.0,
+		0.0, 0.0, 0.0, 1.0,
+	}
+	expected := CreateMatrixFlat(data)
+
+	tr := ViewTransform(from, to, up)
+
+	assert.Assert(t, expected.Equals(tr))
 }

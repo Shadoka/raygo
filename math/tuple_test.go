@@ -280,3 +280,19 @@ func TestBlendColor(t *testing.T) {
 
 	assert.Assert(t, expectedColor.Equals(c1.Blend(c2)))
 }
+
+func TestReflect45d(t *testing.T) {
+	v := CreateVector(1.0, -1.0, 0.0)
+	n := CreateVector(0.0, 1.0, 0.0)
+	expected := CreateVector(1.0, 1.0, 0.0)
+
+	assert.Assert(t, expected.Equals(v.Reflect(n)))
+}
+
+func TestReflectSlanted(t *testing.T) {
+	v := CreateVector(0.0, -1.0, 0.0)
+	n := CreateVector(gomath.Sqrt(2)/2, gomath.Sqrt(2)/2, 0.0)
+	expected := CreateVector(1.0, 0.0, 0.0)
+
+	assert.Assert(t, expected.Equals(v.Reflect(n)))
+}

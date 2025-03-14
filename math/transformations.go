@@ -57,3 +57,20 @@ func Shearing(xy float64, xz float64, yx float64, yz float64, zx float64, zy flo
 	shearingMatrix.data[2][1] = zy
 	return shearingMatrix
 }
+
+func ViewTransform(from Point, to Point, up Vector) Matrix {
+	forward := to.Subtract(from).Normalize()
+	upn := up.Normalize()
+	left := forward.Cross(upn)
+	trueUp := left.Cross(forward)
+
+	orientationData := []float64{
+		left.X, left.Y, left.Z, 0.0,
+		trueUp.X, trueUp.Y, trueUp.Z, 0.0,
+		-forward.X, -forward.Y, -forward.Z, 0.0,
+		0.0, 0.0, 0.0, 1.0,
+	}
+	orientation := CreateMatrixFlat(orientationData)
+
+	return orientation.MulM(Translation(-from.X, -from.Y, -from.Z))
+}
