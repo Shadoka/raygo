@@ -5,7 +5,7 @@ import (
 	"raygo/math"
 )
 
-func PhongLighting(m Material, light Light, position math.Point, eyev math.Vector, normalv math.Vector) math.Color {
+func PhongLighting(m Material, light Light, position math.Point, eyev math.Vector, normalv math.Vector, inShadow bool) math.Color {
 	// combine the surface color with the light's color/intensity
 	effectiveColor := m.Color.Blend(light.Intensity)
 
@@ -14,6 +14,10 @@ func PhongLighting(m Material, light Light, position math.Point, eyev math.Vecto
 
 	// compute the ambient contribution
 	ambient := effectiveColor.Mul(m.Ambient)
+
+	if inShadow {
+		return ambient
+	}
 
 	// lightDotNormal represents the cosine of the angle between the
 	// light vector and the normal vector. A negative number means the

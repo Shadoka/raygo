@@ -38,3 +38,8 @@ Drawings of a sphere with lightning via phong shader.
 ![Exercise 7](examples/chapter7.png)
 
 Scene drawn from the viewpoint of a camera
+
+### Chapter 8
+![Exercise 8](examples/chapter8.png)
+
+Shapes now throw shadows

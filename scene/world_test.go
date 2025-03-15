@@ -68,7 +68,7 @@ func TestShadeHitInside(t *testing.T) {
 
 	r := ray.CreateRay(math.CreatePoint(0.0, 0.0, 0.0), math.CreateVector(0.0, 0.0, 1.0))
 	i := ray.CreateIntersection(0.5, w.Objects[1])
-	expected := math.CreateColor(0.90498, 0.90498, 0.90498)
+	expected := math.CreateColor(0.1, 0.1, 0.1)
 
 	comps := i.PrepareComputation(r)
 	actual := w.ShadeHit(comps)
@@ -127,4 +127,55 @@ func TestColorAtHitBehindRay(t *testing.T) {
 	actual := w.ColorAt(r)
 
 	assert.Assert(t, m2.Color.Equals(actual))
+}
+
+func TestIsShadowedColinearPoint(t *testing.T) {
+	w := DefaultWorld()
+	p := math.CreatePoint(0.0, 10.0, 0.0)
+
+	assert.Assert(t, w.IsShadowed(p) == false)
+}
+
+func TestIsShadowedBehindSphere(t *testing.T) {
+	w := DefaultWorld()
+	p := math.CreatePoint(10.0, -10.0, 10.0)
+
+	assert.Assert(t, w.IsShadowed(p) == true)
+}
+
+func TestIsShadowedBehindLight(t *testing.T) {
+	w := DefaultWorld()
+	p := math.CreatePoint(-20.0, 20.0, -20.0)
+
+	assert.Assert(t, w.IsShadowed(p) == false)
+}
+
+func TestIsShadowedBetweenLightAndShape(t *testing.T) {
+	w := DefaultWorld()
+	p := math.CreatePoint(-2.0, 2.0, -2.0)
+
+	assert.Assert(t, w.IsShadowed(p) == false)
+}
+
+func TestShadeHitInShadow(t *testing.T) {
+	w := EmptyWorld()
+	expected := math.CreateColor(0.1, 0.1, 0.1)
+
+	objs := make([]ray.Shape, 0)
+	s1 := ray.CreateSphere()
+	s2 := ray.CreateSphere()
+	s2.SetTransform(math.Translation(0.0, 0.0, 10.0))
+	objs = append(objs, s1, s2)
+	w.Objects = objs
+
+	light := lighting.CreateLight(math.CreatePoint(0.0, 0.0, -10.0), math.CreateColor(1.0, 1.0, 1.0))
+	w.Light = &light
+
+	r := ray.CreateRay(math.CreatePoint(0.0, 0.0, 5.0), math.CreateVector(0.0, 0.0, 1.0))
+	i := ray.CreateIntersection(4.0, s2)
+
+	comps := i.PrepareComputation(r)
+	c := w.ShadeHit(comps)
+
+	assert.Assert(t, expected.Equals(c))
 }

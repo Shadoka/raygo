@@ -4,5 +4,5 @@ import "raygo/render"
 
 func main() {
 	scene := render.CreateSceneFromCamera(200, 100)
-	scene.WriteFile("chapter7.ppm")
+	scene.WriteFile("chapter8.ppm")
 }

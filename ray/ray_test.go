@@ -168,3 +168,15 @@ func TestPrepareComputationRayInside(t *testing.T) {
 	assert.Assert(t, expected.Normalv.Equals(actual.Normalv))
 	assert.Assert(t, expected.Inside == actual.Inside)
 }
+
+func TestPrepareComputationsOverPoint(t *testing.T) {
+	r := CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
+	s := CreateSphere()
+	s.SetTransform(math.Translation(0.0, 0.0, 1.0))
+	i := CreateIntersection(5.0, s)
+
+	comps := i.PrepareComputation(r)
+
+	assert.Assert(t, comps.OverPoint.Z < -EPSILON/2.0)
+	assert.Assert(t, comps.Point.Z > comps.OverPoint.Z)
+}

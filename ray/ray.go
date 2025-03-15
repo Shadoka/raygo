@@ -6,6 +6,8 @@ import (
 	"sort"
 )
 
+const EPSILON = 0.00001
+
 type Ray struct {
 	Origin    math.Point
 	Direction math.Vector
@@ -23,6 +25,7 @@ type IntersectionComputations struct {
 	Eyev           math.Vector
 	Normalv        math.Vector
 	Inside         bool
+	OverPoint      math.Point
 }
 
 func CreateRay(origin math.Point, direction math.Vector) Ray {
@@ -87,6 +90,7 @@ func (i Intersection) PrepareComputation(r Ray) IntersectionComputations {
 	p := r.Position(i.IntersectionAt)
 	normal := i.Object.NormalAt(p)
 	eye := r.Direction.Negate()
+	overP := p.Add(normal.Mul(EPSILON))
 
 	inside := false
 	if normal.Dot(eye) < 0.0 {
@@ -101,5 +105,6 @@ func (i Intersection) PrepareComputation(r Ray) IntersectionComputations {
 		Eyev:           eye,
 		Normalv:        normal,
 		Inside:         inside,
+		OverPoint:      overP,
 	}
 }

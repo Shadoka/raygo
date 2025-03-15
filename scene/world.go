@@ -53,9 +53,12 @@ func (w *World) Intersect(r ray.Ray) []ray.Intersection {
 }
 
 func (w *World) ShadeHit(comp ray.IntersectionComputations) math.Color {
+	shadowed := w.IsShadowed(comp.OverPoint)
+
 	return lighting.PhongLighting(comp.Object.GetMaterial(),
 		*w.Light,
-		comp.Point, comp.Eyev, comp.Normalv)
+		comp.Point, comp.Eyev, comp.Normalv,
+		shadowed)
 }
 
 func (w *World) ColorAt(r ray.Ray) math.Color {
@@ -72,4 +75,16 @@ func (w *World) ColorAt(r ray.Ray) math.Color {
 
 func (w *World) GetObject(index int) *ray.Shape {
 	return &w.Objects[index]
+}
+
+func (w *World) IsShadowed(p math.Point) bool {
+	v := w.Light.Position.Subtract(p)
+	distance := v.Magnitude()
+	direction := v.Normalize()
+
+	r := ray.CreateRay(p, direction)
+	xs := w.Intersect(r)
+
+	h := ray.Hit(xs)
+	return h != nil && h.IntersectionAt < distance
 }
