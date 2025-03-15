@@ -11,7 +11,7 @@ Go lang implementation of [The Ray Tracer Challenge](http://raytracerchallenge.c
 5. Ray-Sphere Intersections ✔
 6. Light and Shading ✔
 7. Making a Scene ✔
-8. Shadows
+8. Shadows ✔
 9. Planes
 10. Patterns
 11. Reflection and Refraction
@@ -42,4 +42,4 @@ Scene drawn from the viewpoint of a camera
 ### Chapter 8
 ![Exercise 8](examples/chapter8.png)
 
-Shapes now throw shadows
+Shapes now cast shadows
