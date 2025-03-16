@@ -12,7 +12,7 @@ Go lang implementation of [The Ray Tracer Challenge](http://raytracerchallenge.c
 6. Light and Shading ✔
 7. Making a Scene ✔
 8. Shadows ✔
-9. Planes
+9. Planes ✔
 10. Patterns
 11. Reflection and Refraction
 12. Cubes
@@ -43,3 +43,12 @@ Scene drawn from the viewpoint of a camera
 ![Exercise 8](examples/chapter8.png)
 
 Shapes now cast shadows
+
+### Chapter 9
+![Exercise 9](examples/chapter9.png)
+
+Plane got added as additional shape
+
+![Exercise 9 with backdrop](examples/chapter9_backdrop.png)
+
+An additional plane got added as backdrop

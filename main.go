@@ -1,8 +1,17 @@
 package main
 
-import "raygo/render"
+import (
+	"fmt"
+	"raygo/render"
+	"time"
+)
 
 func main() {
-	scene := render.CreateSceneFromCamera(200, 100)
-	scene.WriteFile("chapter8.ppm")
+	begin := time.Now()
+	scene := render.CreateSceneWithPlane(1000, 500)
+	end := time.Now()
+	scene.WriteFile("chapter9_lowambient_hq.ppm")
+
+	diff := end.Sub(begin)
+	fmt.Printf("rendering took %v seconds\n", diff.Seconds())
 }
