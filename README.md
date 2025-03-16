@@ -51,6 +51,11 @@ Plane got added as additional shape
 
 ![Exercise 9 with backdrop](examples/chapter9_backdrop.png)
 
-An additional plane got added as backdrop
-(I think the reason why the ground looks so much darker is because I lowered the light. The flat reflection angle is probably why
-the floor looks so dark compared with the other image.)
+An additional plane got added as backdrop.
+
+I think the reason why the ground looks so much darker is because I lowered the light. The flat reflection angle is probably why
+the floor looks so dark compared with the other image.
+
+The following image is fundamentally the same besides the light being higher.
+
+![Exercise 9 with backdrop and higher light](examples/chapter9_backdrop_higherlight.png)
