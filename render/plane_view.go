@@ -55,7 +55,7 @@ func CreateSceneWithPlane(width int, height int) *canvas.Canvas {
 
 	objs := make([]ray.Shape, 0)
 	objs = append(objs, floor, backdrop, middle, right, left)
-	light := lighting.CreateLight(math.CreatePoint(-10.0, 1.0, -10.0), math.CreateColor(1.0, 1.0, 1.0))
+	light := lighting.CreateLight(math.CreatePoint(-10.0, 10.0, -10.0), math.CreateColor(1.0, 1.0, 1.0))
 	w := scene.EmptyWorld()
 	w.Light = &light
 	w.Objects = objs
