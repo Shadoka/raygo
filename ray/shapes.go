@@ -2,7 +2,6 @@ package ray
 
 import (
 	gomath "math"
-	"raygo/lighting"
 	"raygo/math"
 	"reflect"
 
@@ -14,8 +13,8 @@ type Shape interface {
 	GetId() string
 	SetTransform(m math.Matrix)
 	GetTransform() math.Matrix
-	SetMaterial(m lighting.Material)
-	GetMaterial() lighting.Material
+	SetMaterial(m Material)
+	GetMaterial() Material
 	Intersect(ray Ray) []Intersection
 	NormalAt(p math.Point) math.Vector
 }
@@ -23,20 +22,20 @@ type Shape interface {
 type Sphere struct {
 	Id        string
 	Transform math.Matrix
-	Material  lighting.Material
+	Material  Material
 }
 
 type Plane struct {
 	Id        string
 	Transform math.Matrix
-	Material  lighting.Material
+	Material  Material
 }
 
 func CreateSphere() *Sphere {
 	return &Sphere{
 		Id:        uuid.NewString(),
 		Transform: math.IdentityMatrix(),
-		Material:  lighting.DefaultMaterial(),
+		Material:  DefaultMaterial(),
 	}
 }
 
@@ -44,7 +43,7 @@ func CreatePlane() *Plane {
 	return &Plane{
 		Id:        uuid.NewString(),
 		Transform: math.IdentityMatrix(),
-		Material:  lighting.DefaultMaterial(),
+		Material:  DefaultMaterial(),
 	}
 }
 
@@ -68,11 +67,11 @@ func (s *Sphere) GetTransform() math.Matrix {
 	return s.Transform
 }
 
-func (s *Sphere) GetMaterial() lighting.Material {
+func (s *Sphere) GetMaterial() Material {
 	return s.Material
 }
 
-func (s *Sphere) SetMaterial(m lighting.Material) {
+func (s *Sphere) SetMaterial(m Material) {
 	s.Material = m
 }
 
@@ -122,11 +121,11 @@ func (p *Plane) GetTransform() math.Matrix {
 	return p.Transform
 }
 
-func (p *Plane) GetMaterial() lighting.Material {
+func (p *Plane) GetMaterial() Material {
 	return p.Material
 }
 
-func (p *Plane) SetMaterial(m lighting.Material) {
+func (p *Plane) SetMaterial(m Material) {
 	p.Material = m
 }
 

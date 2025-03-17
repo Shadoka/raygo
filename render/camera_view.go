@@ -12,7 +12,7 @@ import (
 func CreateSceneFromCamera(width int, height int) *canvas.Canvas {
 	floor := ray.CreateSphere()
 	floor.SetTransform(math.Scaling(10.0, 0.01, 10.0))
-	floorMat := lighting.DefaultMaterial()
+	floorMat := ray.DefaultMaterial()
 	floorColor := math.CreateColor(1.0, 0.9, 0.9)
 	floorMat.SetColor(floorColor)
 	(&floorMat).Specular = 0.0
@@ -36,7 +36,7 @@ func CreateSceneFromCamera(width int, height int) *canvas.Canvas {
 
 	middle := ray.CreateSphere()
 	middle.SetTransform(math.Translation(-0.5, 1.0, 0.5))
-	middleMat := lighting.DefaultMaterial()
+	middleMat := ray.DefaultMaterial()
 	middleColor := math.CreateColor(0.1, 1.0, 0.5)
 	middleMat.SetColor(middleColor)
 	(&middleMat).Diffuse = 0.7
@@ -45,7 +45,7 @@ func CreateSceneFromCamera(width int, height int) *canvas.Canvas {
 
 	right := ray.CreateSphere()
 	right.SetTransform(math.Translation(1.5, 0.5, -0.5).MulM(math.Scaling(0.5, 0.5, 0.5)))
-	rightMat := lighting.DefaultMaterial()
+	rightMat := ray.DefaultMaterial()
 	rightColor := math.CreateColor(0.5, 1.0, 0.1)
 	rightMat.SetColor(rightColor)
 	(&rightMat).Diffuse = 0.7
@@ -54,7 +54,7 @@ func CreateSceneFromCamera(width int, height int) *canvas.Canvas {
 
 	left := ray.CreateSphere()
 	left.SetTransform(math.Translation(-1.5, 0.33, -0.75).MulM(math.Scaling(0.33, 0.33, 0.33)))
-	leftMat := lighting.DefaultMaterial()
+	leftMat := ray.DefaultMaterial()
 	leftColor := math.CreateColor(1.0, 0.8, 0.1)
 	leftMat.SetColor(leftColor)
 	(&leftMat).Diffuse = 0.7

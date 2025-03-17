@@ -8,9 +8,9 @@ import (
 
 func main() {
 	begin := time.Now()
-	scene := render.CreateSceneWithPlane(200, 100)
+	scene := render.CreateStripedPatternScene(200, 100)
 	end := time.Now()
-	scene.WriteFile("chapter9_lowambient.ppm")
+	scene.WriteFile("chapter10_stripedpattern.ppm")
 
 	diff := end.Sub(begin)
 	fmt.Printf("rendering took %v seconds\n", diff.Seconds())

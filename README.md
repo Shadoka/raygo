@@ -59,3 +59,8 @@ the floor looks so dark compared with the other image.
 The following image is fundamentally the same besides the light being higher.
 
 ![Exercise 9 with backdrop and higher light](examples/chapter9_backdrop_higherlight.png)
+
+### Chapter 10
+![Exercise 10](examples/chapter10_stripes.png)
+
+Spheres with attached stripe patterns

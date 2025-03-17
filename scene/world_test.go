@@ -19,7 +19,7 @@ func TestEmptyWorld(t *testing.T) {
 func TestDefaultWorld(t *testing.T) {
 	expectedLight := lighting.CreateLight(math.CreatePoint(-10.0, 10.0, -10.0), math.CreateColor(1.0, 1.0, 1.0))
 	expectedShape1 := ray.CreateSphere()
-	m1 := lighting.DefaultMaterial()
+	m1 := ray.DefaultMaterial()
 	m1.SetColor(math.CreateColor(0.8, 1.0, 0.6))
 	(&m1).Diffuse = 0.7
 	(&m1).Specular = 0.2
@@ -101,7 +101,7 @@ func TestColorAtHitBehindRay(t *testing.T) {
 	objects := make([]ray.Shape, 0)
 
 	s1 := ray.CreateSphere()
-	m1 := lighting.DefaultMaterial()
+	m1 := ray.DefaultMaterial()
 	m1.SetColor(math.CreateColor(0.8, 1.0, 0.6))
 	(&m1).Ambient = 1.0
 	(&m1).Diffuse = 0.7
@@ -112,7 +112,7 @@ func TestColorAtHitBehindRay(t *testing.T) {
 	s2 := ray.CreateSphere()
 	transform := math.Scaling(0.5, 0.5, 0.5)
 	s2.SetTransform(transform)
-	m2 := lighting.DefaultMaterial()
+	m2 := ray.DefaultMaterial()
 	(&m2).Ambient = 1.0
 	s2.SetMaterial(m2)
 	objects = append(objects, s2)

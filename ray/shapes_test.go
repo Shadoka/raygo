@@ -2,7 +2,6 @@ package ray
 
 import (
 	gomath "math"
-	"raygo/lighting"
 	"raygo/math"
 	"testing"
 
@@ -165,14 +164,14 @@ func TestNormalAtSphereTransformed(t *testing.T) {
 
 func TestDefaultMaterialSphere(t *testing.T) {
 	s := CreateSphere()
-	m := lighting.DefaultMaterial()
+	m := DefaultMaterial()
 
 	assert.Assert(t, m.Equals(s.GetMaterial()))
 }
 
 func TestSetMaterialSphere(t *testing.T) {
 	s := CreateSphere()
-	m := lighting.DefaultMaterial()
+	m := DefaultMaterial()
 	m.Ambient = 1.0
 
 	s.SetMaterial(m)

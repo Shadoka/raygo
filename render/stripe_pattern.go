@@ -9,7 +9,16 @@ import (
 	"raygo/scene"
 )
 
-func CreateSceneWithPlane(width int, height int) *canvas.Canvas {
+func CreateStripedPatternScene(width int, height int) *canvas.Canvas {
+	whiteRedStripedPattern := ray.CreateStripePattern(math.CreateColor(1.0, 1.0, 1.0), math.CreateColor(1.0, 0.0, 0.0))
+
+	yellowHorizontalStripes := ray.CreateStripePattern(math.CreateColor(1.0, 1.0, 1.0), math.CreateColor(1.0, 1.0, 0.0))
+	yellowHorizontalStripes.SetTransform(math.Rotation_Z(gomath.Pi / 2.0))
+
+	tealPattern := ray.CreateStripePattern(math.CreateColor(0.0, 0.0, 0.0), math.CreateColor(0.0, 1.0, 1.0))
+	tealPattern.SetTransform(math.Scaling(0.5, 0.5, 0.5).
+		MulM(math.Rotation_Z(gomath.Pi / 4.0)))
+
 	floor := ray.CreatePlane()
 	floorMat := ray.DefaultMaterial()
 	floorColor := math.CreateColor(1.0, 0.9, 0.9)
@@ -29,8 +38,7 @@ func CreateSceneWithPlane(width int, height int) *canvas.Canvas {
 	middle := ray.CreateSphere()
 	middle.SetTransform(math.Translation(-0.5, 1.0, 0.5))
 	middleMat := ray.DefaultMaterial()
-	middleColor := math.CreateColor(0.1, 1.0, 0.5)
-	middleMat.SetColor(middleColor)
+	middleMat.SetPattern(whiteRedStripedPattern)
 	(&middleMat).Diffuse = 0.7
 	(&middleMat).Specular = 0.3
 	middle.SetMaterial(middleMat)
@@ -38,8 +46,7 @@ func CreateSceneWithPlane(width int, height int) *canvas.Canvas {
 	right := ray.CreateSphere()
 	right.SetTransform(math.Translation(1.5, 0.5, -0.5).MulM(math.Scaling(0.5, 0.5, 0.5)))
 	rightMat := ray.DefaultMaterial()
-	rightColor := math.CreateColor(0.5, 1.0, 0.1)
-	rightMat.SetColor(rightColor)
+	rightMat.SetPattern(yellowHorizontalStripes)
 	(&rightMat).Diffuse = 0.7
 	(&rightMat).Specular = 0.3
 	right.SetMaterial(rightMat)
@@ -47,8 +54,7 @@ func CreateSceneWithPlane(width int, height int) *canvas.Canvas {
 	left := ray.CreateSphere()
 	left.SetTransform(math.Translation(-1.5, 0.33, -0.75).MulM(math.Scaling(0.33, 0.33, 0.33)))
 	leftMat := ray.DefaultMaterial()
-	leftColor := math.CreateColor(1.0, 0.8, 0.1)
-	leftMat.SetColor(leftColor)
+	leftMat.SetPattern(tealPattern)
 	(&leftMat).Diffuse = 0.7
 	(&leftMat).Specular = 0.3
 	left.SetMaterial(leftMat)

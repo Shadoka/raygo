@@ -28,7 +28,7 @@ func DefaultWorld() *World {
 	objects := make([]ray.Shape, 0)
 
 	s1 := ray.CreateSphere()
-	m1 := lighting.DefaultMaterial()
+	m1 := ray.DefaultMaterial()
 	m1.SetColor(math.CreateColor(0.8, 1.0, 0.6))
 	(&m1).Diffuse = 0.7
 	(&m1).Specular = 0.2
@@ -56,6 +56,7 @@ func (w *World) ShadeHit(comp ray.IntersectionComputations) math.Color {
 	shadowed := w.IsShadowed(comp.OverPoint)
 
 	return lighting.PhongLighting(comp.Object.GetMaterial(),
+		comp.Object,
 		*w.Light,
 		comp.Point, comp.Eyev, comp.Normalv,
 		shadowed)

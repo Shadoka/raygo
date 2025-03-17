@@ -3,11 +3,17 @@ package lighting
 import (
 	gomath "math"
 	"raygo/math"
+	"raygo/ray"
 )
 
-func PhongLighting(m Material, light Light, position math.Point, eyev math.Vector, normalv math.Vector, inShadow bool) math.Color {
+func PhongLighting(m ray.Material, obj ray.Shape, light Light, position math.Point, eyev math.Vector, normalv math.Vector, inShadow bool) math.Color {
+	color := m.Color
+	if m.Pattern != nil {
+		color = m.Pattern.ColorAtObject(position, obj)
+	}
+
 	// combine the surface color with the light's color/intensity
-	effectiveColor := m.Color.Blend(light.Intensity)
+	effectiveColor := color.Blend(light.Intensity)
 
 	// find the direction to the light source
 	lightv := light.Position.Subtract(position).Normalize()

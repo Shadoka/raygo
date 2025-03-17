@@ -1,4 +1,4 @@
-package lighting
+package ray
 
 import (
 	"raygo/math"
