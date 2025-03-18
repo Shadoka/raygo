@@ -3,8 +3,8 @@ package scene
 import (
 	gomath "math"
 	"raygo/canvas"
+	g "raygo/geometry"
 	"raygo/math"
-	"raygo/ray"
 )
 
 type Camera struct {
@@ -44,7 +44,7 @@ func (c *Camera) calculateCameraProperties() {
 	c.PixelSize = (c.HalfWidth * 2.0) / float64(c.Hsize)
 }
 
-func (c *Camera) RayForPixel(x int, y int) ray.Ray {
+func (c *Camera) RayForPixel(x int, y int) g.Ray {
 	// the offset from the edge of the canvas to the pixels center
 	xOffset := (float64(x) + 0.5) * c.PixelSize
 	yOffset := (float64(y) + 0.5) * c.PixelSize
@@ -61,7 +61,7 @@ func (c *Camera) RayForPixel(x int, y int) ray.Ray {
 	origin := c.Transform.Inverse().MulT(math.CreatePoint(0.0, 0.0, 0.0))
 	direction := pixel.Subtract(origin).Normalize()
 
-	return ray.CreateRay(origin, direction)
+	return g.CreateRay(origin, direction)
 }
 
 func (c *Camera) SetTransform(tf math.Matrix) {

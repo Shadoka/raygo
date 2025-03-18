@@ -1,4 +1,4 @@
-package ray
+package geometry
 
 import (
 	gomath "math"

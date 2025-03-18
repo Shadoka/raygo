@@ -2,18 +2,18 @@ package lighting
 
 import (
 	gomath "math"
+	g "raygo/geometry"
 	"raygo/math"
-	"raygo/ray"
 	"testing"
 
 	"gotest.tools/v3/assert"
 )
 
 func TestLightingEyeBetweenLightAndSurface(t *testing.T) {
-	s := ray.CreateSphere()
+	s := g.CreateSphere()
 	eyev := math.CreateVector(0.0, 0.0, -1.0)
 	normalv := math.CreateVector(0.0, 0.0, -1.0)
-	m := ray.DefaultMaterial()
+	m := g.DefaultMaterial()
 	p := math.CreatePoint(0.0, 0.0, 0.0)
 	light := CreateLight(math.CreatePoint(0.0, 0.0, -10.0), math.CreateColor(1.0, 1.0, 1.0))
 	expected := math.CreateColor(1.9, 1.9, 1.9)
@@ -24,10 +24,10 @@ func TestLightingEyeBetweenLightAndSurface(t *testing.T) {
 }
 
 func TestLightingEyeOffsetBetweenLightAndSurface(t *testing.T) {
-	s := ray.CreateSphere()
+	s := g.CreateSphere()
 	eyev := math.CreateVector(0.0, gomath.Sqrt(2)/2, -gomath.Sqrt(2)/2)
 	normalv := math.CreateVector(0.0, 0.0, -1.0)
-	m := ray.DefaultMaterial()
+	m := g.DefaultMaterial()
 	p := math.CreatePoint(0.0, 0.0, 0.0)
 	light := CreateLight(math.CreatePoint(0.0, 0.0, -10.0), math.CreateColor(1.0, 1.0, 1.0))
 	expected := math.CreateColor(1.0, 1.0, 1.0)
@@ -36,10 +36,10 @@ func TestLightingEyeOffsetBetweenLightAndSurface(t *testing.T) {
 }
 
 func TestLightingEyeBetweenLightOffsetAndSurface(t *testing.T) {
-	s := ray.CreateSphere()
+	s := g.CreateSphere()
 	eyev := math.CreateVector(0.0, 0.0, -1.0)
 	normalv := math.CreateVector(0.0, 0.0, -1.0)
-	m := ray.DefaultMaterial()
+	m := g.DefaultMaterial()
 	p := math.CreatePoint(0.0, 0.0, 0.0)
 	light := CreateLight(math.CreatePoint(0.0, 10.0, -10.0), math.CreateColor(1.0, 1.0, 1.0))
 	expected := math.CreateColor(0.7364, 0.7364, 0.7364)
@@ -48,10 +48,10 @@ func TestLightingEyeBetweenLightOffsetAndSurface(t *testing.T) {
 }
 
 func TestLightingEyeInReflectionVector(t *testing.T) {
-	s := ray.CreateSphere()
+	s := g.CreateSphere()
 	eyev := math.CreateVector(0.0, -gomath.Sqrt(2)/2, -gomath.Sqrt(2)/2)
 	normalv := math.CreateVector(0.0, 0.0, -1.0)
-	m := ray.DefaultMaterial()
+	m := g.DefaultMaterial()
 	p := math.CreatePoint(0.0, 0.0, 0.0)
 	light := CreateLight(math.CreatePoint(0.0, 10.0, -10.0), math.CreateColor(1.0, 1.0, 1.0))
 	expected := math.CreateColor(1.6364, 1.6364, 1.6364)
@@ -60,10 +60,10 @@ func TestLightingEyeInReflectionVector(t *testing.T) {
 }
 
 func TestLightingLightBehindSurface(t *testing.T) {
-	s := ray.CreateSphere()
+	s := g.CreateSphere()
 	eyev := math.CreateVector(0.0, 0.0, -1.0)
 	normalv := math.CreateVector(0.0, 0.0, -1.0)
-	m := ray.DefaultMaterial()
+	m := g.DefaultMaterial()
 	p := math.CreatePoint(0.0, 0.0, 0.0)
 	light := CreateLight(math.CreatePoint(0.0, 10.0, 10.0), math.CreateColor(1.0, 1.0, 1.0))
 	expected := math.CreateColor(0.1, 0.1, 0.1)
@@ -72,10 +72,10 @@ func TestLightingLightBehindSurface(t *testing.T) {
 }
 
 func TestLightingEyeBetweenLightAndSurfaceShadow(t *testing.T) {
-	s := ray.CreateSphere()
+	s := g.CreateSphere()
 	eyev := math.CreateVector(0.0, 0.0, -1.0)
 	normalv := math.CreateVector(0.0, 0.0, -1.0)
-	m := ray.DefaultMaterial()
+	m := g.DefaultMaterial()
 	p := math.CreatePoint(0.0, 0.0, 0.0)
 	light := CreateLight(math.CreatePoint(0.0, 0.0, -10.0), math.CreateColor(1.0, 1.0, 1.0))
 	expected := math.CreateColor(0.1, 0.1, 0.1)
@@ -86,11 +86,11 @@ func TestLightingEyeBetweenLightAndSurfaceShadow(t *testing.T) {
 }
 
 func TestMaterialWithPattern(t *testing.T) {
-	s := ray.CreateSphere()
+	s := g.CreateSphere()
 	white := math.CreateColor(1.0, 1.0, 1.0)
 	black := math.CreateColor(0.0, 0.0, 0.0)
-	p := ray.CreateStripePattern(white, black)
-	m := ray.DefaultMaterial()
+	p := g.CreateStripePattern(white, black)
+	m := g.DefaultMaterial()
 	m.SetPattern(p)
 	m.SetAmbient(1.0)
 	m.SetDiffuse(0.0)

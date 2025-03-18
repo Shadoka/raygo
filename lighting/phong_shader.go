@@ -2,11 +2,11 @@ package lighting
 
 import (
 	gomath "math"
+	g "raygo/geometry"
 	"raygo/math"
-	"raygo/ray"
 )
 
-func PhongLighting(m ray.Material, obj ray.Shape, light Light, position math.Point, eyev math.Vector, normalv math.Vector, inShadow bool) math.Color {
+func PhongLighting(m g.Material, obj g.Shape, light Light, position math.Point, eyev math.Vector, normalv math.Vector, inShadow bool) math.Color {
 	color := m.Color
 	if m.Pattern != nil {
 		color = m.Pattern.ColorAtObject(position, obj)

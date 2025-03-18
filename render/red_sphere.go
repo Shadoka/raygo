@@ -2,8 +2,8 @@ package render
 
 import (
 	"raygo/canvas"
+	g "raygo/geometry"
 	"raygo/math"
-	"raygo/ray"
 )
 
 func CreateRedSphere(dimension int) *canvas.Canvas {
@@ -15,7 +15,7 @@ func CreateRedSphere(dimension int) *canvas.Canvas {
 
 	canvas := canvas.CreateCanvas(dimension, dimension)
 	color := math.CreateColor(1.0, 0.0, 0.0)
-	shape := ray.CreateSphere()
+	shape := g.CreateSphere()
 
 	// for each row of pixels in the canvas
 	for y := range dimension {
@@ -30,10 +30,10 @@ func CreateRedSphere(dimension int) *canvas.Canvas {
 			// describe the point on the wall that the ray will target
 			position := math.CreatePoint(worldX, worldY, wallZ)
 
-			r := ray.CreateRay(rayOrigin, position.Subtract(rayOrigin).Normalize())
+			r := g.CreateRay(rayOrigin, position.Subtract(rayOrigin).Normalize())
 			xs := shape.Intersect(r)
 
-			if ray.Hit(xs) != nil {
+			if g.Hit(xs) != nil {
 				canvas.WritePixel(x, y, color)
 			}
 		}

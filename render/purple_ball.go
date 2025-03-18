@@ -2,9 +2,9 @@ package render
 
 import (
 	"raygo/canvas"
+	g "raygo/geometry"
 	"raygo/lighting"
 	"raygo/math"
-	"raygo/ray"
 )
 
 func CreatePurpleBall(dimension int) *canvas.Canvas {
@@ -15,9 +15,9 @@ func CreatePurpleBall(dimension int) *canvas.Canvas {
 	half := wallSize / 2.0
 
 	canvas := canvas.CreateCanvas(dimension, dimension)
-	shape := ray.CreateSphere()
+	shape := g.CreateSphere()
 
-	m := ray.DefaultMaterial()
+	m := g.DefaultMaterial()
 	m.SetColor(math.CreateColor(1.0, 0.2, 1.0))
 	shape.SetMaterial(m)
 
@@ -38,11 +38,11 @@ func CreatePurpleBall(dimension int) *canvas.Canvas {
 			// describe the point on the wall that the ray will target
 			position := math.CreatePoint(worldX, worldY, wallZ)
 
-			r := ray.CreateRay(rayOrigin, position.Subtract(rayOrigin).Normalize())
+			r := g.CreateRay(rayOrigin, position.Subtract(rayOrigin).Normalize())
 			xs := shape.Intersect(r)
 
-			if ray.Hit(xs) != nil {
-				inters := ray.Hit(xs)
+			if g.Hit(xs) != nil {
+				inters := g.Hit(xs)
 				point := r.Position(inters.IntersectionAt)
 				normalv := inters.Object.NormalAt(point)
 				eyev := r.Direction.Negate()

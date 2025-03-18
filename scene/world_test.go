@@ -1,9 +1,9 @@
 package scene
 
 import (
+	g "raygo/geometry"
 	"raygo/lighting"
 	"raygo/math"
-	"raygo/ray"
 	"testing"
 
 	"gotest.tools/v3/assert"
@@ -18,13 +18,13 @@ func TestEmptyWorld(t *testing.T) {
 
 func TestDefaultWorld(t *testing.T) {
 	expectedLight := lighting.CreateLight(math.CreatePoint(-10.0, 10.0, -10.0), math.CreateColor(1.0, 1.0, 1.0))
-	expectedShape1 := ray.CreateSphere()
-	m1 := ray.DefaultMaterial()
+	expectedShape1 := g.CreateSphere()
+	m1 := g.DefaultMaterial()
 	m1.SetColor(math.CreateColor(0.8, 1.0, 0.6))
 	(&m1).Diffuse = 0.7
 	(&m1).Specular = 0.2
 	expectedShape1.SetMaterial(m1)
-	expectedShape2 := ray.CreateSphere()
+	expectedShape2 := g.CreateSphere()
 	transform := math.Scaling(0.5, 0.5, 0.5)
 	expectedShape2.SetTransform(transform)
 
@@ -38,7 +38,7 @@ func TestDefaultWorld(t *testing.T) {
 
 func TestIntersectWorld(t *testing.T) {
 	w := DefaultWorld()
-	r := ray.CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
+	r := g.CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
 
 	xs := w.Intersect(r)
 
@@ -51,8 +51,8 @@ func TestIntersectWorld(t *testing.T) {
 
 func TestShadeHitDefault(t *testing.T) {
 	w := DefaultWorld()
-	r := ray.CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
-	i := ray.CreateIntersection(4.0, w.Objects[0])
+	r := g.CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
+	i := g.CreateIntersection(4.0, w.Objects[0])
 	expected := math.CreateColor(0.38066, 0.47583, 0.2855)
 
 	comps := i.PrepareComputation(r)
@@ -66,8 +66,8 @@ func TestShadeHitInside(t *testing.T) {
 	l := lighting.CreateLight(math.CreatePoint(0.0, 0.25, 0.0), math.CreateColor(1.0, 1.0, 1.0))
 	w.Light = &l
 
-	r := ray.CreateRay(math.CreatePoint(0.0, 0.0, 0.0), math.CreateVector(0.0, 0.0, 1.0))
-	i := ray.CreateIntersection(0.5, w.Objects[1])
+	r := g.CreateRay(math.CreatePoint(0.0, 0.0, 0.0), math.CreateVector(0.0, 0.0, 1.0))
+	i := g.CreateIntersection(0.5, w.Objects[1])
 	expected := math.CreateColor(0.1, 0.1, 0.1)
 
 	comps := i.PrepareComputation(r)
@@ -78,7 +78,7 @@ func TestShadeHitInside(t *testing.T) {
 
 func TestColorAtRayMiss(t *testing.T) {
 	w := DefaultWorld()
-	r := ray.CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 1.0, 0.0))
+	r := g.CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 1.0, 0.0))
 	expected := math.CreateColor(0.0, 0.0, 0.0)
 
 	actual := w.ColorAt(r)
@@ -88,7 +88,7 @@ func TestColorAtRayMiss(t *testing.T) {
 
 func TestColorAtRayHit(t *testing.T) {
 	w := DefaultWorld()
-	r := ray.CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
+	r := g.CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
 	expected := math.CreateColor(0.38066, 0.47583, 0.2855)
 
 	actual := w.ColorAt(r)
@@ -98,10 +98,10 @@ func TestColorAtRayHit(t *testing.T) {
 
 func TestColorAtHitBehindRay(t *testing.T) {
 	w := EmptyWorld()
-	objects := make([]ray.Shape, 0)
+	objects := make([]g.Shape, 0)
 
-	s1 := ray.CreateSphere()
-	m1 := ray.DefaultMaterial()
+	s1 := g.CreateSphere()
+	m1 := g.DefaultMaterial()
 	m1.SetColor(math.CreateColor(0.8, 1.0, 0.6))
 	(&m1).Ambient = 1.0
 	(&m1).Diffuse = 0.7
@@ -109,10 +109,10 @@ func TestColorAtHitBehindRay(t *testing.T) {
 	s1.SetMaterial(m1)
 	objects = append(objects, s1)
 
-	s2 := ray.CreateSphere()
+	s2 := g.CreateSphere()
 	transform := math.Scaling(0.5, 0.5, 0.5)
 	s2.SetTransform(transform)
-	m2 := ray.DefaultMaterial()
+	m2 := g.DefaultMaterial()
 	(&m2).Ambient = 1.0
 	s2.SetMaterial(m2)
 	objects = append(objects, s2)
@@ -122,7 +122,7 @@ func TestColorAtHitBehindRay(t *testing.T) {
 	light := lighting.CreateLight(math.CreatePoint(-10.0, 10.0, -10.0), math.CreateColor(1.0, 1.0, 1.0))
 	w.Light = &light
 
-	r := ray.CreateRay(math.CreatePoint(0.0, 0.0, 0.75), math.CreateVector(0.0, 0.0, -1.0))
+	r := g.CreateRay(math.CreatePoint(0.0, 0.0, 0.75), math.CreateVector(0.0, 0.0, -1.0))
 
 	actual := w.ColorAt(r)
 
@@ -161,9 +161,9 @@ func TestShadeHitInShadow(t *testing.T) {
 	w := EmptyWorld()
 	expected := math.CreateColor(0.1, 0.1, 0.1)
 
-	objs := make([]ray.Shape, 0)
-	s1 := ray.CreateSphere()
-	s2 := ray.CreateSphere()
+	objs := make([]g.Shape, 0)
+	s1 := g.CreateSphere()
+	s2 := g.CreateSphere()
 	s2.SetTransform(math.Translation(0.0, 0.0, 10.0))
 	objs = append(objs, s1, s2)
 	w.Objects = objs
@@ -171,8 +171,8 @@ func TestShadeHitInShadow(t *testing.T) {
 	light := lighting.CreateLight(math.CreatePoint(0.0, 0.0, -10.0), math.CreateColor(1.0, 1.0, 1.0))
 	w.Light = &light
 
-	r := ray.CreateRay(math.CreatePoint(0.0, 0.0, 5.0), math.CreateVector(0.0, 0.0, 1.0))
-	i := ray.CreateIntersection(4.0, s2)
+	r := g.CreateRay(math.CreatePoint(0.0, 0.0, 5.0), math.CreateVector(0.0, 0.0, 1.0))
+	i := g.CreateIntersection(4.0, s2)
 
 	comps := i.PrepareComputation(r)
 	c := w.ShadeHit(comps)
