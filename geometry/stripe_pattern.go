@@ -43,5 +43,11 @@ func (sp *StripePattern) SetTransform(tf math.Matrix) {
 }
 
 func (sp *StripePattern) Equals(other Pattern) bool {
-	return reflect.TypeOf(sp) == reflect.TypeOf(other)
+	if reflect.TypeOf(sp) == reflect.TypeOf(other) {
+		concreteType := other.(*StripePattern)
+		return sp.ColorA.Equals(concreteType.ColorA) &&
+			sp.ColorB.Equals(concreteType.ColorB) &&
+			sp.Transform.Equals(concreteType.GetTransform())
+	}
+	return false
 }

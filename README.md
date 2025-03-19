@@ -64,3 +64,7 @@ The following image is fundamentally the same besides the light being higher.
 ![Exercise 10](examples/chapter10_stripes.png)
 
 Spheres with attached stripe patterns
+
+![Exercise 10](examples/chapter10_gradients.png)
+
+Spheres with attached gradient patterns
