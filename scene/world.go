@@ -6,6 +6,8 @@ import (
 	"raygo/math"
 )
 
+const MAX_REFLECTION_LIMIT = 5
+
 type World struct {
 	Objects []g.Shape
 	Light   *lighting.Light
@@ -52,24 +54,27 @@ func (w *World) Intersect(r g.Ray) []g.Intersection {
 	return xs
 }
 
-func (w *World) ShadeHit(comp g.IntersectionComputations) math.Color {
+func (w *World) ShadeHit(comp g.IntersectionComputations, remainingReflections int) math.Color {
 	shadowed := w.IsShadowed(comp.OverPoint)
 
-	return lighting.PhongLighting(comp.Object.GetMaterial(),
+	surfaceColor := lighting.PhongLighting(*comp.Object.GetMaterial(),
 		comp.Object,
 		*w.Light,
-		comp.Point, comp.Eyev, comp.Normalv,
+		comp.OverPoint, comp.Eyev, comp.Normalv,
 		shadowed)
+
+	reflectedColor := w.ReflectedColor(comp, remainingReflections)
+	return surfaceColor.Add(reflectedColor)
 }
 
-func (w *World) ColorAt(r g.Ray) math.Color {
+func (w *World) ColorAt(r g.Ray, remainingReflections int) math.Color {
 	xs := w.Intersect(r)
 	hit := g.Hit(xs)
 
 	color := math.CreateColor(0.0, 0.0, 0.0)
 	if hit != nil {
 		comps := hit.PrepareComputation(r)
-		color = w.ShadeHit(comps)
+		color = w.ShadeHit(comps, remainingReflections)
 	}
 	return color
 }
@@ -88,4 +93,15 @@ func (w *World) IsShadowed(p math.Point) bool {
 
 	h := g.Hit(xs)
 	return h != nil && h.IntersectionAt < distance
+}
+
+func (w *World) ReflectedColor(precomps g.IntersectionComputations, remainingReflections int) math.Color {
+	if precomps.Object.GetMaterial().Reflective == 0.0 || remainingReflections <= 0 {
+		return math.CreateColor(0.0, 0.0, 0.0)
+	}
+
+	reflectedRay := g.CreateRay(precomps.OverPoint, precomps.Reflectv)
+	colorAtReflectionTarget := w.ColorAt(reflectedRay, remainingReflections-1)
+
+	return colorAtReflectionTarget.Mul(precomps.Object.GetMaterial().Reflective)
 }

@@ -16,4 +16,5 @@ func TestDefaultMaterial(t *testing.T) {
 	assert.Assert(t, m.Diffuse == 0.9)
 	assert.Assert(t, m.Specular == 0.9)
 	assert.Assert(t, m.Shininess == 200.0)
+	assert.Assert(t, m.Reflective == 0.0)
 }

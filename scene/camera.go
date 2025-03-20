@@ -74,7 +74,7 @@ func (c *Camera) Render(w *World) *canvas.Canvas {
 	for y := range c.Vsize {
 		for x := range c.Hsize {
 			r := c.RayForPixel(x, y)
-			color := w.ColorAt(r)
+			color := w.ColorAt(r, MAX_REFLECTION_LIMIT)
 			canv.WritePixel(x, y, color)
 		}
 	}

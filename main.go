@@ -8,9 +8,9 @@ import (
 
 func main() {
 	begin := time.Now()
-	scene := render.CreateMultiplePatternScene(400, 200)
+	scene := render.CreateReflectionScene(400, 200)
 	end := time.Now()
-	scene.WriteFile("chapter10_patterns.ppm")
+	scene.WriteFile("chapter11_reflections.ppm")
 
 	diff := end.Sub(begin)
 	fmt.Printf("rendering took %v seconds\n", diff.Seconds())

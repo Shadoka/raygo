@@ -1,7 +1,6 @@
 package math
 
 import (
-	"fmt"
 	"math"
 	"testing"
 
@@ -209,7 +208,7 @@ func TestViewTransformMoved(t *testing.T) {
 	expected := Translation(0.0, 0.0, -8.0)
 
 	tr := ViewTransform(from, to, up)
-	fmt.Println(tr)
+
 	assert.Assert(t, expected.Equals(tr))
 }
 

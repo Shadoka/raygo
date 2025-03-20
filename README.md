@@ -72,3 +72,8 @@ Spheres with attached gradient patterns
 ![Exercise 10](examples/chapter10_patterns.png)
 
 Multiple patterns at once
+
+### Chapter 11
+![Exercise 11](examples/chapter11_reflections.png)
+
+Material can now be reflective

@@ -14,7 +14,7 @@ type Shape interface {
 	SetTransform(m math.Matrix)
 	GetTransform() math.Matrix
 	SetMaterial(m Material)
-	GetMaterial() Material
+	GetMaterial() *Material
 	Intersect(ray Ray) []Intersection
 	NormalAt(p math.Point) math.Vector
 }
@@ -52,7 +52,7 @@ func CreatePlane() *Plane {
 func (s *Sphere) Equals(other Shape) bool {
 	return reflect.TypeOf(s) == reflect.TypeOf(other) &&
 		s.Transform.Equals(other.GetTransform()) &&
-		s.Material.Equals(other.GetMaterial())
+		s.Material.Equals(*other.GetMaterial())
 }
 
 func (s *Sphere) SetTransform(m math.Matrix) {
@@ -67,8 +67,8 @@ func (s *Sphere) GetTransform() math.Matrix {
 	return s.Transform
 }
 
-func (s *Sphere) GetMaterial() Material {
-	return s.Material
+func (s *Sphere) GetMaterial() *Material {
+	return &s.Material
 }
 
 func (s *Sphere) SetMaterial(m Material) {
@@ -121,8 +121,8 @@ func (p *Plane) GetTransform() math.Matrix {
 	return p.Transform
 }
 
-func (p *Plane) GetMaterial() Material {
-	return p.Material
+func (p *Plane) GetMaterial() *Material {
+	return &p.Material
 }
 
 func (p *Plane) SetMaterial(m Material) {
@@ -132,7 +132,7 @@ func (p *Plane) SetMaterial(m Material) {
 func (p *Plane) Equals(other Shape) bool {
 	return reflect.TypeOf(p) == reflect.TypeOf(other) &&
 		p.Transform.Equals(other.GetTransform()) &&
-		p.Material.Equals(other.GetMaterial())
+		p.Material.Equals(*other.GetMaterial())
 }
 
 func (p *Plane) NormalAt(point math.Point) math.Vector {

@@ -1,6 +1,7 @@
 package geometry
 
 import (
+	gomath "math"
 	"raygo/math"
 	"testing"
 
@@ -179,4 +180,15 @@ func TestPrepareComputationsOverPoint(t *testing.T) {
 
 	assert.Assert(t, comps.OverPoint.Z < -EPSILON/2.0)
 	assert.Assert(t, comps.Point.Z > comps.OverPoint.Z)
+}
+
+func TestPrepareComputationReflectV(t *testing.T) {
+	p := CreatePlane()
+	r := CreateRay(math.CreatePoint(0.0, 1.0, -1.0), math.CreateVector(0.0, -gomath.Sqrt(2)/2.0, gomath.Sqrt(2)/2.0))
+	i := CreateIntersection(gomath.Sqrt(2.0), p)
+	expected := math.CreateVector(0.0, gomath.Sqrt(2)/2.0, gomath.Sqrt(2)/2.0)
+
+	precomps := i.PrepareComputation(r)
+
+	assert.Assert(t, expected.Equals(precomps.Reflectv))
 }

@@ -24,6 +24,7 @@ type IntersectionComputations struct {
 	Point          math.Point
 	Eyev           math.Vector
 	Normalv        math.Vector
+	Reflectv       math.Vector
 	Inside         bool
 	OverPoint      math.Point
 }
@@ -90,13 +91,15 @@ func (i Intersection) PrepareComputation(r Ray) IntersectionComputations {
 	p := r.Position(i.IntersectionAt)
 	normal := i.Object.NormalAt(p)
 	eye := r.Direction.Negate()
-	overP := p.Add(normal.Mul(EPSILON))
 
 	inside := false
 	if normal.Dot(eye) < 0.0 {
 		inside = true
 		normal = normal.Negate()
 	}
+
+	overP := p.Add(normal.Mul(EPSILON))
+	reflect := r.Direction.Reflect(normal)
 
 	return IntersectionComputations{
 		IntersectionAt: i.IntersectionAt,
@@ -106,5 +109,6 @@ func (i Intersection) PrepareComputation(r Ray) IntersectionComputations {
 		Normalv:        normal,
 		Inside:         inside,
 		OverPoint:      overP,
+		Reflectv:       reflect,
 	}
 }

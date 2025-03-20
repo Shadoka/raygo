@@ -6,28 +6,30 @@ import (
 )
 
 type Material struct {
-	Color     math.Color
-	Pattern   Pattern
-	Ambient   float64
-	Diffuse   float64
-	Specular  float64
-	Shininess float64
+	Color      math.Color
+	Pattern    Pattern
+	Ambient    float64
+	Diffuse    float64
+	Specular   float64
+	Shininess  float64
+	Reflective float64
 }
 
-func CreateMaterial(c math.Color, p Pattern, am float64, diff float64, spec float64, shin float64) Material {
+func CreateMaterial(c math.Color, p Pattern, am float64, diff float64, spec float64, shin float64, refl float64) Material {
 	return Material{
-		Color:     c,
-		Pattern:   p,
-		Ambient:   am,
-		Diffuse:   diff,
-		Specular:  spec,
-		Shininess: shin,
+		Color:      c,
+		Pattern:    p,
+		Ambient:    am,
+		Diffuse:    diff,
+		Specular:   spec,
+		Shininess:  shin,
+		Reflective: refl,
 	}
 }
 
 func DefaultMaterial() Material {
 	c := math.CreateColor(1.0, 1.0, 1.0)
-	return CreateMaterial(c, nil, 0.1, 0.9, 0.9, 200.0)
+	return CreateMaterial(c, nil, 0.1, 0.9, 0.9, 200.0, 0.0)
 }
 
 func (m *Material) SetColor(c math.Color) {
@@ -48,6 +50,14 @@ func (m *Material) SetDiffuse(d float64) {
 
 func (m *Material) SetSpecular(s float64) {
 	m.Specular = s
+}
+
+func (m *Material) SetReflective(r float64) {
+	m.Reflective = r
+}
+
+func (m *Material) SetShininess(s float64) {
+	m.Shininess = s
 }
 
 func (m Material) Equals(other Material) bool {

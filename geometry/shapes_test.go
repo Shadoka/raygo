@@ -166,7 +166,7 @@ func TestDefaultMaterialSphere(t *testing.T) {
 	s := CreateSphere()
 	m := DefaultMaterial()
 
-	assert.Assert(t, m.Equals(s.GetMaterial()))
+	assert.Assert(t, m.Equals(*s.GetMaterial()))
 }
 
 func TestSetMaterialSphere(t *testing.T) {
@@ -176,7 +176,7 @@ func TestSetMaterialSphere(t *testing.T) {
 
 	s.SetMaterial(m)
 
-	assert.Assert(t, m.Equals(s.GetMaterial()))
+	assert.Assert(t, m.Equals(*s.GetMaterial()))
 }
 
 func TestLocalPlaneIntersectParallel(t *testing.T) {

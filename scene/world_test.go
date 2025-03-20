@@ -1,6 +1,7 @@
 package scene
 
 import (
+	gomath "math"
 	g "raygo/geometry"
 	"raygo/lighting"
 	"raygo/math"
@@ -56,7 +57,7 @@ func TestShadeHitDefault(t *testing.T) {
 	expected := math.CreateColor(0.38066, 0.47583, 0.2855)
 
 	comps := i.PrepareComputation(r)
-	actual := w.ShadeHit(comps)
+	actual := w.ShadeHit(comps, 0)
 
 	assert.Assert(t, expected.Equals(actual))
 }
@@ -68,10 +69,10 @@ func TestShadeHitInside(t *testing.T) {
 
 	r := g.CreateRay(math.CreatePoint(0.0, 0.0, 0.0), math.CreateVector(0.0, 0.0, 1.0))
 	i := g.CreateIntersection(0.5, w.Objects[1])
-	expected := math.CreateColor(0.1, 0.1, 0.1)
+	expected := math.CreateColor(0.90498, 0.90498, 0.90498)
 
 	comps := i.PrepareComputation(r)
-	actual := w.ShadeHit(comps)
+	actual := w.ShadeHit(comps, 0)
 
 	assert.Assert(t, expected.Equals(actual))
 }
@@ -81,7 +82,7 @@ func TestColorAtRayMiss(t *testing.T) {
 	r := g.CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 1.0, 0.0))
 	expected := math.CreateColor(0.0, 0.0, 0.0)
 
-	actual := w.ColorAt(r)
+	actual := w.ColorAt(r, 0)
 
 	assert.Assert(t, expected.Equals(actual))
 }
@@ -91,7 +92,7 @@ func TestColorAtRayHit(t *testing.T) {
 	r := g.CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
 	expected := math.CreateColor(0.38066, 0.47583, 0.2855)
 
-	actual := w.ColorAt(r)
+	actual := w.ColorAt(r, 0)
 
 	assert.Assert(t, expected.Equals(actual))
 }
@@ -124,7 +125,7 @@ func TestColorAtHitBehindRay(t *testing.T) {
 
 	r := g.CreateRay(math.CreatePoint(0.0, 0.0, 0.75), math.CreateVector(0.0, 0.0, -1.0))
 
-	actual := w.ColorAt(r)
+	actual := w.ColorAt(r, 0)
 
 	assert.Assert(t, m2.Color.Equals(actual))
 }
@@ -175,7 +176,78 @@ func TestShadeHitInShadow(t *testing.T) {
 	i := g.CreateIntersection(4.0, s2)
 
 	comps := i.PrepareComputation(r)
-	c := w.ShadeHit(comps)
+	c := w.ShadeHit(comps, 0)
 
 	assert.Assert(t, expected.Equals(c))
+}
+
+func TestReflectedColorWithNonreflectiveMaterial(t *testing.T) {
+	w := DefaultWorld()
+	r := g.CreateRay(math.CreatePoint(0.0, 0.0, 0.0), math.CreateVector(0.0, 0.0, 1.0))
+	m := w.Objects[1].GetMaterial()
+	m.SetAmbient(1.0)
+	i := g.CreateIntersection(1.0, w.Objects[1])
+	expected := math.CreateColor(0.0, 0.0, 0.0)
+
+	precomps := i.PrepareComputation(r)
+
+	assert.Assert(t, expected.Equals(w.ReflectedColor(precomps, 0)))
+}
+
+func TestReflectedColorWithReflectiveMaterial(t *testing.T) {
+	w := DefaultWorld()
+	p := g.CreatePlane()
+	p.GetMaterial().SetReflective(0.5)
+	p.SetTransform(math.Translation(0.0, -1.0, 0.0))
+	w.Objects = append(w.Objects, p)
+
+	r := g.CreateRay(math.CreatePoint(0.0, 0.0, -3.0), math.CreateVector(0.0, -gomath.Sqrt(2)/2.0, gomath.Sqrt(2)/2.0))
+	i := g.CreateIntersection(gomath.Sqrt(2), p)
+	expected := math.CreateColor(0.19033, 0.23791, 0.14274)
+
+	precomps := i.PrepareComputation(r)
+	actual := w.ReflectedColor(precomps, 1)
+
+	assert.Assert(t, expected.Equals(actual))
+}
+
+func TestShadeHitWithReflectiveMaterial(t *testing.T) {
+	w := DefaultWorld()
+	p := g.CreatePlane()
+	p.GetMaterial().SetReflective(0.5)
+	p.SetTransform(math.Translation(0.0, -1.0, 0.0))
+	w.Objects = append(w.Objects, p)
+
+	r := g.CreateRay(math.CreatePoint(0.0, 0.0, -3.0), math.CreateVector(0.0, -gomath.Sqrt(2)/2.0, gomath.Sqrt(2)/2.0))
+	i := g.CreateIntersection(gomath.Sqrt(2), p)
+	expected := math.CreateColor(0.87675, 0.92434, 0.82917)
+
+	precomps := i.PrepareComputation(r)
+	actual := w.ShadeHit(precomps, 1)
+
+	assert.Assert(t, expected.Equals(actual))
+}
+
+func TestColorAtNoEndlessRecursion(t *testing.T) {
+	w := EmptyWorld()
+
+	light := lighting.CreateLight(math.CreatePoint(0.0, 0.0, 0.0), math.CreateColor(1.0, 1.0, 1.0))
+	w.Light = &light
+
+	lower := g.CreatePlane()
+	lower.GetMaterial().SetReflective(1.0)
+	lower.SetTransform(math.Translation(0.0, -1.0, 0.0))
+	w.Objects = append(w.Objects, lower)
+
+	upper := g.CreatePlane()
+	upper.GetMaterial().SetReflective(1.0)
+	upper.SetTransform(math.Translation(0.0, 1.0, 0.0))
+	w.Objects = append(w.Objects, upper)
+
+	r := g.CreateRay(math.CreatePoint(0.0, 0.0, 0.0), math.CreateVector(0.0, 1.0, 0.0))
+	expected := math.CreateColor(3.8, 3.8, 3.8)
+
+	actual := w.ColorAt(r, 1)
+
+	assert.Assert(t, expected.Equals(actual))
 }
