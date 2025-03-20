@@ -13,7 +13,7 @@ Go lang implementation of [The Ray Tracer Challenge](http://raytracerchallenge.c
 7. Making a Scene ✔
 8. Shadows ✔
 9. Planes ✔
-10. Patterns
+10. Patterns ✔
 11. Reflection and Refraction
 12. Cubes
 13. Cylinders
@@ -22,7 +22,7 @@ Go lang implementation of [The Ray Tracer Challenge](http://raytracerchallenge.c
 16. Constructive Solid Geometry (CSG)
 17. Next Steps
 
-## Exercises
+## Examples
 
 ### Chapter 5
 ![Exercise 5](examples/chapter5.png)
@@ -32,7 +32,7 @@ Drawing of a sphere via ray-sphere intersections.
 ### Chapter 6
 ![Exercise 6](examples/chapter6.png)
 
-Drawings of a sphere with lightning via phong shader.
+Drawing of a sphere with lightning via phong shader.
 
 ### Chapter 7
 ![Exercise 7](examples/chapter7.png)
@@ -68,3 +68,7 @@ Spheres with attached stripe patterns
 ![Exercise 10](examples/chapter10_gradients.png)
 
 Spheres with attached gradient patterns
+
+![Exercise 10](examples/chapter10_patterns.png)
+
+Multiple patterns at once
