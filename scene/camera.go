@@ -81,3 +81,35 @@ func (c *Camera) Render(w *World) *canvas.Canvas {
 
 	return &canv
 }
+
+func (c *Camera) RenderMultithreaded(w *World, workerThreads int) *canvas.Canvas {
+	done := make(chan bool, workerThreads)
+	canv := canvas.CreateCanvas(c.Hsize, c.Vsize)
+
+	rowsPerWorker := c.Vsize / workerThreads
+	remainingRows := c.Vsize % workerThreads
+
+	for worker := range workerThreads {
+		from := rowsPerWorker * worker
+		to := from + rowsPerWorker
+		if worker == workerThreads-1 {
+			to = to + remainingRows
+		}
+
+		go c.renderPartially(from, to, w, &canv, done)
+	}
+
+	<-done
+	return &canv
+}
+
+func (c *Camera) renderPartially(fromY int, toY int, w *World, cv *canvas.Canvas, done chan bool) {
+	for y := fromY; y < toY; y++ {
+		for x := range c.Hsize {
+			r := c.RayForPixel(x, y)
+			color := w.ColorAt(r, MAX_REFLECTION_LIMIT)
+			cv.WritePixel(x, y, color)
+		}
+	}
+	done <- true
+}
