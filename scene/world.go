@@ -1,12 +1,13 @@
 package scene
 
 import (
+	gomath "math"
 	g "raygo/geometry"
 	"raygo/lighting"
 	"raygo/math"
 )
 
-const MAX_REFLECTION_LIMIT = 5
+const MAX_REFLECTION_LIMIT = 10
 
 type World struct {
 	Objects []g.Shape
@@ -64,7 +65,8 @@ func (w *World) ShadeHit(comp g.IntersectionComputations, remainingReflections i
 		shadowed)
 
 	reflectedColor := w.ReflectedColor(comp, remainingReflections)
-	return surfaceColor.Add(reflectedColor)
+	refractedColor := w.RefractedColor(comp, remainingReflections)
+	return surfaceColor.Add(reflectedColor).Add(refractedColor)
 }
 
 func (w *World) ColorAt(r g.Ray, remainingReflections int) math.Color {
@@ -73,7 +75,7 @@ func (w *World) ColorAt(r g.Ray, remainingReflections int) math.Color {
 
 	color := math.CreateColor(0.0, 0.0, 0.0)
 	if hit != nil {
-		comps := hit.PrepareComputation(r)
+		comps := hit.PrepareComputation(r, xs)
 		color = w.ShadeHit(comps, remainingReflections)
 	}
 	return color
@@ -104,4 +106,41 @@ func (w *World) ReflectedColor(precomps g.IntersectionComputations, remainingRef
 	colorAtReflectionTarget := w.ColorAt(reflectedRay, remainingReflections-1)
 
 	return colorAtReflectionTarget.Mul(precomps.Object.GetMaterial().Reflective)
+}
+
+func (w *World) RefractedColor(precomps g.IntersectionComputations, remainingRefractions int) math.Color {
+	if precomps.Object.GetMaterial().Transparency == 0.0 || remainingRefractions <= 0 {
+		return math.CreateColor(0.0, 0.0, 0.0)
+	}
+
+	// find the ratio of first index of refraction to the second
+	refractionRatio := precomps.N1 / precomps.N2
+
+	// cos(theta_i) is the same as the dot product of the two vectors
+	cosI := precomps.Eyev.Dot(precomps.Normalv)
+
+	// find sin(theta_t)^2 via trigonometric identity
+	sin2T := (refractionRatio * refractionRatio) * (1.0 - cosI*cosI)
+
+	if sin2T > 1.0 {
+		// total internal reflection
+		return math.CreateColor(0.0, 0.0, 0.0)
+	}
+
+	// find cos(theta_t) via trigonometric identity
+	cosT := gomath.Sqrt(1.0 - sin2T)
+
+	dirComp1 := precomps.Normalv.Mul(refractionRatio*cosI - cosT)
+	dirComp2 := precomps.Eyev.Mul(refractionRatio)
+	// compute the direction of the refracted ray
+	direction := dirComp1.Subtract(dirComp2)
+
+	// create the refracted ray
+	refractRay := g.CreateRay(precomps.UnderPoint, direction)
+
+	// find the color of the refracted ray, making sure to multiply
+	// by the transparency value to account for any opacity
+	color := w.ColorAt(refractRay, remainingRefractions-1).Mul(precomps.Object.GetMaterial().Transparency)
+
+	return color
 }

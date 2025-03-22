@@ -1,6 +1,7 @@
 package geometry
 
 import (
+	"fmt"
 	gomath "math"
 	"raygo/math"
 	"testing"
@@ -137,7 +138,7 @@ func TestPrepareComputation(t *testing.T) {
 		Inside:         false,
 	}
 
-	actual := i.PrepareComputation(r)
+	actual := i.PrepareComputation(r, make([]Intersection, 0))
 
 	assert.Assert(t, expected.IntersectionAt == actual.IntersectionAt)
 	assert.Assert(t, expected.Object.Equals(actual.Object))
@@ -160,7 +161,7 @@ func TestPrepareComputationRayInside(t *testing.T) {
 		Inside:         true,
 	}
 
-	actual := i.PrepareComputation(r)
+	actual := i.PrepareComputation(r, make([]Intersection, 0))
 
 	assert.Assert(t, expected.IntersectionAt == actual.IntersectionAt)
 	assert.Assert(t, expected.Object.Equals(actual.Object))
@@ -176,7 +177,7 @@ func TestPrepareComputationsOverPoint(t *testing.T) {
 	s.SetTransform(math.Translation(0.0, 0.0, 1.0))
 	i := CreateIntersection(5.0, s)
 
-	comps := i.PrepareComputation(r)
+	comps := i.PrepareComputation(r, make([]Intersection, 0))
 
 	assert.Assert(t, comps.OverPoint.Z < -EPSILON/2.0)
 	assert.Assert(t, comps.Point.Z > comps.OverPoint.Z)
@@ -188,7 +189,60 @@ func TestPrepareComputationReflectV(t *testing.T) {
 	i := CreateIntersection(gomath.Sqrt(2.0), p)
 	expected := math.CreateVector(0.0, gomath.Sqrt(2)/2.0, gomath.Sqrt(2)/2.0)
 
-	precomps := i.PrepareComputation(r)
+	precomps := i.PrepareComputation(r, make([]Intersection, 0))
 
 	assert.Assert(t, expected.Equals(precomps.Reflectv))
+}
+
+func TestPrepareComputationRefractiveIndices(t *testing.T) {
+	a := CreateGlassSphere()
+	a.SetTransform(math.Scaling(2.0, 2.0, 2.0))
+	a.GetMaterial().SetRefractiveIndex(1.5)
+
+	b := CreateGlassSphere()
+	b.SetTransform(math.Translation(0.0, 0.0, -0.25))
+	b.GetMaterial().SetRefractiveIndex(2.0)
+
+	c := CreateGlassSphere()
+	c.SetTransform(math.Translation(0.0, 0.0, 0.25))
+	c.GetMaterial().SetRefractiveIndex(2.5)
+
+	r := CreateRay(math.CreatePoint(0.0, 0.0, -4.0), math.CreateVector(0.0, 0.0, 1.0))
+	xs := []Intersection{
+		CreateIntersection(2.0, a),
+		CreateIntersection(2.75, b),
+		CreateIntersection(3.25, c),
+		CreateIntersection(4.75, b),
+		CreateIntersection(5.25, c),
+		CreateIntersection(6.0, a),
+	}
+
+	expected := []float64{
+		1.0, 1.5,
+		1.5, 2.0,
+		2.0, 2.5,
+		2.5, 2.5,
+		2.5, 1.5,
+		1.5, 1.0,
+	}
+
+	for index, i := range xs {
+		precomp := i.PrepareComputation(r, xs)
+		fmt.Println(precomp)
+		assert.Assert(t, precomp.N1 == expected[index*2])
+		assert.Assert(t, precomp.N2 == expected[index*2+1])
+	}
+}
+
+func TestPrepareComputationUnderPoint(t *testing.T) {
+	r := CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
+	s := CreateGlassSphere()
+	s.SetTransform(math.Translation(0.0, 0.0, 1.0))
+	i := CreateIntersection(5.0, s)
+	xs := []Intersection{i}
+
+	comps := i.PrepareComputation(r, xs)
+
+	assert.Assert(t, comps.UnderPoint.Z > EPSILON/2.0)
+	assert.Assert(t, comps.Point.Z < comps.UnderPoint.Z)
 }

@@ -6,30 +6,42 @@ import (
 )
 
 type Material struct {
-	Color      math.Color
-	Pattern    Pattern
-	Ambient    float64
-	Diffuse    float64
-	Specular   float64
-	Shininess  float64
-	Reflective float64
+	Color           math.Color
+	Pattern         Pattern
+	Ambient         float64
+	Diffuse         float64
+	Specular        float64
+	Shininess       float64
+	Reflective      float64
+	Transparency    float64
+	RefractiveIndex float64
 }
 
-func CreateMaterial(c math.Color, p Pattern, am float64, diff float64, spec float64, shin float64, refl float64) Material {
+func CreateMaterial(c math.Color,
+	p Pattern,
+	am float64,
+	diff float64,
+	spec float64,
+	shin float64,
+	refl float64,
+	transp float64,
+	refInd float64) Material {
 	return Material{
-		Color:      c,
-		Pattern:    p,
-		Ambient:    am,
-		Diffuse:    diff,
-		Specular:   spec,
-		Shininess:  shin,
-		Reflective: refl,
+		Color:           c,
+		Pattern:         p,
+		Ambient:         am,
+		Diffuse:         diff,
+		Specular:        spec,
+		Shininess:       shin,
+		Reflective:      refl,
+		Transparency:    transp,
+		RefractiveIndex: refInd,
 	}
 }
 
 func DefaultMaterial() Material {
 	c := math.CreateColor(1.0, 1.0, 1.0)
-	return CreateMaterial(c, nil, 0.1, 0.9, 0.9, 200.0, 0.0)
+	return CreateMaterial(c, nil, 0.1, 0.9, 0.9, 200.0, 0.0, 0.0, 1.0)
 }
 
 func (m *Material) SetColor(c math.Color) {
@@ -60,6 +72,14 @@ func (m *Material) SetShininess(s float64) {
 	m.Shininess = s
 }
 
+func (m *Material) SetTransparency(t float64) {
+	m.Transparency = t
+}
+
+func (m *Material) SetRefractiveIndex(ri float64) {
+	m.RefractiveIndex = ri
+}
+
 func (m Material) Equals(other Material) bool {
 	patternEquals := true
 	if (m.Pattern == nil && other.Pattern != nil) ||
@@ -73,6 +93,9 @@ func (m Material) Equals(other Material) bool {
 		floatEquals(m.Diffuse, other.Diffuse) &&
 		floatEquals(m.Specular, other.Specular) &&
 		floatEquals(m.Shininess, other.Shininess) &&
+		floatEquals(m.Reflective, other.Reflective) &&
+		floatEquals(m.Transparency, other.Transparency) &&
+		floatEquals(m.RefractiveIndex, other.RefractiveIndex) &&
 		patternEquals
 }
 

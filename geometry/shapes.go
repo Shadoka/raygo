@@ -39,6 +39,17 @@ func CreateSphere() *Sphere {
 	}
 }
 
+func CreateGlassSphere() *Sphere {
+	m := DefaultMaterial()
+	m.SetTransparency(1.0)
+	m.SetRefractiveIndex(1.5)
+	return &Sphere{
+		Id:        uuid.NewString(),
+		Transform: math.IdentityMatrix(),
+		Material:  m,
+	}
+}
+
 func CreatePlane() *Plane {
 	return &Plane{
 		Id:        uuid.NewString(),

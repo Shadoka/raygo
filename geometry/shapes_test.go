@@ -252,3 +252,11 @@ func TestNormalAtDefaultPlaneRotatedX(t *testing.T) {
 
 	assert.Assert(t, expected.Equals(actual))
 }
+
+func TestCreateGlassSphere(t *testing.T) {
+	s := CreateGlassSphere()
+
+	assert.Assert(t, math.IdentityMatrix().Equals(s.GetTransform()))
+	assert.Assert(t, s.GetMaterial().Transparency == 1.0)
+	assert.Assert(t, s.GetMaterial().RefractiveIndex == 1.5)
+}

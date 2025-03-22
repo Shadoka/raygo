@@ -56,7 +56,7 @@ func TestShadeHitDefault(t *testing.T) {
 	i := g.CreateIntersection(4.0, w.Objects[0])
 	expected := math.CreateColor(0.38066, 0.47583, 0.2855)
 
-	comps := i.PrepareComputation(r)
+	comps := i.PrepareComputation(r, make([]g.Intersection, 0))
 	actual := w.ShadeHit(comps, 0)
 
 	assert.Assert(t, expected.Equals(actual))
@@ -71,7 +71,7 @@ func TestShadeHitInside(t *testing.T) {
 	i := g.CreateIntersection(0.5, w.Objects[1])
 	expected := math.CreateColor(0.90498, 0.90498, 0.90498)
 
-	comps := i.PrepareComputation(r)
+	comps := i.PrepareComputation(r, make([]g.Intersection, 0))
 	actual := w.ShadeHit(comps, 0)
 
 	assert.Assert(t, expected.Equals(actual))
@@ -175,7 +175,7 @@ func TestShadeHitInShadow(t *testing.T) {
 	r := g.CreateRay(math.CreatePoint(0.0, 0.0, 5.0), math.CreateVector(0.0, 0.0, 1.0))
 	i := g.CreateIntersection(4.0, s2)
 
-	comps := i.PrepareComputation(r)
+	comps := i.PrepareComputation(r, make([]g.Intersection, 0))
 	c := w.ShadeHit(comps, 0)
 
 	assert.Assert(t, expected.Equals(c))
@@ -189,7 +189,7 @@ func TestReflectedColorWithNonreflectiveMaterial(t *testing.T) {
 	i := g.CreateIntersection(1.0, w.Objects[1])
 	expected := math.CreateColor(0.0, 0.0, 0.0)
 
-	precomps := i.PrepareComputation(r)
+	precomps := i.PrepareComputation(r, make([]g.Intersection, 0))
 
 	assert.Assert(t, expected.Equals(w.ReflectedColor(precomps, 0)))
 }
@@ -205,7 +205,7 @@ func TestReflectedColorWithReflectiveMaterial(t *testing.T) {
 	i := g.CreateIntersection(gomath.Sqrt(2), p)
 	expected := math.CreateColor(0.19033, 0.23791, 0.14274)
 
-	precomps := i.PrepareComputation(r)
+	precomps := i.PrepareComputation(r, make([]g.Intersection, 0))
 	actual := w.ReflectedColor(precomps, 1)
 
 	assert.Assert(t, expected.Equals(actual))
@@ -222,7 +222,7 @@ func TestShadeHitWithReflectiveMaterial(t *testing.T) {
 	i := g.CreateIntersection(gomath.Sqrt(2), p)
 	expected := math.CreateColor(0.87675, 0.92434, 0.82917)
 
-	precomps := i.PrepareComputation(r)
+	precomps := i.PrepareComputation(r, make([]g.Intersection, 0))
 	actual := w.ShadeHit(precomps, 1)
 
 	assert.Assert(t, expected.Equals(actual))
@@ -250,4 +250,72 @@ func TestColorAtNoEndlessRecursion(t *testing.T) {
 	actual := w.ColorAt(r, 1)
 
 	assert.Assert(t, expected.Equals(actual))
+}
+
+func TestRefractedColorOpaqueSurface(t *testing.T) {
+	w := DefaultWorld()
+	r := g.CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
+	xs := []g.Intersection{g.CreateIntersection(4.0, w.Objects[0]),
+		g.CreateIntersection(6.0, w.Objects[0]),
+	}
+	expected := math.CreateColor(0.0, 0.0, 0.0)
+
+	precomps := xs[0].PrepareComputation(r, xs)
+
+	assert.Assert(t, expected.Equals(w.RefractedColor(precomps, 5)))
+}
+
+func TestRefractedColorMaxDepth(t *testing.T) {
+	w := DefaultWorld()
+	w.Objects[0].GetMaterial().SetTransparency(1.0)
+	w.Objects[0].GetMaterial().SetRefractiveIndex(1.5)
+	r := g.CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
+	xs := []g.Intersection{g.CreateIntersection(4.0, w.Objects[0]),
+		g.CreateIntersection(6.0, w.Objects[0]),
+	}
+	expected := math.CreateColor(0.0, 0.0, 0.0)
+
+	precomps := xs[0].PrepareComputation(r, xs)
+
+	assert.Assert(t, expected.Equals(w.RefractedColor(precomps, 0)))
+}
+
+func TestRefractedColorTotalInternalReflection(t *testing.T) {
+	w := DefaultWorld()
+	w.Objects[0].GetMaterial().SetTransparency(1.0)
+	w.Objects[0].GetMaterial().SetRefractiveIndex(1.5)
+	r := g.CreateRay(math.CreatePoint(0.0, 0.0, gomath.Sqrt(2)/2.0), math.CreateVector(0.0, 1.0, 0.0))
+	xs := []g.Intersection{
+		g.CreateIntersection(-gomath.Sqrt(2)/2.0, w.Objects[0]),
+		g.CreateIntersection(gomath.Sqrt(2)/2.0, w.Objects[0]),
+	}
+	expected := math.CreateColor(0.0, 0.0, 0.0)
+
+	precomps := xs[1].PrepareComputation(r, xs)
+
+	assert.Assert(t, expected.Equals(w.RefractedColor(precomps, 5)))
+}
+
+func TestShadeHitWithTransparentMaterial(t *testing.T) {
+	w := DefaultWorld()
+	floor := g.CreatePlane()
+	floor.SetTransform(math.Translation(0.0, -1.0, 0.0))
+	floor.GetMaterial().SetTransparency(0.5)
+	floor.GetMaterial().SetRefractiveIndex(1.5)
+
+	ball := g.CreateSphere()
+	ball.GetMaterial().SetColor(math.CreateColor(1.0, 0.0, 0.0))
+	ball.GetMaterial().SetAmbient(0.5)
+	ball.SetTransform(math.Translation(0.0, -3.5, -0.5))
+	w.Objects = append(w.Objects, floor, ball)
+
+	r := g.CreateRay(math.CreatePoint(0.0, 0.0, -3.0), math.CreateVector(0.0, -gomath.Sqrt(2)/2.0, gomath.Sqrt(2)/2.0))
+	xs := []g.Intersection{
+		g.CreateIntersection(gomath.Sqrt(2), floor),
+	}
+	expected := math.CreateColor(0.93642, 0.68642, 0.68642)
+
+	precomps := xs[0].PrepareComputation(r, xs)
+
+	assert.Assert(t, expected.Equals(w.ShadeHit(precomps, 5)))
 }
