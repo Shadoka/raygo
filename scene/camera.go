@@ -1,10 +1,12 @@
 package scene
 
 import (
+	"fmt"
 	gomath "math"
 	"raygo/canvas"
 	g "raygo/geometry"
 	"raygo/math"
+	"sync"
 )
 
 type Camera struct {
@@ -83,7 +85,7 @@ func (c *Camera) Render(w *World) *canvas.Canvas {
 }
 
 func (c *Camera) RenderMultithreaded(w *World, workerThreads int) *canvas.Canvas {
-	done := make(chan bool, workerThreads)
+	var wg sync.WaitGroup
 	canv := canvas.CreateCanvas(c.Hsize, c.Vsize)
 
 	rowsPerWorker := c.Vsize / workerThreads
@@ -96,14 +98,20 @@ func (c *Camera) RenderMultithreaded(w *World, workerThreads int) *canvas.Canvas
 			to = to + remainingRows
 		}
 
-		go c.renderPartially(from, to, w, &canv, done)
+		wg.Add(1)
+
+		go func() {
+			defer wg.Done()
+			c.renderPartially(from, to, w, &canv)
+		}()
 	}
 
-	<-done
+	wg.Wait()
 	return &canv
 }
 
-func (c *Camera) renderPartially(fromY int, toY int, w *World, cv *canvas.Canvas, done chan bool) {
+func (c *Camera) renderPartially(fromY int, toY int, w *World, cv *canvas.Canvas) {
+	fmt.Printf("worker thread from %v to %v is now starting...\n", fromY, toY)
 	for y := fromY; y < toY; y++ {
 		for x := range c.Hsize {
 			r := c.RayForPixel(x, y)
@@ -111,5 +119,4 @@ func (c *Camera) renderPartially(fromY int, toY int, w *World, cv *canvas.Canvas
 			cv.WritePixel(x, y, color)
 		}
 	}
-	done <- true
 }
