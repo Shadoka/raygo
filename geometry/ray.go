@@ -131,7 +131,7 @@ func (is Intersection) findRefractiveIndices(xs []Intersection) (float64, float6
 	for _, i := range xs {
 		if i.Equals(is) {
 			if len(containers) == 0 {
-				// refractive index of air
+				// refractive index of vacuum
 				n1 = 1.0
 			} else {
 				lastIndex := len(containers) - 1
@@ -148,7 +148,7 @@ func (is Intersection) findRefractiveIndices(xs []Intersection) (float64, float6
 
 		if i.Equals(is) {
 			if len(containers) == 0 {
-				// refractive index of air
+				// refractive index of vacuum
 				n2 = 1.0
 			} else {
 				lastIndex := len(containers) - 1
@@ -165,4 +165,23 @@ func containsShape(shapes []Shape, toCompareTo Shape) bool {
 	return slices.ContainsFunc(shapes, func(s Shape) bool {
 		return s.GetId() == toCompareTo.GetId()
 	})
+}
+
+func (precomps IntersectionComputations) Schlick() float64 {
+	cos := precomps.Eyev.Dot(precomps.Normalv)
+
+	if precomps.N1 > precomps.N2 {
+		n := precomps.N1 / precomps.N2
+		sin2T := (n * n) * (1.0 - cos*cos)
+		if sin2T > 1.0 {
+			// total internal reflection
+			return 1.0
+		}
+
+		cos = gomath.Sqrt(1.0 - sin2T)
+	}
+
+	// TODO: maybe lookup that paper mentioned in the book?
+	r0 := gomath.Pow(((precomps.N1 - precomps.N2) / (precomps.N1 + precomps.N2)), 2)
+	return r0 + (1.0-r0)*gomath.Pow(1.0-cos, 5)
 }

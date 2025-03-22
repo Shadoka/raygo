@@ -14,6 +14,7 @@ func CreateRefractionScene(width int, height int) *canvas.Canvas {
 	black := math.CreateColor(0.0, 0.0, 0.0)
 
 	grayBlackCheckerPattern := g.CreateCheckerPattern(lightGray, black)
+	grayBlackCheckerPattern.SetTransform(math.Scaling(0.33, 0.33, 0.33))
 
 	backdrop := g.CreatePlane()
 	backdrop.SetTransform(math.Translation(0.0, 0.0, 5.0).
@@ -26,7 +27,8 @@ func CreateRefractionScene(width int, height int) *canvas.Canvas {
 	outerBall := g.CreateSphere()
 	outerBall.SetTransform(math.Translation(0.0, 1.0, 0.5))
 	outerMat := g.DefaultMaterial()
-	outerMat.SetDiffuse(0.3)
+	outerMat.SetDiffuse(0.1)
+	outerMat.SetReflective(0.3)
 	outerMat.SetTransparency(1.0)
 	outerMat.SetRefractiveIndex(1.5)
 	outerBall.SetMaterial(outerMat)
@@ -34,22 +36,14 @@ func CreateRefractionScene(width int, height int) *canvas.Canvas {
 	middleBall := g.CreateSphere()
 	middleBall.SetTransform(math.Translation(0.0, 1.0, 0.5).MulM(math.Scaling(0.5, 0.5, 0.5)))
 	middleMat := g.DefaultMaterial()
-	middleMat.SetDiffuse(0.3)
+	middleMat.SetDiffuse(0.1)
+	middleMat.SetReflective(0.3)
 	middleMat.SetTransparency(1.0)
 	middleMat.SetRefractiveIndex(1.00029)
 	middleBall.SetMaterial(middleMat)
 
-	innerBall := g.CreateSphere()
-	innerBall.SetTransform(math.Translation(0.0, 1.0, 0.5).MulM(math.Scaling(0.3, 0.3, 0.3)))
-	innerMat := g.DefaultMaterial()
-	innerMat.SetSpecular(0.1)
-	innerMat.SetDiffuse(0.3)
-	innerMat.SetTransparency(1.0)
-	innerMat.SetRefractiveIndex(1.5)
-	innerBall.SetMaterial(innerMat)
-
 	objs := make([]g.Shape, 0)
-	objs = append(objs, backdrop, outerBall, middleBall, innerBall)
+	objs = append(objs, backdrop, outerBall, middleBall)
 	light := lighting.CreateLight(math.CreatePoint(-10.0, 15.0, -5.0), math.CreateColor(0.5, 0.5, 0.5))
 	w := scene.EmptyWorld()
 	w.Light = &light

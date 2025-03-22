@@ -14,7 +14,7 @@ Go lang implementation of [The Ray Tracer Challenge](http://raytracerchallenge.c
 8. Shadows ✔
 9. Planes ✔
 10. Patterns ✔
-11. Reflection and Refraction
+11. Reflection and Refraction ✔
 12. Cubes
 13. Cylinders
 14. Groups
@@ -77,3 +77,7 @@ Multiple patterns at once
 ![Exercise 11](examples/chapter11_reflections.png)
 
 Material can now be reflective
+
+![Exercise 11](examples/chapter11_refractions.png)
+
+A glass sphere on the outside that contains a sphere of air in the inside

@@ -246,3 +246,41 @@ func TestPrepareComputationUnderPoint(t *testing.T) {
 	assert.Assert(t, comps.UnderPoint.Z > EPSILON/2.0)
 	assert.Assert(t, comps.Point.Z < comps.UnderPoint.Z)
 }
+
+func TestSchlickTotalInternalReflection(t *testing.T) {
+	s := CreateGlassSphere()
+	r := CreateRay(math.CreatePoint(0.0, 0.0, gomath.Sqrt(2)/2.0), math.CreateVector(0.0, 1.0, 0.0))
+	xs := []Intersection{
+		CreateIntersection(-gomath.Sqrt(2)/2.0, s),
+		CreateIntersection(gomath.Sqrt(2)/2.0, s),
+	}
+	precomps := xs[1].PrepareComputation(r, xs)
+	expected := 1.0
+
+	assert.Assert(t, precomps.Schlick() == expected)
+}
+
+func TestSchlickPerpendicularRay(t *testing.T) {
+	s := CreateGlassSphere()
+	r := CreateRay(math.CreatePoint(0.0, 0.0, 0), math.CreateVector(0.0, 1.0, 0.0))
+	xs := []Intersection{
+		CreateIntersection(-1, s),
+		CreateIntersection(1, s),
+	}
+	precomps := xs[1].PrepareComputation(r, xs)
+	expected := 0.04
+
+	assert.Assert(t, floatEquals(expected, precomps.Schlick()))
+}
+
+func TestSchlickSmallViewAngle(t *testing.T) {
+	s := CreateGlassSphere()
+	r := CreateRay(math.CreatePoint(0.0, 0.99, -2.0), math.CreateVector(0.0, 0.0, 1.0))
+	xs := []Intersection{
+		CreateIntersection(1.8589, s),
+	}
+	precomps := xs[0].PrepareComputation(r, xs)
+	expected := 0.48873
+
+	assert.Assert(t, floatEquals(expected, precomps.Schlick()))
+}

@@ -7,7 +7,7 @@ import (
 	"raygo/math"
 )
 
-const MAX_REFLECTION_LIMIT = 10
+const MAX_REFLECTION_LIMIT = 5
 
 type World struct {
 	Objects []g.Shape
@@ -66,7 +66,16 @@ func (w *World) ShadeHit(comp g.IntersectionComputations, remainingReflections i
 
 	reflectedColor := w.ReflectedColor(comp, remainingReflections)
 	refractedColor := w.RefractedColor(comp, remainingReflections)
-	return surfaceColor.Add(reflectedColor).Add(refractedColor)
+
+	m := comp.Object.GetMaterial()
+	if m.Reflective > 0.0 && m.Transparency > 0.0 {
+		reflectance := comp.Schlick()
+		return surfaceColor.
+			Add(reflectedColor.Mul(reflectance)).
+			Add(refractedColor.Mul(1.0 - reflectance))
+	} else {
+		return surfaceColor.Add(reflectedColor).Add(refractedColor)
+	}
 }
 
 func (w *World) ColorAt(r g.Ray, remainingReflections int) math.Color {
