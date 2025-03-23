@@ -7,8 +7,6 @@ import (
 	"sort"
 )
 
-const EPSILON = 0.00001
-
 type Ray struct {
 	Origin    math.Point
 	Direction math.Vector
@@ -102,8 +100,8 @@ func (i Intersection) PrepareComputation(r Ray, xs []Intersection) IntersectionC
 		normal = normal.Negate()
 	}
 
-	overP := p.Add(normal.Mul(EPSILON))
-	underP := p.Subtract(normal.Mul(EPSILON))
+	overP := p.Add(normal.Mul(math.EPSILON))
+	underP := p.Subtract(normal.Mul(math.EPSILON))
 	reflect := r.Direction.Reflect(normal)
 
 	n1, n2 := i.findRefractiveIndices(xs)

@@ -2,6 +2,8 @@ package scene
 
 import (
 	gomath "math"
+	g "raygo/geometry"
+	"raygo/lighting"
 	"raygo/math"
 	"testing"
 
@@ -89,4 +91,46 @@ func TestRender(t *testing.T) {
 	canv := c.Render(w)
 
 	assert.Assert(t, expectedColor.Equals(canv.GetPixelAt(5, 5)))
+}
+
+func TestInvestigateAcneBug(t *testing.T) {
+	// this test was added after acne on the side of a cube appeared
+	// cause was a bug in calculating the normal vector of a cube
+	// the conversion from world to object space was missing
+	lightGray := math.CreateColor(0.9, 0.9, 0.9)
+	black := math.CreateColor(0.0, 0.0, 0.0)
+	burntUmber := math.CreateColor(math.BToF(110), math.BToF(38), math.BToF(14))
+
+	grayBlackCheckerPattern := g.CreateCheckerPattern(lightGray, black)
+	grayBlackCheckerPattern.SetTransform(math.Scaling(0.33, 0.33, 0.33))
+
+	room := g.CreateCube()
+	room.SetTransform(math.Scaling(10.0, 10.0, 10.0))
+	room.GetMaterial().SetPattern(grayBlackCheckerPattern)
+
+	tableDownwardsTranslation := math.Translation(0.0, -6.0, 0.0)
+
+	tableSurface := g.CreateCube()
+	tableSurface.GetMaterial().SetColor(burntUmber)
+	tableSurface.SetTransform(tableDownwardsTranslation.MulM(math.Scaling(3.0, 0.3, 2.0)))
+
+	objs := make([]g.Shape, 0)
+	objs = append(objs, room, tableSurface)
+	light := lighting.CreateLight(math.CreatePoint(-9.0, 9.0, -5.0), math.CreateColor(0.7, 0.7, 0.7))
+	w := EmptyWorld()
+	w.Light = &light
+	w.Objects = objs
+
+	cam := CreateCamera(400, 200, gomath.Pi/3.0)
+	from := math.CreatePoint(-9.0, -4.0, 0.0)
+	to := math.CreatePoint(0.0, -8.0, 0.0)
+	up := math.CreateVector(0.0, 1.0, 0.0)
+	cam.SetTransform(math.ViewTransform(from, to, up))
+
+	expected := math.CreateColor(0.12450, 0.04301, 0.01584)
+
+	r := cam.RayForPixel(139, 68)
+	actual := w.ColorAt(r, MAX_REFLECTION_LIMIT)
+
+	assert.Assert(t, expected.Equals(actual))
 }

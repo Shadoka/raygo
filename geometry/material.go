@@ -100,5 +100,5 @@ func (m Material) Equals(other Material) bool {
 }
 
 func floatEquals(a float64, b float64) bool {
-	return gomath.Abs(a-b) < EPSILON
+	return gomath.Abs(a-b) < math.EPSILON
 }

@@ -18,3 +18,8 @@ func ClampToByte(n float64) uint8 {
 
 	return uint8(n)
 }
+
+// color representation byte to float conversion
+func BToF(c int) float64 {
+	return float64(c) / 255.0
+}

@@ -179,7 +179,7 @@ func TestPrepareComputationsOverPoint(t *testing.T) {
 
 	comps := i.PrepareComputation(r, make([]Intersection, 0))
 
-	assert.Assert(t, comps.OverPoint.Z < -EPSILON/2.0)
+	assert.Assert(t, comps.OverPoint.Z < -math.EPSILON/2.0)
 	assert.Assert(t, comps.Point.Z > comps.OverPoint.Z)
 }
 
@@ -243,7 +243,7 @@ func TestPrepareComputationUnderPoint(t *testing.T) {
 
 	comps := i.PrepareComputation(r, xs)
 
-	assert.Assert(t, comps.UnderPoint.Z > EPSILON/2.0)
+	assert.Assert(t, comps.UnderPoint.Z > math.EPSILON/2.0)
 	assert.Assert(t, comps.Point.Z < comps.UnderPoint.Z)
 }
 
