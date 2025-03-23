@@ -5,6 +5,7 @@ import (
 	"os"
 	"raygo/math"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -45,8 +46,8 @@ func (c *Canvas) CreatePPMHeader() string {
 }
 
 func (c *Canvas) CreatePPMBody() string {
-	ppmBody := ""
-
+	var b strings.Builder
+	b.Grow(12 * c.Width * c.Height) // 3*3 bytes for string encoding of color + 3*1 byte for blanks
 	for y := range c.Height {
 		currentRow := ""
 		for x := range c.Width {
@@ -61,22 +62,22 @@ func (c *Canvas) CreatePPMBody() string {
 			blueValueString := strconv.FormatUint(tColor.b, 10)
 			currentRowPlusRedLength := len(currentRow) + len(separator) + len(redValueString)
 			if currentRowPlusRedLength > 70 {
-				ppmBody = ppmBody + currentRow + "\n"
+				b.WriteString(currentRow + "\n")
 				currentRow = redValueString + " " + greenValueString + " " + blueValueString
 			} else if currentRowPlusRedLength+len(greenValueString)+1 > 70 { // +1 because of blank
-				ppmBody = ppmBody + currentRow + " " + redValueString + "\n"
+				b.WriteString(currentRow + " " + redValueString + "\n")
 				currentRow = greenValueString + " " + blueValueString
 			} else if currentRowPlusRedLength+len(greenValueString)+len(blueValueString)+2 > 70 { // +2 because of blanks
-				ppmBody = ppmBody + currentRow + " " + redValueString + " " + greenValueString + "\n"
+				b.WriteString(currentRow + " " + redValueString + " " + greenValueString + "\n")
 				currentRow = blueValueString
 			} else {
 				currentRow = currentRow + separator + redValueString + " " + greenValueString + " " + blueValueString
 			}
 		}
-		ppmBody = ppmBody + currentRow + "\n"
+		b.WriteString(currentRow + "\n")
 	}
 
-	return ppmBody
+	return b.String()
 }
 
 func (c *Canvas) WriteFile(location string) {
@@ -85,11 +86,13 @@ func (c *Canvas) WriteFile(location string) {
 	endStringProcessing := time.Now()
 	diffStringProcessing := endStringProcessing.Sub(beginStringProcessing)
 	fmt.Printf("string processing took %v seconds\n", diffStringProcessing.Seconds())
+
 	beginDiskWrite := time.Now()
 	err := os.WriteFile(location, []byte(fileContent), 0644)
 	endDiskWrite := time.Now()
 	diffDiskWrite := endDiskWrite.Sub(beginDiskWrite)
 	fmt.Printf("writing to disk took %v seconds\n", diffDiskWrite.Seconds())
+
 	if err != nil {
 		panic(err)
 	}
