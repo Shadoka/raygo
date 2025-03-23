@@ -8,7 +8,7 @@ func floatEquals(a float64, b float64) bool {
 	return gomath.Abs(a-b) < EPSILON
 }
 
-func ClampToByte(n float64) uint8 {
+func ClampToByte(n float64) uint64 {
 	if n > 255.0 {
 		return 255
 	}
@@ -16,7 +16,7 @@ func ClampToByte(n float64) uint8 {
 		return 0
 	}
 
-	return uint8(n)
+	return uint64(n)
 }
 
 // color representation byte to float conversion

@@ -22,35 +22,35 @@ func TestFloatEqualsFail(t *testing.T) {
 
 func TestClampToByte(t *testing.T) {
 	n := 255.0
-	expected := uint8(255)
+	expected := uint64(255)
 
 	assert.Assert(t, expected == ClampToByte(n))
 }
 
 func TestClampToByte2(t *testing.T) {
 	n := 0.0
-	expected := uint8(0)
+	expected := uint64(0)
 
 	assert.Assert(t, expected == ClampToByte(n))
 }
 
 func TestClampToByteTooHigh(t *testing.T) {
 	n := 300.0
-	expected := uint8(255)
+	expected := uint64(255)
 
 	assert.Assert(t, expected == ClampToByte(n))
 }
 
 func TestClampToByteTooLow(t *testing.T) {
 	n := -2.0
-	expected := uint8(0)
+	expected := uint64(0)
 
 	assert.Assert(t, expected == ClampToByte(n))
 }
 
 func TestClampToByteBetween(t *testing.T) {
 	n := 133.0
-	expected := uint8(133)
+	expected := uint64(133)
 
 	assert.Assert(t, expected == ClampToByte(n))
 }

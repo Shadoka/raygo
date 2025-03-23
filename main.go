@@ -8,10 +8,16 @@ import (
 
 func main() {
 	begin := time.Now()
-	scene := render.CreateCubeScene(1920, 1080)
+	scene := render.CreateRefractionScene(1080, 1920)
 	end := time.Now()
-	scene.WriteFile("chapter12_cubes_hd.ppm")
 
 	diff := end.Sub(begin)
 	fmt.Printf("rendering took %v seconds\n", diff.Seconds())
+
+	beginWrite := time.Now()
+	scene.WriteFile("vertical_refraction.ppm")
+	endWrite := time.Now()
+
+	diffWrite := endWrite.Sub(beginWrite)
+	fmt.Printf("writing file took %v seconds\n", diffWrite.Seconds())
 }

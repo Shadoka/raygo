@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"raygo/math"
+	"strconv"
+	"time"
 )
 
 type Canvas struct {
@@ -12,7 +14,7 @@ type Canvas struct {
 }
 
 type ppmColor struct {
-	r, g, b uint8
+	r, g, b uint64
 }
 
 func CreateCanvas(width int, height int) Canvas {
@@ -54,29 +56,40 @@ func (c *Canvas) CreatePPMBody() string {
 				separator = " "
 			}
 
-			// TODO: THIS LOOKS ABYSMAL WTF
-			if len(fmt.Sprintf("%v%v%d", currentRow, separator, tColor.r)) > 70 {
-				ppmBody = fmt.Sprintf("%v%v\n", ppmBody, currentRow)
-				currentRow = fmt.Sprintf("%v %v %v", tColor.r, tColor.g, tColor.b)
-			} else if len(fmt.Sprintf("%v%v%v %v", currentRow, separator, tColor.r, tColor.g)) > 70 {
-				ppmBody = fmt.Sprintf("%v%v %v\n", ppmBody, currentRow, tColor.r)
-				currentRow = fmt.Sprintf("%v %v", tColor.g, tColor.b)
-			} else if len(fmt.Sprintf("%v%v%v %v %v", currentRow, separator, tColor.r, tColor.g, tColor.b)) > 70 {
-				ppmBody = fmt.Sprintf("%v%v %v %v\n", ppmBody, currentRow, tColor.r, tColor.g)
-				currentRow = fmt.Sprintf("%v", tColor.b)
+			redValueString := strconv.FormatUint(tColor.r, 10)
+			greenValueString := strconv.FormatUint(tColor.g, 10)
+			blueValueString := strconv.FormatUint(tColor.b, 10)
+			currentRowPlusRedLength := len(currentRow) + len(separator) + len(redValueString)
+			if currentRowPlusRedLength > 70 {
+				ppmBody = ppmBody + currentRow + "\n"
+				currentRow = redValueString + " " + greenValueString + " " + blueValueString
+			} else if currentRowPlusRedLength+len(greenValueString)+1 > 70 { // +1 because of blank
+				ppmBody = ppmBody + currentRow + " " + redValueString + "\n"
+				currentRow = greenValueString + " " + blueValueString
+			} else if currentRowPlusRedLength+len(greenValueString)+len(blueValueString)+2 > 70 { // +2 because of blanks
+				ppmBody = ppmBody + currentRow + " " + redValueString + " " + greenValueString + "\n"
+				currentRow = blueValueString
 			} else {
-				currentRow = fmt.Sprintf("%v%v%v %v %v", currentRow, separator, tColor.r, tColor.g, tColor.b)
+				currentRow = currentRow + separator + redValueString + " " + greenValueString + " " + blueValueString
 			}
 		}
-		ppmBody = fmt.Sprintf("%v%v\n", ppmBody, currentRow)
+		ppmBody = ppmBody + currentRow + "\n"
 	}
 
 	return ppmBody
 }
 
 func (c *Canvas) WriteFile(location string) {
+	beginStringProcessing := time.Now()
 	fileContent := fmt.Sprintf("%v%v", c.CreatePPMHeader(), c.CreatePPMBody())
+	endStringProcessing := time.Now()
+	diffStringProcessing := endStringProcessing.Sub(beginStringProcessing)
+	fmt.Printf("string processing took %v seconds\n", diffStringProcessing.Seconds())
+	beginDiskWrite := time.Now()
 	err := os.WriteFile(location, []byte(fileContent), 0644)
+	endDiskWrite := time.Now()
+	diffDiskWrite := endDiskWrite.Sub(beginDiskWrite)
+	fmt.Printf("writing to disk took %v seconds\n", diffDiskWrite.Seconds())
 	if err != nil {
 		panic(err)
 	}

@@ -55,5 +55,5 @@ func CreateRefractionScene(width int, height int) *canvas.Canvas {
 	up := math.CreateVector(0.0, 1.0, 0.0)
 	cam.SetTransform(math.ViewTransform(from, to, up))
 
-	return cam.Render(w)
+	return cam.RenderMultithreaded(w, 16)
 }
