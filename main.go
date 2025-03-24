@@ -8,14 +8,14 @@ import (
 
 func main() {
 	begin := time.Now()
-	scene := render.CreateRefractionScene(1080, 1920)
+	scene := render.CreateMirrorScene(400, 200)
 	end := time.Now()
 
 	diff := end.Sub(begin)
 	fmt.Printf("rendering took %v seconds\n", diff.Seconds())
 
 	beginWrite := time.Now()
-	scene.WriteFile("vertical_refraction.ppm")
+	scene.WriteFile("mirrors.ppm")
 	endWrite := time.Now()
 
 	diffWrite := endWrite.Sub(beginWrite)

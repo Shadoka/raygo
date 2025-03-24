@@ -16,7 +16,7 @@ Go lang implementation of [The Ray Tracer Challenge](http://raytracerchallenge.c
 10. Patterns ✔
 11. Reflection and Refraction ✔
 12. Cubes ✔
-13. Cylinders
+13. Cylinders ✔
 14. Groups
 15. Triangles
 16. Constructive Solid Geometry (CSG)
@@ -83,7 +83,11 @@ Material can now be reflective
 A glass sphere on the outside that contains a sphere of air in the inside
 
 ### Chapter 12
-
 ![Exercise 12](examples/chapter12_cubes.png)
 
 Cubes got added as shapes
+
+### Chapter 13
+![Exercise 13](examples/chapter13_cylinders.png)
+
+Cylinders and cones got added
