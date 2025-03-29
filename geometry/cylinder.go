@@ -15,6 +15,7 @@ type Cylinder struct {
 	Minimum   float64
 	Maximum   float64
 	Closed    bool
+	Parent    *Group
 }
 
 func CreateCylinder() *Cylinder {
@@ -25,6 +26,7 @@ func CreateCylinder() *Cylinder {
 		Minimum:   gomath.Inf(-1.0),
 		Maximum:   gomath.Inf(1.0),
 		Closed:    false,
+		Parent:    nil,
 	}
 }
 
@@ -48,10 +50,19 @@ func (c *Cylinder) SetMaterial(m Material) {
 	c.Material = m
 }
 
+func (c *Cylinder) GetParent() *Group {
+	return c.Parent
+}
+
+func (c *Cylinder) SetParent(g *Group) {
+	c.Parent = g
+}
+
 func (c *Cylinder) Equals(other Shape) bool {
 	return reflect.TypeOf(c) == reflect.TypeOf(other) &&
 		c.Transform.Equals(other.GetTransform()) &&
-		c.Material.Equals(*other.GetMaterial())
+		c.Material.Equals(*other.GetMaterial()) &&
+		c.Parent == other.GetParent()
 }
 
 func (c *Cylinder) Intersect(ray Ray) []Intersection {
@@ -129,11 +140,9 @@ func (c *Cylinder) intersectCaps(ray Ray) []Intersection {
 }
 
 func (c *Cylinder) NormalAt(point math.Point) math.Vector {
-	objectSpace := c.Transform.Inverse().MulT(point)
+	objectSpace := WorldToObject(c, point)
 	objectNormal := c.localCylinderNormalAt(objectSpace)
-	worldNormal := c.Transform.Inverse().Transpose().MulT(objectNormal)
-	worldNormal.W = 0.0
-	return worldNormal.Normalize()
+	return NormalToWorld(c, objectNormal)
 }
 
 func (c *Cylinder) localCylinderNormalAt(point math.Point) math.Vector {

@@ -12,6 +12,7 @@ type Cube struct {
 	Id        string
 	Transform math.Matrix
 	Material  Material
+	Parent    *Group
 }
 
 func CreateCube() *Cube {
@@ -19,6 +20,7 @@ func CreateCube() *Cube {
 		Id:        uuid.NewString(),
 		Transform: math.IdentityMatrix(),
 		Material:  DefaultMaterial(),
+		Parent:    nil,
 	}
 }
 
@@ -42,10 +44,19 @@ func (c *Cube) SetMaterial(m Material) {
 	c.Material = m
 }
 
+func (c *Cube) GetParent() *Group {
+	return c.Parent
+}
+
+func (c *Cube) SetParent(g *Group) {
+	c.Parent = g
+}
+
 func (c *Cube) Equals(other Shape) bool {
 	return reflect.TypeOf(c) == reflect.TypeOf(other) &&
 		c.Transform.Equals(other.GetTransform()) &&
-		c.Material.Equals(*other.GetMaterial())
+		c.Material.Equals(*other.GetMaterial()) &&
+		c.Parent == other.GetParent()
 }
 
 func (c *Cube) Intersect(ray Ray) []Intersection {
@@ -95,11 +106,9 @@ func (c *Cube) checkAxis(origin float64, direction float64) (float64, float64) {
 }
 
 func (c *Cube) NormalAt(point math.Point) math.Vector {
-	objectSpace := c.Transform.Inverse().MulT(point)
+	objectSpace := WorldToObject(c, point)
 	objectNormal := c.localCubeNormalAt(objectSpace)
-	worldNormal := c.Transform.Inverse().Transpose().MulT(objectNormal)
-	worldNormal.W = 0.0
-	return worldNormal.Normalize()
+	return NormalToWorld(c, objectNormal)
 }
 
 func (c *Cube) localCubeNormalAt(point math.Point) math.Vector {

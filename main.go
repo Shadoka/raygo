@@ -8,7 +8,7 @@ import (
 
 func main() {
 	begin := time.Now()
-	scene := render.CreateMirrorScene(400, 200)
+	scene := render.CreateMirrorScene(1920, 1080)
 	end := time.Now()
 
 	diff := end.Sub(begin)

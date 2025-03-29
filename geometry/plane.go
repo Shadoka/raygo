@@ -12,6 +12,7 @@ type Plane struct {
 	Id        string
 	Transform math.Matrix
 	Material  Material
+	Parent    *Group
 }
 
 func CreatePlane() *Plane {
@@ -19,6 +20,7 @@ func CreatePlane() *Plane {
 		Id:        uuid.NewString(),
 		Transform: math.IdentityMatrix(),
 		Material:  DefaultMaterial(),
+		Parent:    nil,
 	}
 }
 
@@ -45,14 +47,21 @@ func (p *Plane) SetMaterial(m Material) {
 func (p *Plane) Equals(other Shape) bool {
 	return reflect.TypeOf(p) == reflect.TypeOf(other) &&
 		p.Transform.Equals(other.GetTransform()) &&
-		p.Material.Equals(*other.GetMaterial())
+		p.Material.Equals(*other.GetMaterial()) &&
+		p.Parent == other.GetParent()
+}
+
+func (p *Plane) GetParent() *Group {
+	return p.Parent
+}
+
+func (p *Plane) SetParent(g *Group) {
+	p.Parent = g
 }
 
 func (p *Plane) NormalAt(point math.Point) math.Vector {
 	objectNormal := p.localPlaneNormalAt()
-	worldNormal := p.Transform.Inverse().Transpose().MulT(objectNormal)
-	worldNormal.W = 0.0
-	return worldNormal.Normalize()
+	return NormalToWorld(p, objectNormal)
 }
 
 func (p *Plane) localPlaneNormalAt() math.Vector {

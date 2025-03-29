@@ -28,7 +28,7 @@ func (sp *StripePattern) ColorAt(point math.Point) math.Color {
 }
 
 func (sp *StripePattern) ColorAtObject(point math.Point, obj Shape) math.Color {
-	objectPoint := obj.GetTransform().Inverse().MulT(point)
+	objectPoint := WorldToObject(obj, point)
 	patternPoint := sp.GetTransform().Inverse().MulT(objectPoint)
 
 	return sp.ColorAt(patternPoint)

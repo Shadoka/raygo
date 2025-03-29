@@ -29,7 +29,7 @@ func (c *CheckerPattern) ColorAt(point math.Point) math.Color {
 }
 
 func (c *CheckerPattern) ColorAtObject(point math.Point, obj Shape) math.Color {
-	objectPoint := obj.GetTransform().Inverse().MulT(point)
+	objectPoint := WorldToObject(obj, point)
 	patternPoint := c.GetTransform().Inverse().MulT(objectPoint)
 
 	return c.ColorAt(patternPoint)

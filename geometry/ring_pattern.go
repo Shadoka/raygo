@@ -29,7 +29,7 @@ func (rp *RingPattern) ColorAt(point math.Point) math.Color {
 }
 
 func (rp *RingPattern) ColorAtObject(point math.Point, obj Shape) math.Color {
-	objectPoint := obj.GetTransform().Inverse().MulT(point)
+	objectPoint := WorldToObject(obj, point)
 	patternPoint := rp.GetTransform().Inverse().MulT(objectPoint)
 
 	return rp.ColorAt(patternPoint)

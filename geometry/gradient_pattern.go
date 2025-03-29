@@ -28,7 +28,7 @@ func (gp *GradientPattern) ColorAt(point math.Point) math.Color {
 }
 
 func (gp *GradientPattern) ColorAtObject(point math.Point, obj Shape) math.Color {
-	objectPoint := obj.GetTransform().Inverse().MulT(point)
+	objectPoint := WorldToObject(obj, point)
 	patternPoint := gp.GetTransform().Inverse().MulT(objectPoint)
 
 	return gp.ColorAt(patternPoint)

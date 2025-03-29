@@ -15,6 +15,7 @@ type Cone struct {
 	Minimum   float64
 	Maximum   float64
 	Closed    bool
+	Parent    *Group
 }
 
 func CreateCone() *Cone {
@@ -25,6 +26,7 @@ func CreateCone() *Cone {
 		Minimum:   gomath.Inf(-1.0),
 		Maximum:   gomath.Inf(1.0),
 		Closed:    false,
+		Parent:    nil,
 	}
 }
 
@@ -48,10 +50,19 @@ func (c *Cone) SetMaterial(m Material) {
 	c.Material = m
 }
 
+func (c *Cone) GetParent() *Group {
+	return c.Parent
+}
+
+func (c *Cone) SetParent(g *Group) {
+	c.Parent = g
+}
+
 func (c *Cone) Equals(other Shape) bool {
 	return reflect.TypeOf(c) == reflect.TypeOf(other) &&
 		c.Transform.Equals(other.GetTransform()) &&
-		c.Material.Equals(*other.GetMaterial())
+		c.Material.Equals(*other.GetMaterial()) &&
+		c.Parent == other.GetParent()
 }
 
 func (c *Cone) Intersect(ray Ray) []Intersection {
@@ -136,11 +147,9 @@ func (c *Cone) intersectCaps(ray Ray) []Intersection {
 }
 
 func (c *Cone) NormalAt(point math.Point) math.Vector {
-	objectSpace := c.Transform.Inverse().MulT(point)
+	objectSpace := WorldToObject(c, point)
 	objectNormal := c.localConeNormalAt(objectSpace)
-	worldNormal := c.Transform.Inverse().Transpose().MulT(objectNormal)
-	worldNormal.W = 0.0
-	return worldNormal.Normalize()
+	return NormalToWorld(c, objectNormal)
 }
 
 func (c *Cone) localConeNormalAt(point math.Point) math.Vector {

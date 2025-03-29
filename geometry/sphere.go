@@ -12,6 +12,7 @@ type Sphere struct {
 	Id        string
 	Transform math.Matrix
 	Material  Material
+	Parent    *Group
 }
 
 func CreateSphere() *Sphere {
@@ -19,6 +20,7 @@ func CreateSphere() *Sphere {
 		Id:        uuid.NewString(),
 		Transform: math.IdentityMatrix(),
 		Material:  DefaultMaterial(),
+		Parent:    nil,
 	}
 }
 
@@ -36,7 +38,8 @@ func CreateGlassSphere() *Sphere {
 func (s *Sphere) Equals(other Shape) bool {
 	return reflect.TypeOf(s) == reflect.TypeOf(other) &&
 		s.Transform.Equals(other.GetTransform()) &&
-		s.Material.Equals(*other.GetMaterial())
+		s.Material.Equals(*other.GetMaterial()) &&
+		s.Parent == other.GetParent()
 }
 
 func (s *Sphere) SetTransform(m math.Matrix) {
@@ -57,6 +60,14 @@ func (s *Sphere) GetMaterial() *Material {
 
 func (s *Sphere) SetMaterial(m Material) {
 	s.Material = m
+}
+
+func (s *Sphere) GetParent() *Group {
+	return s.Parent
+}
+
+func (s *Sphere) SetParent(g *Group) {
+	s.Parent = g
 }
 
 func (sphere *Sphere) Intersect(ray Ray) []Intersection {
@@ -82,9 +93,7 @@ func (sphere *Sphere) Intersect(ray Ray) []Intersection {
 }
 
 func (s *Sphere) NormalAt(p math.Point) math.Vector {
-	objectSpace := s.Transform.Inverse().MulT(p)
+	objectSpace := WorldToObject(s, p)
 	objectNormal := objectSpace.Subtract(math.CreatePoint(0.0, 0.0, 0.0))
-	worldNormal := s.Transform.Inverse().Transpose().MulT(objectNormal)
-	worldNormal.W = 0.0
-	return worldNormal.Normalize()
+	return NormalToWorld(s, objectNormal)
 }
