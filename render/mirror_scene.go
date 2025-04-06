@@ -45,6 +45,7 @@ func CreateMirrorScene(width int, height int) *canvas.Canvas {
 	mirror1.GetMaterial().SetTransparency(0.0)
 	mirror1.SetTransform(math.Translation(0.0, 0.5, 5.0).MulM(math.Rotation_Y(gomath.Pi / 4.0).MulM(math.Scaling(0.5, 0.5, 0.001))))
 
+	group1 := g.EmptyGroup()
 	mirror2 := g.CreateCube()
 	mirror2.GetMaterial().SetReflective(1.0)
 	mirror2.GetMaterial().SetDiffuse(0.0)
@@ -52,19 +53,22 @@ func CreateMirrorScene(width int, height int) *canvas.Canvas {
 	mirror2.GetMaterial().SetShininess(300)
 	mirror2.GetMaterial().SetTransparency(0.0)
 	mirror2.SetTransform(math.Translation(-3.0, 0.5, 5.0).MulM(math.Rotation_Y(-gomath.Pi / 4.0).MulM(math.Scaling(0.5, 0.5, 0.001))))
+	group1.AddChild(mirror2)
 
 	middleWall := g.CreateCube()
 	middleWall.GetMaterial().SetColor(burntUmber)
 	middleWall.SetTransform(math.Translation(-1.0, 0.0, 0.0).MulM(math.Scaling(0.001, 20.0, 3.0)))
 
+	group2 := g.EmptyGroup()
 	ball := g.CreateSphere()
 	ball.GetMaterial().SetColor(blue)
 	ball.GetMaterial().SetReflective(0.5)
 	ball.GetMaterial().SetDiffuse(0.5)
 	ball.SetTransform(math.Translation(-3.0, 0.5, 0.0).MulM(math.Scaling(0.5, 0.5, 0.5)))
+	group2.AddChild(ball)
 
 	objs := make([]g.Shape, 0)
-	objs = append(objs, floor, mirror1, mirror2, ball, wallBack, middleWall, wallBehindCamera)
+	objs = append(objs, floor, mirror1, group1, group2, wallBack, middleWall, wallBehindCamera)
 	light := lighting.CreateLight(math.CreatePoint(-9.0, 9.0, -1.0), math.CreateColor(1.0, 1.0, 1.0))
 	w := scene.EmptyWorld()
 	w.Light = &light

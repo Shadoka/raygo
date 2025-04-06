@@ -97,3 +97,10 @@ func (s *Sphere) NormalAt(p math.Point) math.Vector {
 	objectNormal := objectSpace.Subtract(math.CreatePoint(0.0, 0.0, 0.0))
 	return NormalToWorld(s, objectNormal)
 }
+
+func (s *Sphere) Bounds() *Bounds {
+	return &Bounds{
+		Minimum: s.Transform.MulT(math.CreatePoint(-1.0, -1.0, -1.0)),
+		Maximum: s.Transform.MulT(math.CreatePoint(1.0, 1.0, 1.0)),
+	}
+}

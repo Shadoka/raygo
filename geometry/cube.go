@@ -121,3 +121,10 @@ func (c *Cube) localCubeNormalAt(point math.Point) math.Vector {
 	}
 	return math.CreateVector(0.0, 0.0, point.Z)
 }
+
+func (c *Cube) Bounds() *Bounds {
+	return &Bounds{
+		Minimum: c.Transform.MulT(math.CreatePoint(-1.0, -1.0, -1.0)),
+		Maximum: c.Transform.MulT(math.CreatePoint(1.0, 1.0, 1.0)),
+	}
+}

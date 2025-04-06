@@ -1,7 +1,6 @@
 package geometry
 
 import (
-	"fmt"
 	gomath "math"
 	"raygo/math"
 	"testing"
@@ -135,6 +134,6 @@ func TestGroupNormalAt(t *testing.T) {
 	expected := math.CreateVector(0.28570, 0.42854, -0.85716)
 
 	actual := s.NormalAt(math.CreatePoint(1.7321, 1.1547, -5.5774))
-	fmt.Println(actual)
+
 	assert.Assert(t, expected.Equals(actual))
 }

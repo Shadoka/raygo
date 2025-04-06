@@ -15,7 +15,7 @@ func main() {
 	fmt.Printf("rendering took %v seconds\n", diff.Seconds())
 
 	beginWrite := time.Now()
-	scene.WriteFile("mirrors.ppm")
+	scene.WriteFile("mirrors_groups.ppm")
 	endWrite := time.Now()
 
 	diffWrite := endWrite.Sub(beginWrite)

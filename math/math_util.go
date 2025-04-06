@@ -5,7 +5,12 @@ import gomath "math"
 const EPSILON = 0.00001
 
 func floatEquals(a float64, b float64) bool {
-	return gomath.Abs(a-b) < EPSILON
+	diff := gomath.Abs(a - b)
+	// if a and b are Inf diff becomes NaN
+	if gomath.IsNaN(diff) {
+		return true
+	}
+	return diff < EPSILON
 }
 
 func ClampToByte(n float64) uint64 {

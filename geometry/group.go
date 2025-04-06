@@ -1,6 +1,7 @@
 package geometry
 
 import (
+	gomath "math"
 	"raygo/math"
 	"reflect"
 
@@ -90,6 +91,10 @@ func (g *Group) Intersect(ray Ray) []Intersection {
 
 func (g *Group) localIntersect(ray Ray) []Intersection {
 	xs := make([]Intersection, 0)
+	if len(g.boundsIntersect(ray)) == 0 {
+		return xs
+	}
+
 	for _, child := range g.Children {
 		xs = append(xs, child.Intersect(ray)...)
 	}
@@ -99,4 +104,77 @@ func (g *Group) localIntersect(ray Ray) []Intersection {
 
 func (g *Group) NormalAt(p math.Point) math.Vector {
 	return math.CreateVector(0.0, 1.0, 0.0)
+}
+
+func (g *Group) Bounds() *Bounds {
+	// those BBs are in their respective object space but not axis aligned
+	nonAlignedBoundingBoxes := make([]*Bounds, 0)
+	for _, child := range g.Children {
+		nonAlignedBoundingBoxes = append(nonAlignedBoundingBoxes, child.Bounds())
+	}
+
+	alignedMinimumBB := FindMinimalContainingBoundingBox(nonAlignedBoundingBoxes)
+	// TODO: wouldnt it make sense to cache that group BB?
+	return BoundsToObjectSpace(alignedMinimumBB, g.Transform)
+}
+
+func FindMinimalContainingBoundingBox(bounds []*Bounds) Bounds {
+	minX, minY, minZ := gomath.MaxFloat64, gomath.MaxFloat64, gomath.MaxFloat64
+	maxX, maxY, maxZ := gomath.SmallestNonzeroFloat64, gomath.SmallestNonzeroFloat64, gomath.SmallestNonzeroFloat64
+
+	for _, b := range bounds {
+		minX = gomath.Min(minX, b.Minimum.X)
+		minY = gomath.Min(minY, b.Minimum.Y)
+		minZ = gomath.Min(minZ, b.Minimum.Z)
+		maxX = gomath.Max(maxX, b.Maximum.X)
+		maxY = gomath.Max(maxY, b.Maximum.Y)
+		maxZ = gomath.Max(maxZ, b.Maximum.Z)
+	}
+
+	return Bounds{
+		Minimum: math.CreatePoint(minX, minY, minZ),
+		Maximum: math.CreatePoint(maxX, maxY, maxZ),
+	}
+}
+
+// TODO: the following two methods are basically the cube intersection from cube.go
+
+func (g *Group) boundsIntersect(localRay Ray) []Intersection {
+	bounds := g.Bounds()
+	xtmin, xtmax := checkAxisBoundsIntersect(localRay.Origin.X, localRay.Direction.X, bounds.Minimum.X, bounds.Maximum.X)
+	ytmin, ytmax := checkAxisBoundsIntersect(localRay.Origin.Y, localRay.Direction.Y, bounds.Minimum.Y, bounds.Maximum.Y)
+	ztmin, ztmax := checkAxisBoundsIntersect(localRay.Origin.Z, localRay.Direction.Z, bounds.Minimum.Z, bounds.Maximum.Z)
+
+	tmin := gomath.Max(gomath.Max(xtmin, ytmin), ztmin)
+	tmax := gomath.Min(gomath.Min(xtmax, ytmax), ztmax)
+
+	xs := make([]Intersection, 0)
+
+	if tmin > tmax {
+		return xs
+	}
+
+	xs = append(xs, CreateIntersection(tmin, g))
+	xs = append(xs, CreateIntersection(tmax, g))
+	return xs
+}
+
+func checkAxisBoundsIntersect(origin float64, direction float64, minBound float64, maxBound float64) (float64, float64) {
+	tminNumerator := minBound - origin
+	tmaxNumerator := maxBound - origin
+
+	tmin := 0.0
+	tmax := 0.0
+	if gomath.Abs(direction) >= math.EPSILON {
+		tmin = tminNumerator / direction
+		tmax = tmaxNumerator / direction
+	} else {
+		tmin = tminNumerator * gomath.SmallestNonzeroFloat64
+		tmax = tmaxNumerator * gomath.MaxFloat64
+	}
+
+	if tmin > tmax {
+		return tmax, tmin
+	}
+	return tmin, tmax
 }

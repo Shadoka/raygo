@@ -186,3 +186,38 @@ func TestCreateGlassSphere(t *testing.T) {
 	assert.Assert(t, s.GetMaterial().Transparency == 1.0)
 	assert.Assert(t, s.GetMaterial().RefractiveIndex == 1.5)
 }
+
+func TestBoundsUntransformed(t *testing.T) {
+	s := CreateSphere()
+	b := s.Bounds()
+	expected := Bounds{
+		Minimum: math.CreatePoint(-1.0, -1.0, -1.0),
+		Maximum: math.CreatePoint(1.0, 1.0, 1.0),
+	}
+
+	assert.Assert(t, expected.Equals(b))
+}
+
+func TestBoundsScaled(t *testing.T) {
+	s := CreateSphere()
+	s.SetTransform(math.Scaling(3.0, 3.0, 3.0))
+	b := s.Bounds()
+	expected := Bounds{
+		Minimum: math.CreatePoint(-3.0, -3.0, -3.0),
+		Maximum: math.CreatePoint(3.0, 3.0, 3.0),
+	}
+
+	assert.Assert(t, expected.Equals(b))
+}
+
+func TestBoundsTransformed(t *testing.T) {
+	s := CreateSphere()
+	s.SetTransform(math.Translation(1.0, 1.0, 1.0).MulM(math.Scaling(3.0, 3.0, 3.0)))
+	b := s.Bounds()
+	expected := Bounds{
+		Minimum: math.CreatePoint(-2.0, -2.0, -2.0),
+		Maximum: math.CreatePoint(4.0, 4.0, 4.0),
+	}
+
+	assert.Assert(t, expected.Equals(b))
+}

@@ -106,3 +106,38 @@ func TestCubeLocalNormalAt(t *testing.T) {
 	assert.Assert(t, expected7.Equals(c.localCubeNormalAt(p7)))
 	assert.Assert(t, expected8.Equals(c.localCubeNormalAt(p8)))
 }
+
+func TestCubeBoundsUntransformed(t *testing.T) {
+	c := CreateCube()
+	b := c.Bounds()
+	expected := Bounds{
+		Minimum: math.CreatePoint(-1.0, -1.0, -1.0),
+		Maximum: math.CreatePoint(1.0, 1.0, 1.0),
+	}
+
+	assert.Assert(t, expected.Equals(b))
+}
+
+func TestCubeBoundsScaled(t *testing.T) {
+	c := CreateCube()
+	c.SetTransform(math.Scaling(3.0, 3.0, 3.0))
+	b := c.Bounds()
+	expected := Bounds{
+		Minimum: math.CreatePoint(-3.0, -3.0, -3.0),
+		Maximum: math.CreatePoint(3.0, 3.0, 3.0),
+	}
+
+	assert.Assert(t, expected.Equals(b))
+}
+
+func TestCubeBoundsTransformed(t *testing.T) {
+	c := CreateCube()
+	c.SetTransform(math.Translation(1.0, 1.0, 1.0).MulM(math.Scaling(3.0, 3.0, 3.0)))
+	b := c.Bounds()
+	expected := Bounds{
+		Minimum: math.CreatePoint(-2.0, -2.0, -2.0),
+		Maximum: math.CreatePoint(4.0, 4.0, 4.0),
+	}
+
+	assert.Assert(t, expected.Equals(b))
+}

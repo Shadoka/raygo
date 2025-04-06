@@ -23,8 +23,8 @@ func CreateCone() *Cone {
 		Id:        uuid.NewString(),
 		Transform: math.IdentityMatrix(),
 		Material:  DefaultMaterial(),
-		Minimum:   gomath.Inf(-1.0),
-		Maximum:   gomath.Inf(1.0),
+		Minimum:   gomath.Inf(-1),
+		Maximum:   gomath.Inf(1),
 		Closed:    false,
 		Parent:    nil,
 	}
@@ -167,4 +167,11 @@ func (c *Cone) localConeNormalAt(point math.Point) math.Vector {
 	}
 
 	return math.CreateVector(point.X, y, point.Z)
+}
+
+func (c *Cone) Bounds() *Bounds {
+	return &Bounds{
+		Minimum: c.Transform.MulT(math.CreatePoint(-1.0, c.Minimum, -1.0)),
+		Maximum: c.Transform.MulT(math.CreatePoint(1.0, c.Maximum, 1.0)),
+	}
 }
