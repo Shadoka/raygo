@@ -171,7 +171,7 @@ func (c *Cone) localConeNormalAt(point math.Point) math.Vector {
 
 func (c *Cone) Bounds() *Bounds {
 	return &Bounds{
-		Minimum: c.Transform.MulT(math.CreatePoint(-1.0, c.Minimum, -1.0)),
-		Maximum: c.Transform.MulT(math.CreatePoint(1.0, c.Maximum, 1.0)),
+		Minimum: math.CreatePoint(-1.0, c.Minimum, -1.0),
+		Maximum: math.CreatePoint(1.0, c.Maximum, 1.0),
 	}
 }

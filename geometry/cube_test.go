@@ -109,7 +109,7 @@ func TestCubeLocalNormalAt(t *testing.T) {
 
 func TestCubeBoundsUntransformed(t *testing.T) {
 	c := CreateCube()
-	b := c.Bounds()
+	b := c.ScaledBounds()
 	expected := Bounds{
 		Minimum: math.CreatePoint(-1.0, -1.0, -1.0),
 		Maximum: math.CreatePoint(1.0, 1.0, 1.0),
@@ -121,7 +121,7 @@ func TestCubeBoundsUntransformed(t *testing.T) {
 func TestCubeBoundsScaled(t *testing.T) {
 	c := CreateCube()
 	c.SetTransform(math.Scaling(3.0, 3.0, 3.0))
-	b := c.Bounds()
+	b := c.ScaledBounds()
 	expected := Bounds{
 		Minimum: math.CreatePoint(-3.0, -3.0, -3.0),
 		Maximum: math.CreatePoint(3.0, 3.0, 3.0),
@@ -133,11 +133,21 @@ func TestCubeBoundsScaled(t *testing.T) {
 func TestCubeBoundsTransformed(t *testing.T) {
 	c := CreateCube()
 	c.SetTransform(math.Translation(1.0, 1.0, 1.0).MulM(math.Scaling(3.0, 3.0, 3.0)))
-	b := c.Bounds()
+	b := c.ScaledBounds()
 	expected := Bounds{
 		Minimum: math.CreatePoint(-2.0, -2.0, -2.0),
 		Maximum: math.CreatePoint(4.0, 4.0, 4.0),
 	}
 
 	assert.Assert(t, expected.Equals(b))
+}
+
+func TestCubeScaledLocalIntersect(t *testing.T) {
+	c := CreateCube()
+	c.SetTransform(math.Scaling(2.0, 2.0, 2.0).MulM(math.Translation(5.0, 0.0, 0.0)))
+	r := CreateRay(math.CreatePoint(10.0, 0.0, -10.0), math.CreateVector(0.0, 0.0, 1.0))
+
+	xs := c.Intersect(r)
+
+	assert.Assert(t, len(xs) == 2)
 }

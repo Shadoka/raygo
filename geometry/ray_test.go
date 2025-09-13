@@ -1,7 +1,6 @@
 package geometry
 
 import (
-	"fmt"
 	gomath "math"
 	"raygo/math"
 	"testing"
@@ -228,7 +227,7 @@ func TestPrepareComputationRefractiveIndices(t *testing.T) {
 
 	for index, i := range xs {
 		precomp := i.PrepareComputation(r, xs)
-		fmt.Println(precomp)
+
 		assert.Assert(t, precomp.N1 == expected[index*2])
 		assert.Assert(t, precomp.N2 == expected[index*2+1])
 	}

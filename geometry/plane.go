@@ -87,7 +87,7 @@ func (p *Plane) localPlaneIntersect(localRay Ray) []Intersection {
 
 func (p *Plane) Bounds() *Bounds {
 	return &Bounds{
-		Minimum: p.Transform.MulT(math.CreatePoint(gomath.Inf(-1), -0.1, gomath.Inf(-1))),
-		Maximum: p.Transform.MulT(math.CreatePoint(gomath.Inf(1), 0.1, gomath.Inf(1))),
+		Minimum: math.CreatePoint(gomath.Inf(-1), -0.1, gomath.Inf(-1)),
+		Maximum: math.CreatePoint(gomath.Inf(1), 0.1, gomath.Inf(1)),
 	}
 }

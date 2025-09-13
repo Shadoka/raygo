@@ -76,6 +76,22 @@ func TestLocalIntersectNonEmptyGroup(t *testing.T) {
 	assert.Assert(t, actual[3].Object.Equals(s1))
 }
 
+func TestNonEmptyGroupBounds(t *testing.T) {
+	g := EmptyGroup()
+	s1 := CreateSphere()
+	g.SetTransform(math.Scaling(2.0, 2.0, 2.0))
+	s1.SetTransform(math.Translation(5.0, 0.0, 0.0))
+	g.AddChild(s1)
+	expected := Bounds{
+		Minimum: math.CreatePoint(4.0, -1.0, -1.0),
+		Maximum: math.CreatePoint(6.0, 1.0, 1.0),
+	}
+
+	b := g.Bounds()
+
+	assert.Assert(t, expected.Equals(b))
+}
+
 func TestIntersectGroupWithTransformations(t *testing.T) {
 	g := EmptyGroup()
 	s1 := CreateSphere()

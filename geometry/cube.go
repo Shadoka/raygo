@@ -61,7 +61,9 @@ func (c *Cube) Equals(other Shape) bool {
 
 func (c *Cube) Intersect(ray Ray) []Intersection {
 	transformedRay := ray.Transform(c.Transform.Inverse())
-	return c.localCubeIntersect(transformedRay)
+	b := c.Bounds()
+	return BoundingBoxIntersect(transformedRay, c, b.Minimum, b.Maximum)
+	//return BoundingBoxIntersect(transformedRay, c, math.CreatePoint(-1.0, -1.0, -1.0), math.CreatePoint(1.0, 1.0, 1.0))
 }
 
 func (c *Cube) localCubeIntersect(localRay Ray) []Intersection {
@@ -122,7 +124,20 @@ func (c *Cube) localCubeNormalAt(point math.Point) math.Vector {
 	return math.CreateVector(0.0, 0.0, point.Z)
 }
 
+//	func (c *Cube) Bounds() *Bounds {
+//		return &Bounds{
+//			Minimum: c.Transform.MulT(math.CreatePoint(-1.0, -1.0, -1.0)),
+//			Maximum: c.Transform.MulT(math.CreatePoint(1.0, 1.0, 1.0)),
+//		}
+//	}
 func (c *Cube) Bounds() *Bounds {
+	return &Bounds{
+		Minimum: math.CreatePoint(-1.0, -1.0, -1.0),
+		Maximum: math.CreatePoint(1.0, 1.0, 1.0),
+	}
+}
+
+func (c *Cube) ScaledBounds() *Bounds {
 	return &Bounds{
 		Minimum: c.Transform.MulT(math.CreatePoint(-1.0, -1.0, -1.0)),
 		Maximum: c.Transform.MulT(math.CreatePoint(1.0, 1.0, 1.0)),

@@ -159,7 +159,7 @@ func (c *Cylinder) localCylinderNormalAt(point math.Point) math.Vector {
 
 func (c *Cylinder) Bounds() *Bounds {
 	return &Bounds{
-		Minimum: c.Transform.MulT(math.CreatePoint(-1.0, c.Minimum, -1.0)),
-		Maximum: c.Transform.MulT(math.CreatePoint(1.0, c.Maximum, 1.0)),
+		Minimum: math.CreatePoint(-1.0, c.Minimum, -1.0),
+		Maximum: math.CreatePoint(1.0, c.Maximum, 1.0),
 	}
 }

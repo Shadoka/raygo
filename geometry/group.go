@@ -1,7 +1,6 @@
 package geometry
 
 import (
-	gomath "math"
 	"raygo/math"
 	"reflect"
 
@@ -9,20 +8,22 @@ import (
 )
 
 type Group struct {
-	Id        string
-	Transform math.Matrix
-	Material  Material
-	Children  []Shape
-	Parent    *Group
+	Id                string
+	Transform         math.Matrix
+	Material          Material
+	Children          []Shape
+	Parent            *Group
+	CachedBoundingBox *Bounds
 }
 
 func EmptyGroup() *Group {
 	return &Group{
-		Id:        uuid.NewString(),
-		Transform: math.IdentityMatrix(),
-		Material:  DefaultMaterial(),
-		Children:  make([]Shape, 0),
-		Parent:    nil,
+		Id:                uuid.NewString(),
+		Transform:         math.IdentityMatrix(),
+		Material:          DefaultMaterial(),
+		Children:          make([]Shape, 0),
+		Parent:            nil,
+		CachedBoundingBox: nil,
 	}
 }
 
@@ -91,7 +92,8 @@ func (g *Group) Intersect(ray Ray) []Intersection {
 
 func (g *Group) localIntersect(ray Ray) []Intersection {
 	xs := make([]Intersection, 0)
-	if len(g.boundsIntersect(ray)) == 0 {
+	bb := g.Bounds()
+	if len(BoundingBoxIntersect(ray, g, bb.Minimum, bb.Maximum)) == 0 {
 		return xs
 	}
 
@@ -107,74 +109,19 @@ func (g *Group) NormalAt(p math.Point) math.Vector {
 }
 
 func (g *Group) Bounds() *Bounds {
+	if g.CachedBoundingBox != nil {
+		return g.CachedBoundingBox
+	}
+
 	// those BBs are in their respective object space but not axis aligned
 	nonAlignedBoundingBoxes := make([]*Bounds, 0)
 	for _, child := range g.Children {
-		nonAlignedBoundingBoxes = append(nonAlignedBoundingBoxes, child.Bounds())
+		childBB := child.Bounds()
+		nonAlignedBoundingBoxes = append(nonAlignedBoundingBoxes, childBB.ApplyTransform(child.GetTransform()))
 	}
 
 	alignedMinimumBB := FindMinimalContainingBoundingBox(nonAlignedBoundingBoxes)
-	// TODO: wouldnt it make sense to cache that group BB?
-	return BoundsToObjectSpace(alignedMinimumBB, g.Transform)
-}
-
-func FindMinimalContainingBoundingBox(bounds []*Bounds) Bounds {
-	minX, minY, minZ := gomath.MaxFloat64, gomath.MaxFloat64, gomath.MaxFloat64
-	maxX, maxY, maxZ := gomath.SmallestNonzeroFloat64, gomath.SmallestNonzeroFloat64, gomath.SmallestNonzeroFloat64
-
-	for _, b := range bounds {
-		minX = gomath.Min(minX, b.Minimum.X)
-		minY = gomath.Min(minY, b.Minimum.Y)
-		minZ = gomath.Min(minZ, b.Minimum.Z)
-		maxX = gomath.Max(maxX, b.Maximum.X)
-		maxY = gomath.Max(maxY, b.Maximum.Y)
-		maxZ = gomath.Max(maxZ, b.Maximum.Z)
-	}
-
-	return Bounds{
-		Minimum: math.CreatePoint(minX, minY, minZ),
-		Maximum: math.CreatePoint(maxX, maxY, maxZ),
-	}
-}
-
-// TODO: the following two methods are basically the cube intersection from cube.go
-
-func (g *Group) boundsIntersect(localRay Ray) []Intersection {
-	bounds := g.Bounds()
-	xtmin, xtmax := checkAxisBoundsIntersect(localRay.Origin.X, localRay.Direction.X, bounds.Minimum.X, bounds.Maximum.X)
-	ytmin, ytmax := checkAxisBoundsIntersect(localRay.Origin.Y, localRay.Direction.Y, bounds.Minimum.Y, bounds.Maximum.Y)
-	ztmin, ztmax := checkAxisBoundsIntersect(localRay.Origin.Z, localRay.Direction.Z, bounds.Minimum.Z, bounds.Maximum.Z)
-
-	tmin := gomath.Max(gomath.Max(xtmin, ytmin), ztmin)
-	tmax := gomath.Min(gomath.Min(xtmax, ytmax), ztmax)
-
-	xs := make([]Intersection, 0)
-
-	if tmin > tmax {
-		return xs
-	}
-
-	xs = append(xs, CreateIntersection(tmin, g))
-	xs = append(xs, CreateIntersection(tmax, g))
-	return xs
-}
-
-func checkAxisBoundsIntersect(origin float64, direction float64, minBound float64, maxBound float64) (float64, float64) {
-	tminNumerator := minBound - origin
-	tmaxNumerator := maxBound - origin
-
-	tmin := 0.0
-	tmax := 0.0
-	if gomath.Abs(direction) >= math.EPSILON {
-		tmin = tminNumerator / direction
-		tmax = tmaxNumerator / direction
-	} else {
-		tmin = tminNumerator * gomath.SmallestNonzeroFloat64
-		tmax = tmaxNumerator * gomath.MaxFloat64
-	}
-
-	if tmin > tmax {
-		return tmax, tmin
-	}
-	return tmin, tmax
+	g.CachedBoundingBox = alignedMinimumBB
+	//g.CachedBoundingBox = alignedMinimumBB.ApplyTransform(g.Transform)
+	return g.CachedBoundingBox
 }

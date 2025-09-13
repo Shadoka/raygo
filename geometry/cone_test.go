@@ -78,25 +78,13 @@ func TestConeBoundsUntransformed(t *testing.T) {
 	assert.Assert(t, expected.Equals(b))
 }
 
-func TestConeBoundsScaled(t *testing.T) {
-	c := CreateCone()
-	c.SetTransform(math.Scaling(3.0, 3.0, 3.0))
-	b := c.Bounds()
-	expected := Bounds{
-		Minimum: math.CreatePoint(-3.0, gomath.Inf(-1), -3.0),
-		Maximum: math.CreatePoint(3.0, gomath.Inf(1), 3.0),
-	}
-
-	assert.Assert(t, expected.Equals(b))
-}
-
 func TestConeBoundsTransformed(t *testing.T) {
 	c := CreateCone()
 	c.SetTransform(math.Translation(1.0, 1.0, 1.0).MulM(math.Scaling(3.0, 3.0, 3.0)))
 	b := c.Bounds()
 	expected := Bounds{
-		Minimum: math.CreatePoint(-2.0, gomath.Inf(-1), -2.0),
-		Maximum: math.CreatePoint(4.0, gomath.Inf(1), 4.0),
+		Minimum: math.CreatePoint(-1.0, gomath.Inf(-1), -1.0),
+		Maximum: math.CreatePoint(1.0, gomath.Inf(1), 1.0),
 	}
 
 	assert.Assert(t, expected.Equals(b))
@@ -110,8 +98,8 @@ func TestConeCappedBoundsTransformed(t *testing.T) {
 	c.SetTransform(math.Translation(1.0, 1.0, 1.0).MulM(math.Scaling(3.0, 3.0, 3.0)))
 	b := c.Bounds()
 	expected := Bounds{
-		Minimum: math.CreatePoint(-2.0, -2.0, -2.0),
-		Maximum: math.CreatePoint(4.0, 4.0, 4.0),
+		Minimum: math.CreatePoint(-1.0, -1.0, -1.0),
+		Maximum: math.CreatePoint(1.0, 1.0, 1.0),
 	}
 
 	assert.Assert(t, expected.Equals(b))

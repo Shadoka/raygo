@@ -100,7 +100,7 @@ func (s *Sphere) NormalAt(p math.Point) math.Vector {
 
 func (s *Sphere) Bounds() *Bounds {
 	return &Bounds{
-		Minimum: s.Transform.MulT(math.CreatePoint(-1.0, -1.0, -1.0)),
-		Maximum: s.Transform.MulT(math.CreatePoint(1.0, 1.0, 1.0)),
+		Minimum: math.CreatePoint(-1.0, -1.0, -1.0),
+		Maximum: math.CreatePoint(1.0, 1.0, 1.0),
 	}
 }
