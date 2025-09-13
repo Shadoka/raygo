@@ -53,6 +53,9 @@ func (g *Group) GetTransform() math.Matrix {
 
 func (g *Group) SetMaterial(m Material) {
 	g.Material = m
+	for _, child := range g.Children {
+		child.SetMaterial(m)
+	}
 }
 
 func (g *Group) GetMaterial() *Material {

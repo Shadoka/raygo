@@ -8,14 +8,14 @@ import (
 
 func main() {
 	begin := time.Now()
-	scene := render.CreateMirrorScene(1920, 1080)
+	scene := render.CreateHexagonScene(400, 200)
 	end := time.Now()
 
 	diff := end.Sub(begin)
 	fmt.Printf("rendering took %v seconds\n", diff.Seconds())
 
 	beginWrite := time.Now()
-	scene.WriteFile("mirrors_groups.ppm")
+	scene.WriteFile("hexagon_transformed.ppm")
 	endWrite := time.Now()
 
 	diffWrite := endWrite.Sub(beginWrite)

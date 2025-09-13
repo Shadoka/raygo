@@ -17,7 +17,7 @@ Go lang implementation of [The Ray Tracer Challenge](http://raytracerchallenge.c
 11. Reflection and Refraction ✔
 12. Cubes ✔
 13. Cylinders ✔
-14. Groups
+14. Groups ✔
 15. Triangles
 16. Constructive Solid Geometry (CSG)
 17. Next Steps
@@ -91,3 +91,11 @@ Cubes got added as shapes
 ![Exercise 13](examples/chapter13_cylinders.png)
 
 Cylinders and cones got added
+
+### Chapter 14
+![Exercise 14](examples/chapter14_groups.png)
+
+Groups are now added, allowing for creating reusable complex shapes and performance improvements.
+
+The implementation differs slightly from the book. The implementation of the bounding box intersection is
+according to [this blog article](https://tavianator.com/2011/ray_box.html)
