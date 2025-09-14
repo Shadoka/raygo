@@ -9,32 +9,34 @@ import (
 )
 
 type Triangle struct {
-	P1        math.Point
-	P2        math.Point
-	P3        math.Point
-	E1        math.Vector // Direction P1 -> P2
-	E2        math.Vector // Direction P1 -> P3
-	Normal    math.Vector
-	Id        string
-	Transform math.Matrix
-	Material  Material
-	Parent    *Group
+	P1           math.Point
+	P2           math.Point
+	P3           math.Point
+	E1           math.Vector // Direction P1 -> P2
+	E2           math.Vector // Direction P1 -> P3
+	Normal       math.Vector
+	Id           string
+	Transform    math.Matrix
+	Material     Material
+	Parent       *Group
+	CachedBounds *Bounds
 }
 
 func CreateTriangle(p1 math.Point, p2 math.Point, p3 math.Point) *Triangle {
 	e1 := p2.Subtract(p1)
 	e2 := p3.Subtract(p1)
 	return &Triangle{
-		P1:        p1,
-		P2:        p2,
-		P3:        p3,
-		E1:        e1,
-		E2:        e2,
-		Normal:    e1.Cross(e2).Normalize(),
-		Id:        uuid.NewString(),
-		Transform: math.IdentityMatrix(),
-		Material:  DefaultMaterial(),
-		Parent:    nil,
+		P1:           p1,
+		P2:           p2,
+		P3:           p3,
+		E1:           e1,
+		E2:           e2,
+		Normal:       e1.Cross(e2).Normalize(),
+		Id:           uuid.NewString(),
+		Transform:    math.IdentityMatrix(),
+		Material:     DefaultMaterial(),
+		Parent:       nil,
+		CachedBounds: nil,
 	}
 }
 
@@ -88,7 +90,23 @@ func (t *Triangle) SetParent(g *Group) {
 }
 
 func (t *Triangle) Bounds() *Bounds {
-	return &Bounds{}
+	if t.CachedBounds != nil {
+		return t.CachedBounds
+	}
+
+	minX := gomath.Min(t.P1.X, gomath.Min(t.P2.X, t.P3.X))
+	minY := gomath.Min(t.P1.Y, gomath.Min(t.P2.Y, t.P3.Y))
+	minZ := gomath.Min(t.P1.Z, gomath.Min(t.P2.Z, t.P3.Z))
+	maxX := gomath.Max(t.P1.X, gomath.Max(t.P2.X, t.P3.X))
+	maxY := gomath.Max(t.P1.Y, gomath.Max(t.P2.Y, t.P3.Y))
+	maxZ := gomath.Max(t.P1.Z, gomath.Max(t.P2.Z, t.P3.Z))
+
+	t.CachedBounds = &Bounds{
+		Minimum: math.CreatePoint(minX, minY, minZ),
+		Maximum: math.CreatePoint(maxX, maxY, maxZ),
+	}
+
+	return t.CachedBounds
 }
 
 func (t *Triangle) Intersect(ray Ray) []Intersection {
