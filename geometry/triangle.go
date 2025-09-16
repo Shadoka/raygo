@@ -110,7 +110,8 @@ func (t *Triangle) Bounds() *Bounds {
 }
 
 func (t *Triangle) Intersect(ray Ray) []Intersection {
-	return make([]Intersection, 0)
+	localRay := ray.Transform(t.Transform.Inverse())
+	return t.localIntersect(localRay)
 }
 
 func (t *Triangle) localIntersect(localRay Ray) []Intersection {

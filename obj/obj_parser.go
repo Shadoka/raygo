@@ -129,6 +129,7 @@ func ParseLine(objData *ObjData, line *string) {
 
 func processFace(objData *ObjData, line *string, currentGroup *ObjGroup) {
 	faceComponents := strings.Split(*line, " ")
+	faceComponents = slices.DeleteFunc(faceComponents, isEmptyString)
 	face := CreateFace(len(faceComponents) - 1)
 	for index := range faceComponents {
 		if index == 0 {

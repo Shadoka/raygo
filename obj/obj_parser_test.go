@@ -128,7 +128,7 @@ v 1 0 0
 v 1 1 0
 v 0 2 0
 
-f 1 2 3 4 5
+f 1 2 3 4 5 
 `
 	objData := CreateObjData()
 	ParseData(objData, input)

@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"raygo/obj"
+	"raygo/render"
 	"time"
 )
 
@@ -15,25 +15,25 @@ func main() {
 	// pprof.StartCPUProfile(f)
 	// defer pprof.StopCPUProfile()
 
-	// begin := time.Now()
-	// scene := render.CreateHexagonScene(1920, 1080)
-	// end := time.Now()
-
-	// diff := end.Sub(begin)
-	// fmt.Printf("rendering took %v seconds\n", diff.Seconds())
-
-	// beginWrite := time.Now()
-	// scene.WriteFile("hexagon_transformed.ppm")
-	// endWrite := time.Now()
-
-	// diffWrite := endWrite.Sub(beginWrite)
-	// fmt.Printf("writing file took %v seconds\n", diffWrite.Seconds())
-
 	begin := time.Now()
-	teapot := obj.ParseFile("resources/teapot_low.obj")
+	scene := render.CreateTeapotScene(400, 200)
 	end := time.Now()
-	diff := end.Sub(begin)
 
-	fmt.Printf("parsing obj took %v seconds\n", diff.Seconds())
-	teapot.PrintStats()
+	diff := end.Sub(begin)
+	fmt.Printf("rendering took %v seconds\n", diff.Seconds())
+
+	beginWrite := time.Now()
+	scene.WriteFile("teapot_lowres.ppm")
+	endWrite := time.Now()
+
+	diffWrite := endWrite.Sub(beginWrite)
+	fmt.Printf("writing file took %v seconds\n", diffWrite.Seconds())
+
+	// begin := time.Now()
+	// teapot := obj.ParseFile("resources/teapot_high.obj")
+	// end := time.Now()
+	// diff := end.Sub(begin)
+
+	// fmt.Printf("parsing obj took %v seconds\n", diff.Seconds())
+	// teapot.PrintStats()
 }
