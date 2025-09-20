@@ -149,7 +149,7 @@ func processFace(objData *ObjData, line *string, currentGroup *ObjGroup) {
 }
 
 func isEmptyString(s string) bool {
-	return s == ""
+	return s == "" || s == "\r"
 }
 
 func processVertex(objData *ObjData, line *string) {
@@ -159,32 +159,16 @@ func processVertex(objData *ObjData, line *string) {
 		panic(fmt.Sprintf("a vertex line must consist of 4 elements: %v", vertexComponents))
 	}
 
-	vertx, err := getStringAsFloat(vertexComponents[1])
-	if err != nil {
-		fmt.Printf("current line: %s\n", *line)
-		panic("")
-	}
-	verty, err := getStringAsFloat(vertexComponents[2])
-	if err != nil {
-		fmt.Printf("current line: %s\n", *line)
-		panic("")
-	}
-	vertz, err := getStringAsFloat(vertexComponents[3])
-	if err != nil {
-		fmt.Printf("current line: %s\n", *line)
-		panic("")
-	}
+	vertx := getStringAsFloat(vertexComponents[1])
+	verty := getStringAsFloat(vertexComponents[2])
+	vertz := getStringAsFloat(strings.TrimSuffix(vertexComponents[3], "\r"))
 	objData.Vertices = append(objData.Vertices,
 		math.CreatePoint(vertx,
 			verty,
 			vertz))
 }
 
-func getStringAsFloat(s string) (float64, error) {
-	f, err := strconv.ParseFloat(s, 64)
-	if err != nil {
-		fmt.Printf("cannot parse '%v' as float\n", s)
-		return 0.0, fmt.Errorf("cannot parse '%v' as float\n", s)
-	}
-	return f, nil
+func getStringAsFloat(s string) float64 {
+	f, _ := strconv.ParseFloat(s, 64)
+	return f
 }

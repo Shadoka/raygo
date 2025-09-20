@@ -283,3 +283,13 @@ func TestSchlickSmallViewAngle(t *testing.T) {
 
 	assert.Assert(t, floatEquals(expected, precomps.Schlick()))
 }
+
+func TestCreateIntersectionWithUV(t *testing.T) {
+	u := 0.2
+	v := 0.4
+
+	i := CreateIntersectionWithUV(4.0, CreateSphere(), u, v)
+
+	assert.Assert(t, i.U == u)
+	assert.Assert(t, i.V == v)
+}

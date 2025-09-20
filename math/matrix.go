@@ -7,16 +7,14 @@ import (
 )
 
 type Matrix struct {
-	data              [][]float64
-	dimension         int
-	cachedDeterminant *float64
+	data      [][]float64
+	dimension int
 }
 
 func CreateMatrix(m [][]float64) Matrix {
 	return Matrix{
-		data:              m,
-		dimension:         len(m),
-		cachedDeterminant: nil,
+		data:      m,
+		dimension: len(m),
 	}
 }
 
@@ -104,9 +102,6 @@ func (m Matrix) Transpose() Matrix {
 }
 
 func (m *Matrix) Determinant() float64 {
-	if m.cachedDeterminant != nil {
-		return *m.cachedDeterminant
-	}
 	result := 0.0
 	if m.dimension == 2 {
 		result = m.data[0][0]*m.data[1][1] - m.data[0][1]*m.data[1][0]
@@ -115,7 +110,6 @@ func (m *Matrix) Determinant() float64 {
 			result = result + m.data[0][column]*m.Cofactor(0, column)
 		}
 	}
-	m.cachedDeterminant = &result
 	return result
 }
 

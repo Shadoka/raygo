@@ -20,6 +20,11 @@ type Triangle struct {
 	Material     Material
 	Parent       *Group
 	CachedBounds *Bounds
+	// smooth triangle fields
+	N1     math.Vector
+	N2     math.Vector
+	N3     math.Vector
+	Smooth bool
 }
 
 func CreateTriangle(p1 math.Point, p2 math.Point, p3 math.Point) *Triangle {
@@ -37,6 +42,30 @@ func CreateTriangle(p1 math.Point, p2 math.Point, p3 math.Point) *Triangle {
 		Material:     DefaultMaterial(),
 		Parent:       nil,
 		CachedBounds: nil,
+		Smooth:       false,
+	}
+}
+
+func CreateSmoothTriangle(p1 math.Point, p2 math.Point, p3 math.Point,
+	n1 math.Vector, n2 math.Vector, n3 math.Vector) *Triangle {
+	e1 := p2.Subtract(p1)
+	e2 := p3.Subtract(p1)
+	return &Triangle{
+		P1:           p1,
+		P2:           p2,
+		P3:           p3,
+		E1:           e1,
+		E2:           e2,
+		Normal:       e1.Cross(e2).Normalize(),
+		Id:           uuid.NewString(),
+		Transform:    math.IdentityMatrix(),
+		Material:     DefaultMaterial(),
+		Parent:       nil,
+		CachedBounds: nil,
+		Smooth:       true,
+		N1:           n1,
+		N2:           n2,
+		N3:           n3,
 	}
 }
 
@@ -139,5 +168,10 @@ func (t *Triangle) localIntersect(localRay Ray) []Intersection {
 	}
 
 	t2 := f * t.E2.Dot(originCrossE1)
-	return append(xs, CreateIntersection(t2, t))
+	if t.Smooth {
+		xs = append(xs, CreateIntersectionWithUV(t2, t, u, v))
+	} else {
+		xs = append(xs, CreateIntersection(t2, t))
+	}
+	return xs
 }
