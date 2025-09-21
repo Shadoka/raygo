@@ -101,7 +101,7 @@ func (m Matrix) Transpose() Matrix {
 	return CreateMatrix(result)
 }
 
-func (m Matrix) Determinant() float64 {
+func (m *Matrix) Determinant() float64 {
 	result := 0.0
 	if m.dimension == 2 {
 		result = m.data[0][0]*m.data[1][1] - m.data[0][1]*m.data[1][0]
@@ -128,7 +128,8 @@ func (m Matrix) Submatrix(row int, column int) Matrix {
 }
 
 func (m Matrix) Minor(row int, column int) float64 {
-	return m.Submatrix(row, column).Determinant()
+	submatrix := m.Submatrix(row, column)
+	return submatrix.Determinant()
 }
 
 func (m Matrix) Cofactor(row int, column int) float64 {

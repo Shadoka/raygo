@@ -55,7 +55,7 @@ func TestNormalAtDefaultPlane(t *testing.T) {
 	point := math.CreatePoint(0.0, 0.0, 5.0)
 	expected := math.CreateVector(0.0, 1.0, 0.0)
 
-	actual := p.NormalAt(point)
+	actual := p.NormalAt(point, Intersection{})
 
 	assert.Assert(t, expected.Equals(actual))
 }
@@ -66,7 +66,7 @@ func TestNormalAtDefaultPlaneTranslated(t *testing.T) {
 	point := math.CreatePoint(0.0, 0.0, 5.0)
 	expected := math.CreateVector(0.0, 1.0, 0.0)
 
-	actual := p.NormalAt(point)
+	actual := p.NormalAt(point, Intersection{})
 
 	assert.Assert(t, expected.Equals(actual))
 }
@@ -77,7 +77,7 @@ func TestNormalAtDefaultPlaneRotatedX(t *testing.T) {
 	point := math.CreatePoint(0.0, 0.0, 5.0)
 	expected := math.CreateVector(0.0, 0.0, 1.0)
 
-	actual := p.NormalAt(point)
+	actual := p.NormalAt(point, Intersection{})
 
 	assert.Assert(t, expected.Equals(actual))
 }

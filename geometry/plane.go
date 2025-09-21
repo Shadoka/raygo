@@ -59,7 +59,7 @@ func (p *Plane) SetParent(g *Group) {
 	p.Parent = g
 }
 
-func (p *Plane) NormalAt(point math.Point) math.Vector {
+func (p *Plane) NormalAt(point math.Point, hit Intersection) math.Vector {
 	objectNormal := p.localPlaneNormalAt()
 	return NormalToWorld(p, objectNormal)
 }

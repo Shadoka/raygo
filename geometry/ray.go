@@ -15,6 +15,8 @@ type Ray struct {
 type Intersection struct {
 	IntersectionAt float64 // t value
 	Object         Shape
+	U              float64
+	V              float64
 }
 
 type IntersectionComputations struct {
@@ -42,6 +44,17 @@ func CreateIntersection(t float64, object Shape) Intersection {
 	return Intersection{
 		IntersectionAt: t,
 		Object:         object,
+		U:              -1.0,
+		V:              -1.0,
+	}
+}
+
+func CreateIntersectionWithUV(t float64, object Shape, u float64, v float64) Intersection {
+	return Intersection{
+		IntersectionAt: t,
+		Object:         object,
+		U:              u,
+		V:              v,
 	}
 }
 
@@ -91,7 +104,7 @@ func SortIntersections(xs []Intersection) {
 
 func (i Intersection) PrepareComputation(r Ray, xs []Intersection) IntersectionComputations {
 	p := r.Position(i.IntersectionAt)
-	normal := i.Object.NormalAt(p)
+	normal := i.Object.NormalAt(p, i)
 	eye := r.Direction.Negate()
 
 	inside := false

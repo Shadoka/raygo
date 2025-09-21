@@ -10,6 +10,17 @@ import (
 	"gotest.tools/v3/assert"
 )
 
+const EPSILON = 0.00001
+
+func floatEquals(a float64, b float64) bool {
+	diff := gomath.Abs(a - b)
+	// if a and b are Inf diff becomes NaN
+	if gomath.IsNaN(diff) {
+		return true
+	}
+	return diff < EPSILON
+}
+
 func TestCreateCamera(t *testing.T) {
 	hsize := 160
 	vsize := 120
@@ -30,7 +41,7 @@ func TestCreateCameraHorizontalCanvas(t *testing.T) {
 
 	c := CreateCamera(hsize, vsize, fov)
 
-	assert.Assert(t, c.PixelSize == 0.01)
+	assert.Assert(t, floatEquals(c.PixelSize, 0.01))
 }
 
 func TestCreateCameraVerticalCanvas(t *testing.T) {
@@ -40,7 +51,7 @@ func TestCreateCameraVerticalCanvas(t *testing.T) {
 
 	c := CreateCamera(hsize, vsize, fov)
 
-	assert.Assert(t, c.PixelSize == 0.01)
+	assert.Assert(t, floatEquals(c.PixelSize, 0.01))
 }
 
 func TestRayForPixelCenter(t *testing.T) {

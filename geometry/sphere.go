@@ -92,7 +92,7 @@ func (sphere *Sphere) Intersect(ray Ray) []Intersection {
 	return CreateIntersection(t1, sphere).Aggregate(CreateIntersection(t2, sphere))
 }
 
-func (s *Sphere) NormalAt(p math.Point) math.Vector {
+func (s *Sphere) NormalAt(p math.Point, hit Intersection) math.Vector {
 	objectSpace := WorldToObject(s, p)
 	objectNormal := objectSpace.Subtract(math.CreatePoint(0.0, 0.0, 0.0))
 	return NormalToWorld(s, objectNormal)

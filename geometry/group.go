@@ -107,7 +107,7 @@ func (g *Group) localIntersect(ray Ray) []Intersection {
 	return xs
 }
 
-func (g *Group) NormalAt(p math.Point) math.Vector {
+func (g *Group) NormalAt(p math.Point, hit Intersection) math.Vector {
 	return math.CreateVector(0.0, 1.0, 0.0)
 }
 

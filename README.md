@@ -18,9 +18,12 @@ Go lang implementation of [The Ray Tracer Challenge](http://raytracerchallenge.c
 12. Cubes ✔
 13. Cylinders ✔
 14. Groups ✔
-15. Triangles
+15. Triangles ✔
 16. Constructive Solid Geometry (CSG)
 17. Next Steps
+
+I don't think that I'll implement CSG, because I don't see the use case for myself at this point.
+Feel free to submit a PR though.
 
 ## Examples
 
@@ -99,3 +102,22 @@ Groups are now added, allowing for creating reusable complex shapes and performa
 
 The implementation differs slightly from the book. The implementation of the bounding box intersection is
 according to [this blog article](https://tavianator.com/2011/ray_box.html)
+
+### Chapter 15
+![Exercise 15](examples/chapter15_teapot.png)
+
+The performance is abysmal. The picture for chapter 15 took 90m to render on my beefy desktop PC.
+Most of the time (>50%) is used on Matrix.Determinant, because there is a massive amount of allocation in use.
+
+## Outlook
+
+These are the next steps for me:
+
+* Performance improvements
+* Scene descriptions in YAML format
+* Add test case for third possible face format in OBJ files
+
+Current ideas for performance improvements:
+* Make matrix data 1-dimensional instead of two dimensions. Reduces number of allocations.
+* Instead of deleting rows/cols in Matrix.Submatrix, hold a virtual dimension index that subsequent operations have to respect.
+Question: When would I reset that virtual dimension index?
