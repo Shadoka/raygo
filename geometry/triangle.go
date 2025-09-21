@@ -86,6 +86,16 @@ func (t *Triangle) Equals(other Shape) bool {
 	return result
 }
 
+func DefaultSmoothTriangle() *Triangle {
+	return CreateSmoothTriangle(math.CreatePoint(0.0, 1.0, 0.0),
+		math.CreatePoint(-1.0, 0.0, 0.0),
+		math.CreatePoint(1.0, 0.0, 0.0),
+		math.CreateVector(0.0, 1.0, 0.0),
+		math.CreateVector(-1.0, 0.0, 0.0),
+		math.CreateVector(1.0, 0.0, 0.0),
+	)
+}
+
 func (t *Triangle) GetId() string {
 	return t.Id
 }
@@ -106,8 +116,19 @@ func (t *Triangle) GetMaterial() *Material {
 	return &t.Material
 }
 
-func (t *Triangle) NormalAt(p math.Point) math.Vector {
-	return t.Normal
+func (t *Triangle) NormalAt(p math.Point, hit Intersection) math.Vector {
+	if t.Smooth {
+		return t.localTriangleNormalAt(hit).Normalize()
+	} else {
+		return t.Normal
+	}
+}
+
+func (t *Triangle) localTriangleNormalAt(hit Intersection) math.Vector {
+	c1 := t.N2.Mul(hit.U)
+	c2 := t.N3.Mul(hit.V)
+	c3 := t.N1.Mul(1.0 - hit.U - hit.V)
+	return c1.Add(c2).Add(c3)
 }
 
 func (t *Triangle) GetParent() *Group {

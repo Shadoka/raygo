@@ -12,7 +12,7 @@ type Shape interface {
 	SetMaterial(m Material)
 	GetMaterial() *Material
 	Intersect(ray Ray) []Intersection
-	NormalAt(p math.Point) math.Vector
+	NormalAt(p math.Point, hit Intersection) math.Vector
 	GetParent() *Group
 	SetParent(g *Group)
 	Bounds() *Bounds

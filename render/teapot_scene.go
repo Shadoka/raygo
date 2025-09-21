@@ -33,7 +33,7 @@ func CreateTeapotScene(width int, height int) *canvas.Canvas {
 	wallBehindCamera.GetMaterial().SetPattern(umberRedStripePattern)
 	wallBehindCamera.SetTransform(math.Translation(0.0, 0.0, -35.0).MulM(math.Rotation_X(gomath.Pi / 2.0)))
 
-	teapot := obj.ParseFile("resources/teapot_low.obj")
+	teapot := obj.ParseFile("resources/teapot_high.obj")
 	teapotGroup := teapot.ToGroup()
 	teapotMaterial := g.DefaultMaterial()
 	teapotMaterial.SetReflective(0.3)

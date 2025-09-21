@@ -293,3 +293,15 @@ func TestCreateIntersectionWithUV(t *testing.T) {
 	assert.Assert(t, i.U == u)
 	assert.Assert(t, i.V == v)
 }
+
+func TestPrepareComputationUV(t *testing.T) {
+	tri := DefaultSmoothTriangle()
+	i := CreateIntersectionWithUV(1.0, tri, 0.45, 0.25)
+	r := CreateRay(p(-0.2, 0.3, -2.0), v(0.0, 0.0, 1.0))
+	expected := v(-0.5547, 0.83205, 0.0)
+	xs := make([]Intersection, 0, 1)
+
+	comps := i.PrepareComputation(r, xs)
+
+	assert.Assert(t, comps.Normalv.Equals(expected))
+}

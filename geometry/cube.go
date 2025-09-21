@@ -106,7 +106,7 @@ func (c *Cube) checkAxis(origin float64, direction float64) (float64, float64) {
 	return tmin, tmax
 }
 
-func (c *Cube) NormalAt(point math.Point) math.Vector {
+func (c *Cube) NormalAt(point math.Point, hit Intersection) math.Vector {
 	objectSpace := WorldToObject(c, point)
 	objectNormal := c.localCubeNormalAt(objectSpace)
 	return NormalToWorld(c, objectNormal)

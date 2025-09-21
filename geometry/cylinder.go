@@ -139,7 +139,7 @@ func (c *Cylinder) intersectCaps(ray Ray) []Intersection {
 	return xs
 }
 
-func (c *Cylinder) NormalAt(point math.Point) math.Vector {
+func (c *Cylinder) NormalAt(point math.Point, hit Intersection) math.Vector {
 	objectSpace := WorldToObject(c, point)
 	objectNormal := c.localCylinderNormalAt(objectSpace)
 	return NormalToWorld(c, objectNormal)

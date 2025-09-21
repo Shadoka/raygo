@@ -16,6 +16,7 @@ func main() {
 	// defer pprof.StopCPUProfile()
 
 	begin := time.Now()
+	//
 	scene := render.CreateTeapotScene(400, 200)
 	end := time.Now()
 
@@ -23,7 +24,8 @@ func main() {
 	fmt.Printf("rendering took %v seconds\n", diff.Seconds())
 
 	beginWrite := time.Now()
-	scene.WriteFile("teapot_lowres.ppm")
+	// high res, 400x200 => 5425s
+	scene.WriteFile("teapot_highres.ppm")
 	endWrite := time.Now()
 
 	diffWrite := endWrite.Sub(beginWrite)

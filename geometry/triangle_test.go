@@ -1,6 +1,7 @@
 package geometry
 
 import (
+	"fmt"
 	"raygo/math"
 	"testing"
 
@@ -35,9 +36,9 @@ func TestNormalAt(t *testing.T) {
 
 	tri := CreateTriangle(p(0.0, 1.0, 0.0), p(-1.0, 0.0, 0.0), p(1.0, 0.0, 0.0))
 
-	assert.Assert(t, tri.Normal.Equals(tri.NormalAt(p1)))
-	assert.Assert(t, tri.Normal.Equals(tri.NormalAt(p2)))
-	assert.Assert(t, tri.Normal.Equals(tri.NormalAt(p3)))
+	assert.Assert(t, tri.Normal.Equals(tri.NormalAt(p1, Intersection{})))
+	assert.Assert(t, tri.Normal.Equals(tri.NormalAt(p2, Intersection{})))
+	assert.Assert(t, tri.Normal.Equals(tri.NormalAt(p3, Intersection{})))
 }
 
 func TestLocalIntersectParallelRay(t *testing.T) {
@@ -84,4 +85,21 @@ func TestLocalIntersectHit(t *testing.T) {
 
 	assert.Assert(t, len(xs) == 1)
 	assert.Assert(t, floatEquals(xs[0].IntersectionAt, 2.0))
+}
+
+func TestSmoothTriangleIntersectionUV(t *testing.T) {
+	r := CreateRay(p(-0.2, 0.3, -2.0), math.CreateVector(0.0, 0.0, 1.0))
+	xs := DefaultSmoothTriangle().localIntersect(r)
+
+	assert.Assert(t, len(xs) == 1)
+	assert.Assert(t, floatEquals(xs[0].U, 0.45))
+	assert.Assert(t, floatEquals(xs[0].V, 0.25))
+}
+
+func TestSmoothTriangleInterpolatedNormal(t *testing.T) {
+	tri := DefaultSmoothTriangle()
+	i := CreateIntersectionWithUV(1.0, tri, 0.45, 0.25)
+	n := tri.NormalAt(p(0.0, 0.0, 0.0), i)
+	fmt.Println(n)
+	assert.Assert(t, n.Equals(v(-0.5547, 0.83205, 0.0)))
 }

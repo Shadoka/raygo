@@ -75,6 +75,7 @@ f 1 3 4
 
 	assert.Assert(t, len(objData.Vertices) == 4)
 	assert.Assert(t, len(objData.Faces) == 2)
+	assert.Assert(t, len(objData.Normals) == 0)
 	assert.Assert(t, objData.IgnoredLines == 3)
 
 	object := objData.ToGroup()
@@ -97,6 +98,13 @@ v -1 0 0
 v 1 0 0
 v 1 1 0
 
+vn 0.0 0.0 0.0
+vn 0.0 0.0 0.0
+vn 0.0 0.0 0.0
+vn 0.0 0.0 0.0
+vn 0.0 0.0 0.0
+vn 0.0 0.0 0.0
+
 f 1/2/3 2/3/4 3/4/5
 f 1/2/3 3/4/5 4/5/6
 `
@@ -105,7 +113,7 @@ f 1/2/3 3/4/5 4/5/6
 
 	assert.Assert(t, len(objData.Vertices) == 4)
 	assert.Assert(t, len(objData.Faces) == 2)
-	assert.Assert(t, objData.IgnoredLines == 3)
+	assert.Assert(t, objData.IgnoredLines == 4)
 
 	object := objData.ToGroup()
 
@@ -192,4 +200,23 @@ f 1 3 4
 	assert.Assert(t, t3.P1.Equals(objData.GetV(1)))
 	assert.Assert(t, t3.P2.Equals(objData.GetV(3)))
 	assert.Assert(t, t3.P3.Equals(objData.GetV(4)))
+}
+
+func TestNormals(t *testing.T) {
+	input := `
+vn 0 0 1
+vn 0.707 0 -0.707
+vn 1 2 3
+`
+	expected1 := math.CreateVector(0.0, 0.0, 1.0)
+	expected2 := math.CreateVector(0.707, 0.0, -0.707)
+	expected3 := math.CreateVector(1.0, 2.0, 3.0)
+
+	objData := CreateObjData()
+	ParseData(objData, input)
+
+	assert.Assert(t, len(objData.Normals) == 3)
+	assert.Assert(t, objData.GetN(1).Equals(expected1))
+	assert.Assert(t, objData.GetN(2).Equals(expected2))
+	assert.Assert(t, objData.GetN(3).Equals(expected3))
 }

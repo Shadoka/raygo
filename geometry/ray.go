@@ -104,7 +104,7 @@ func SortIntersections(xs []Intersection) {
 
 func (i Intersection) PrepareComputation(r Ray, xs []Intersection) IntersectionComputations {
 	p := r.Position(i.IntersectionAt)
-	normal := i.Object.NormalAt(p)
+	normal := i.Object.NormalAt(p, i)
 	eye := r.Direction.Negate()
 
 	inside := false

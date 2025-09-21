@@ -44,7 +44,7 @@ func CreatePurpleBall(dimension int) *canvas.Canvas {
 			if g.Hit(xs) != nil {
 				inters := g.Hit(xs)
 				point := r.Position(inters.IntersectionAt)
-				normalv := inters.Object.NormalAt(point)
+				normalv := inters.Object.NormalAt(point, *inters)
 				eyev := r.Direction.Negate()
 				color := lighting.PhongLighting(*inters.Object.GetMaterial(), inters.Object, light, point, eyev, normalv, false)
 				canvas.WritePixel(x, y, color)

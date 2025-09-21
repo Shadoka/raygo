@@ -10,21 +10,24 @@ import (
 	"strings"
 )
 
-const VERTEX_PREFIX = "v"
-const FACE_PREFIX = "f"
-const GROUP_PREFIX = "g"
+const VERTEX_PREFIX = "v "
+const FACE_PREFIX = "f "
+const GROUP_PREFIX = "g "
+const NORMAL_PREFIX = "vn "
 
 var currentGroup *ObjGroup
 
 type ObjData struct {
 	Vertices     []math.Point
 	Faces        []*Face
+	Normals      []math.Vector
 	Groups       []*ObjGroup
 	IgnoredLines int
 }
 
 type Face struct {
-	VertIndices []int
+	VertIndices   []int
+	NormalIndices []int
 }
 
 type ObjGroup struct {
@@ -35,10 +38,15 @@ func (o *ObjData) GetV(index int) math.Point {
 	return o.Vertices[index-1]
 }
 
+func (o *ObjData) GetN(index int) math.Vector {
+	return o.Normals[index-1]
+}
+
 func CreateObjData() *ObjData {
 	return &ObjData{
 		Vertices:     make([]math.Point, 0, 300),
 		Faces:        make([]*Face, 0, 100),
+		Normals:      make([]math.Vector, 0, 100),
 		Groups:       make([]*ObjGroup, 0, 2),
 		IgnoredLines: 0,
 	}
@@ -46,7 +54,8 @@ func CreateObjData() *ObjData {
 
 func CreateFace(cap int) *Face {
 	return &Face{
-		VertIndices: make([]int, 0, cap),
+		VertIndices:   make([]int, 0, cap),
+		NormalIndices: make([]int, 0, cap),
 	}
 }
 
@@ -59,11 +68,13 @@ func CreateObjGroup() *ObjGroup {
 func (o *ObjData) PrintStats() {
 	fmt.Printf("Vertices: %v\n", len(o.Vertices))
 	fmt.Printf("Faces(root): %v\n", len(o.Faces))
+	fmt.Printf("Normals: %v\n", len(o.Normals))
 	fmt.Printf("Groups: %v\n", len(o.Groups))
 }
 
 func (o *ObjData) ToGroup() *geometry.Group {
 	root := geometry.EmptyGroup()
+	root.GetMaterial().SetShininess(50.0)
 
 	for _, face := range o.Faces {
 		for _, t := range face.ToTriangles(o) {
@@ -90,7 +101,15 @@ func (f *Face) ToTriangles(o *ObjData) []*geometry.Triangle {
 		p1 := o.GetV(f.VertIndices[0])
 		p2 := o.GetV(f.VertIndices[i])
 		p3 := o.GetV(f.VertIndices[i+1])
-		triangles = append(triangles, geometry.CreateTriangle(p1, p2, p3))
+
+		if len(f.NormalIndices) == 0 {
+			triangles = append(triangles, geometry.CreateTriangle(p1, p2, p3))
+		} else {
+			n1 := o.GetN(f.NormalIndices[0])
+			n2 := o.GetN(f.NormalIndices[i])
+			n3 := o.GetN(f.NormalIndices[i+1])
+			triangles = append(triangles, geometry.CreateSmoothTriangle(p1, p2, p3, n1, n2, n3))
+		}
 	}
 	return triangles
 }
@@ -119,12 +138,25 @@ func ParseLine(objData *ObjData, line *string) {
 		processVertex(objData, line)
 	} else if strings.HasPrefix(*line, FACE_PREFIX) {
 		processFace(objData, line, currentGroup)
+	} else if strings.HasPrefix(*line, NORMAL_PREFIX) {
+		processNormal(objData, line)
 	} else if strings.HasPrefix(*line, GROUP_PREFIX) {
 		currentGroup = CreateObjGroup()
 		objData.Groups = append(objData.Groups, currentGroup)
 	} else {
 		objData.IgnoredLines += 1
 	}
+}
+
+func processNormal(objData *ObjData, line *string) {
+	normalComponents := strings.Split(*line, " ")
+	normalComponents = slices.DeleteFunc(normalComponents, isEmptyString)
+	normalx := getStringAsFloat(normalComponents[1])
+	normaly := getStringAsFloat(normalComponents[2])
+	normalz := getStringAsFloat(strings.TrimSuffix(normalComponents[3], "\r"))
+
+	objData.Normals = append(objData.Normals,
+		math.CreateVector(normalx, normaly, normalz))
 }
 
 func processFace(objData *ObjData, line *string, currentGroup *ObjGroup) {
@@ -135,10 +167,11 @@ func processFace(objData *ObjData, line *string, currentGroup *ObjGroup) {
 		if index == 0 {
 			continue
 		}
-		// face format: vertexIndex/textureIndex/vertexNormal
-		vertIndexString, _, _ := strings.Cut(faceComponents[index], "/")
-		vertIndex, _ := strconv.Atoi(vertIndexString)
-		face.VertIndices = append(face.VertIndices, vertIndex)
+		vertexIndex, normalIndex := extractVertexAndNormalIndex(faceComponents[index])
+		face.VertIndices = append(face.VertIndices, vertexIndex)
+		if normalIndex != -1 {
+			face.NormalIndices = append(face.NormalIndices, normalIndex)
+		}
 	}
 
 	if currentGroup == nil {
@@ -146,6 +179,22 @@ func processFace(objData *ObjData, line *string, currentGroup *ObjGroup) {
 	} else {
 		currentGroup.Faces = append(currentGroup.Faces, face)
 	}
+}
+
+// input => 1/3/5
+func extractVertexAndNormalIndex(face string) (int, int) {
+	// face format: vertexIndex/textureIndex/vertexNormal
+	indices := strings.Split(face, "/")
+	vertexIndex := -1
+	normalIndex := -1
+	for i, stringIndex := range indices {
+		if i == 0 {
+			vertexIndex, _ = strconv.Atoi(stringIndex)
+		} else if i == 2 {
+			normalIndex, _ = strconv.Atoi(stringIndex)
+		}
+	}
+	return vertexIndex, normalIndex
 }
 
 func isEmptyString(s string) bool {

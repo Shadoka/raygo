@@ -146,7 +146,7 @@ func (c *Cone) intersectCaps(ray Ray) []Intersection {
 	return xs
 }
 
-func (c *Cone) NormalAt(point math.Point) math.Vector {
+func (c *Cone) NormalAt(point math.Point, hit Intersection) math.Vector {
 	objectSpace := WorldToObject(c, point)
 	objectNormal := c.localConeNormalAt(objectSpace)
 	return NormalToWorld(c, objectNormal)

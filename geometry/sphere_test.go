@@ -113,35 +113,35 @@ func TestNormalAtSphereX(t *testing.T) {
 	s := CreateSphere()
 	expected := math.CreateVector(1.0, 0.0, 0.0)
 
-	assert.Assert(t, expected.Equals(s.NormalAt(math.CreatePoint(1.0, 0.0, 0.0))))
+	assert.Assert(t, expected.Equals(s.NormalAt(math.CreatePoint(1.0, 0.0, 0.0), Intersection{})))
 }
 
 func TestNormalAtSphereY(t *testing.T) {
 	s := CreateSphere()
 	expected := math.CreateVector(0.0, 1.0, 0.0)
 
-	assert.Assert(t, expected.Equals(s.NormalAt(math.CreatePoint(0.0, 1.0, 0.0))))
+	assert.Assert(t, expected.Equals(s.NormalAt(math.CreatePoint(0.0, 1.0, 0.0), Intersection{})))
 }
 
 func TestNormalAtSphereZ(t *testing.T) {
 	s := CreateSphere()
 	expected := math.CreateVector(0.0, 0.0, 1.0)
 
-	assert.Assert(t, expected.Equals(s.NormalAt(math.CreatePoint(0.0, 0.0, 1.0))))
+	assert.Assert(t, expected.Equals(s.NormalAt(math.CreatePoint(0.0, 0.0, 1.0), Intersection{})))
 }
 
 func TestNormalAtSphereNonaxialPoint(t *testing.T) {
 	s := CreateSphere()
 	expected := math.CreateVector(gomath.Sqrt(3.0)/3.0, gomath.Sqrt(3.0)/3.0, gomath.Sqrt(3.0)/3.0)
 
-	assert.Assert(t, expected.Equals(s.NormalAt(math.CreatePoint(gomath.Sqrt(3.0)/3.0, gomath.Sqrt(3.0)/3.0, gomath.Sqrt(3.0)/3.0))))
+	assert.Assert(t, expected.Equals(s.NormalAt(math.CreatePoint(gomath.Sqrt(3.0)/3.0, gomath.Sqrt(3.0)/3.0, gomath.Sqrt(3.0)/3.0), Intersection{})))
 }
 
 func TestNormalAtSphereIsNormalized(t *testing.T) {
 	s := CreateSphere()
 	expected := math.CreateVector(gomath.Sqrt(3.0)/3.0, gomath.Sqrt(3.0)/3.0, gomath.Sqrt(3.0)/3.0).Normalize()
 
-	assert.Assert(t, expected.Equals(s.NormalAt(math.CreatePoint(gomath.Sqrt(3.0)/3.0, gomath.Sqrt(3.0)/3.0, gomath.Sqrt(3.0)/3.0))))
+	assert.Assert(t, expected.Equals(s.NormalAt(math.CreatePoint(gomath.Sqrt(3.0)/3.0, gomath.Sqrt(3.0)/3.0, gomath.Sqrt(3.0)/3.0), Intersection{})))
 }
 
 func TestNormalAtSphereTranslated(t *testing.T) {
@@ -149,7 +149,7 @@ func TestNormalAtSphereTranslated(t *testing.T) {
 	s.SetTransform(math.Translation(0.0, 1.0, 0.0))
 	expected := math.CreateVector(0.0, 0.70711, -0.70711)
 
-	n := s.NormalAt(math.CreatePoint(0.0, 1.70711, -0.70711))
+	n := s.NormalAt(math.CreatePoint(0.0, 1.70711, -0.70711), Intersection{})
 	assert.Assert(t, expected.Equals(n))
 }
 
@@ -158,7 +158,7 @@ func TestNormalAtSphereTransformed(t *testing.T) {
 	s.SetTransform(math.Scaling(1.0, 0.5, 1.0).MulM(math.Rotation_Z(gomath.Pi / 5.0)))
 	expected := math.CreateVector(0.0, 0.97014, -0.24254)
 
-	n := s.NormalAt(math.CreatePoint(0.0, gomath.Sqrt(2)/2.0, -gomath.Sqrt(2)/2))
+	n := s.NormalAt(math.CreatePoint(0.0, gomath.Sqrt(2)/2.0, -gomath.Sqrt(2)/2), Intersection{})
 	assert.Assert(t, expected.Equals(n))
 }
 
