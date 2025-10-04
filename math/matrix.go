@@ -7,36 +7,17 @@ import (
 )
 
 type Matrix struct {
-	data      [][]float64
+	data      []float64
 	dimension int
-}
-
-func CreateMatrix(m [][]float64) Matrix {
-	return Matrix{
-		data:      m,
-		dimension: len(m),
-	}
 }
 
 func CreateMatrixFlat(m []float64) Matrix {
 	dim := int(math.Sqrt(float64(len(m))))
 
-	nestedMatrix := create2dArray(dim)
-
-	y := 0
-	for x, d := range m {
-		y = x / dim
-		nestedMatrix[y][x%dim] = d
-	}
-
 	return Matrix{
-		data:      nestedMatrix,
+		data:      m,
 		dimension: dim,
 	}
-}
-
-func (m Matrix) Get(x int, y int) float64 {
-	return m.data[x][y]
 }
 
 func (m Matrix) Equals(other Matrix) bool {
@@ -63,17 +44,17 @@ func (m Matrix) MulM(other Matrix) Matrix {
 		panic("matrix multiplication only implemented for matrices of dim 4")
 	}
 
-	mulData := create2dArray(m.dimension)
+	mulData := make([]float64, len(m.data))
 	for y := range m.dimension {
 		for x := range m.dimension {
-			mulData[x][y] = m.data[x][0]*other.data[0][y] +
-				m.data[x][1]*other.data[1][y] +
-				m.data[x][2]*other.data[2][y] +
-				m.data[x][3]*other.data[3][y]
+			mulData[CalculateFlatIndex(x, y, 4)] = m.Get(x, 0)*other.Get(0, y) +
+				m.Get(x, 1)*other.Get(1, y) +
+				m.Get(x, 2)*other.Get(2, y) +
+				m.Get(x, 3)*other.Get(3, y)
 		}
 	}
 
-	return CreateMatrix(mulData)
+	return CreateMatrixFlat(mulData)
 }
 
 func (m Matrix) MulT(t Tuple) Tuple {
@@ -82,49 +63,57 @@ func (m Matrix) MulT(t Tuple) Tuple {
 	}
 
 	return Tuple{
-		X: m.data[0][0]*t.X + m.data[0][1]*t.Y + m.data[0][2]*t.Z + m.data[0][3]*t.W,
-		Y: m.data[1][0]*t.X + m.data[1][1]*t.Y + m.data[1][2]*t.Z + m.data[1][3]*t.W,
-		Z: m.data[2][0]*t.X + m.data[2][1]*t.Y + m.data[2][2]*t.Z + m.data[2][3]*t.W,
-		W: m.data[3][0]*t.X + m.data[3][1]*t.Y + m.data[3][2]*t.Z + m.data[3][3]*t.W,
+		X: m.Get(0, 0)*t.X + m.Get(0, 1)*t.Y + m.Get(0, 2)*t.Z + m.Get(0, 3)*t.W,
+		Y: m.Get(1, 0)*t.X + m.Get(1, 1)*t.Y + m.Get(1, 2)*t.Z + m.Get(1, 3)*t.W,
+		Z: m.Get(2, 0)*t.X + m.Get(2, 1)*t.Y + m.Get(2, 2)*t.Z + m.Get(2, 3)*t.W,
+		W: m.Get(3, 0)*t.X + m.Get(3, 1)*t.Y + m.Get(3, 2)*t.Z + m.Get(3, 3)*t.W,
 	}
 }
 
+func (m Matrix) Get(row int, column int) float64 {
+	return m.data[row*m.dimension+column]
+}
+
+func CalculateFlatIndex(row int, column int, dimension int) int {
+	return row*dimension + column
+}
+
 func (m Matrix) Transpose() Matrix {
-	result := create2dArray(m.dimension)
+	result := make([]float64, len(m.data))
 
 	for y := range m.dimension {
 		for x := range m.dimension {
-			result[x][y] = m.data[y][x]
+			result[CalculateFlatIndex(x, y, m.dimension)] = m.Get(y, x)
 		}
 	}
 
-	return CreateMatrix(result)
+	return CreateMatrixFlat(result)
 }
 
 func (m *Matrix) Determinant() float64 {
 	result := 0.0
 	if m.dimension == 2 {
-		result = m.data[0][0]*m.data[1][1] - m.data[0][1]*m.data[1][0]
+		result = m.Get(0, 0)*m.Get(1, 1) - m.Get(0, 1)*m.Get(1, 0)
 	} else {
 		for column := range m.dimension {
-			result = result + m.data[0][column]*m.Cofactor(0, column)
+			result = result + m.Get(0, column)*m.Cofactor(0, column)
 		}
 	}
 	return result
 }
 
 func (m Matrix) Submatrix(row int, column int) Matrix {
-	if int(math.Max(float64(row), float64(column))) > m.dimension-1 {
-		panic(fmt.Sprintf("trying to create a submatrix with wrong parameters. dim: %v, row: %v, col: %v", m.dimension, row, column))
-	}
-
 	dataCopy := cloneMatrixData(m.data)
-	subData := slices.Delete(dataCopy, row, row+1)
-	for currentRow := range m.dimension - 1 {
-		subData[currentRow] = slices.Delete(subData[currentRow], column, column+1)
+	rowOffset := row * m.dimension
+	// delete the row
+	dataCopy = slices.Delete(dataCopy, rowOffset, rowOffset+m.dimension)
+	// delete the column
+	for currentDeleteIndex := 0; currentDeleteIndex < m.dimension-1; currentDeleteIndex++ {
+		deletionIndex := column + currentDeleteIndex*m.dimension - currentDeleteIndex
+		dataCopy = slices.Delete(dataCopy, deletionIndex, deletionIndex+1)
 	}
 
-	return CreateMatrix(subData)
+	return CreateMatrixFlat(dataCopy)
 }
 
 func (m Matrix) Minor(row int, column int) float64 {
@@ -147,45 +136,30 @@ func (m Matrix) IsInvertible() bool {
 }
 
 func (m Matrix) Inverse() Matrix {
-	if !m.IsInvertible() {
-		panic("trying to invert a non invertible matrix")
-	}
-
-	invertedData := create2dArray(m.dimension)
+	invertedData := make([]float64, len(m.data))
 	det := m.Determinant()
 
 	for row := range m.dimension {
 		for column := range m.dimension {
 			c := m.Cofactor(row, column)
-			invertedData[column][row] = c / det
+			invertedData[CalculateFlatIndex(column, row, m.dimension)] = c / det
 		}
 	}
 
-	return CreateMatrix(invertedData)
+	return CreateMatrixFlat(invertedData)
 }
 
 func IdentityMatrix() Matrix {
-	return CreateMatrix([][]float64{
-		{1.0, 0.0, 0.0, 0.0},
-		{0.0, 1.0, 0.0, 0.0},
-		{0.0, 0.0, 1.0, 0.0},
-		{0.0, 0.0, 0.0, 1.0},
+	return CreateMatrixFlat([]float64{
+		1.0, 0.0, 0.0, 0.0,
+		0.0, 1.0, 0.0, 0.0,
+		0.0, 0.0, 1.0, 0.0,
+		0.0, 0.0, 0.0, 1.0,
 	})
 }
 
-func create2dArray(d int) [][]float64 {
-	nestedMatrix := make([][]float64, d)
-	for i := range d {
-		nestedMatrix[i] = make([]float64, d)
-	}
-	return nestedMatrix
-}
-
-func cloneMatrixData(data [][]float64) [][]float64 {
-	result := make([][]float64, len(data))
-	for i := range data {
-		result[i] = make([]float64, len(data[i]))
-		copy(result[i], data[i])
-	}
+func cloneMatrixData(data []float64) []float64 {
+	result := make([]float64, len(data))
+	copy(result, data)
 	return result
 }

@@ -7,13 +7,13 @@ import (
 )
 
 func TestCreateMatrix(t *testing.T) {
-	data := [][]float64{
-		{1.0, 2.0, 3.0, 4.0},
-		{5.5, 6.5, 7.5, 8.5},
-		{9.0, 10.0, 11.0, 12.0},
-		{13.5, 14.5, 15.5, 16.5},
+	data := []float64{
+		1.0, 2.0, 3.0, 4.0,
+		5.5, 6.5, 7.5, 8.5,
+		9.0, 10.0, 11.0, 12.0,
+		13.5, 14.5, 15.5, 16.5,
 	}
-	m := CreateMatrix(data)
+	m := CreateMatrixFlat(data)
 
 	assert.Assert(t, m.Get(0, 0) == 1.0)
 	assert.Assert(t, m.Get(1, 1) == 6.5)

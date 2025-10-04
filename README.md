@@ -106,7 +106,7 @@ according to [this blog article](https://tavianator.com/2011/ray_box.html)
 ### Chapter 15
 ![Exercise 15](examples/chapter15_teapot.png)
 
-The performance is abysmal. The picture for chapter 15 took 90m to render on my beefy desktop PC.
+The performance is abysmal. The picture for chapter 15 took 31m to render on my beefy desktop PC.
 Most of the time (>50%) is used on Matrix.Determinant, because there is a massive amount of allocation in use.
 
 ## Outlook
@@ -116,8 +116,8 @@ These are the next steps for me:
 * Performance improvements
 * Scene descriptions in YAML format
 * Add test case for third possible face format in OBJ files
+* Implement an 'autofocus' on a shape, so that you don't have to manually position the camera to see an object
 
 Current ideas for performance improvements:
-* Make matrix data 1-dimensional instead of two dimensions. Reduces number of allocations.
-* Instead of deleting rows/cols in Matrix.Submatrix, hold a virtual dimension index that subsequent operations have to respect.
-Question: When would I reset that virtual dimension index?
+* Make matrix data 1-dimensional instead of two dimensions. Reduces number of allocations. => DONE, reduced compute from 90m to 30m on high
+poly teapot scene

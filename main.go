@@ -7,7 +7,8 @@ import (
 )
 
 func main() {
-	// f, err := os.Create("cpu.pprof")
+	// go tool pprof -http=":8000" ./cpu.pprof
+	// f, err := os.Create("cpu2.pprof")
 	// if err != nil {
 	// 	log.Fatal(err)
 	// }
@@ -16,7 +17,6 @@ func main() {
 	// defer pprof.StopCPUProfile()
 
 	begin := time.Now()
-	//
 	scene := render.CreateTeapotScene(400, 200)
 	end := time.Now()
 
@@ -25,7 +25,11 @@ func main() {
 
 	beginWrite := time.Now()
 	// high res, 400x200 => 5425s
-	scene.WriteFile("teapot_highres.ppm")
+	// high res, 400x200, amr => 1859s
+	// low res, 400x200, after matrix refactor => 75s
+	// low res, 400x200, amr, single thread => 236s
+	// low res, 400x200, amr, single thread, inverse cache => 300s, IIRC
+	scene.WriteFile("teapot_highres2.ppm")
 	endWrite := time.Now()
 
 	diffWrite := endWrite.Sub(beginWrite)
