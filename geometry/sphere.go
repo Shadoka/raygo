@@ -9,18 +9,20 @@ import (
 )
 
 type Sphere struct {
-	Id        string
-	Transform math.Matrix
-	Material  Material
-	Parent    *Group
+	Id               string
+	Transform        math.Matrix
+	Material         Material
+	Parent           *Group
+	InverseTransform *math.Matrix
 }
 
 func CreateSphere() *Sphere {
 	return &Sphere{
-		Id:        uuid.NewString(),
-		Transform: math.IdentityMatrix(),
-		Material:  DefaultMaterial(),
-		Parent:    nil,
+		Id:               uuid.NewString(),
+		Transform:        math.IdentityMatrix(),
+		Material:         DefaultMaterial(),
+		Parent:           nil,
+		InverseTransform: nil,
 	}
 }
 
@@ -73,7 +75,7 @@ func (s *Sphere) SetParent(g *Group) {
 func (sphere *Sphere) Intersect(ray Ray) []Intersection {
 	// the vector from the sphere's center, to the ray origin
 	// remember: the sphere is centered at the world origin
-	transformedRay := ray.Transform(sphere.Transform.Inverse())
+	transformedRay := ray.Transform(sphere.GetInverseTransform())
 	sphereToRay := transformedRay.Origin.Subtract(math.CreatePoint(0.0, 0.0, 0.0))
 
 	a := transformedRay.Direction.Dot(transformedRay.Direction)
@@ -103,4 +105,14 @@ func (s *Sphere) Bounds() *Bounds {
 		Minimum: math.CreatePoint(-1.0, -1.0, -1.0),
 		Maximum: math.CreatePoint(1.0, 1.0, 1.0),
 	}
+}
+
+func (s *Sphere) GetInverseTransform() math.Matrix {
+	if s.InverseTransform != nil {
+		return *s.InverseTransform
+	}
+
+	inverse := s.Transform.Inverse()
+	s.InverseTransform = &inverse
+	return *s.InverseTransform
 }

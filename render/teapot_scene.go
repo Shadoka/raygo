@@ -36,7 +36,7 @@ func CreateTeapotScene(width int, height int) *canvas.Canvas {
 	teapot := obj.ParseFile("resources/teapot_high.obj")
 	teapotGroup := teapot.ToGroup(true)
 	teapotMaterial := g.DefaultMaterial()
-	teapotMaterial.SetReflective(0.3)
+	teapotMaterial.SetReflective(0)
 	teapotGroup.SetMaterial(teapotMaterial)
 	teapotGroup.SetTransform(math.Rotation_X(-gomath.Pi / 2))
 

@@ -9,18 +9,20 @@ import (
 )
 
 type Plane struct {
-	Id        string
-	Transform math.Matrix
-	Material  Material
-	Parent    *Group
+	Id               string
+	Transform        math.Matrix
+	Material         Material
+	Parent           *Group
+	InverseTransform *math.Matrix
 }
 
 func CreatePlane() *Plane {
 	return &Plane{
-		Id:        uuid.NewString(),
-		Transform: math.IdentityMatrix(),
-		Material:  DefaultMaterial(),
-		Parent:    nil,
+		Id:               uuid.NewString(),
+		Transform:        math.IdentityMatrix(),
+		Material:         DefaultMaterial(),
+		Parent:           nil,
+		InverseTransform: nil,
 	}
 }
 
@@ -69,7 +71,7 @@ func (p *Plane) localPlaneNormalAt() math.Vector {
 }
 
 func (p *Plane) Intersect(ray Ray) []Intersection {
-	transformedRay := ray.Transform(p.Transform.Inverse())
+	transformedRay := ray.Transform(p.GetInverseTransform())
 	return p.localPlaneIntersect(transformedRay)
 }
 
@@ -90,4 +92,14 @@ func (p *Plane) Bounds() *Bounds {
 		Minimum: math.CreatePoint(gomath.Inf(-1), -0.1, gomath.Inf(-1)),
 		Maximum: math.CreatePoint(gomath.Inf(1), 0.1, gomath.Inf(1)),
 	}
+}
+
+func (p *Plane) GetInverseTransform() math.Matrix {
+	if p.InverseTransform != nil {
+		return *p.InverseTransform
+	}
+
+	inverse := p.Transform.Inverse()
+	p.InverseTransform = &inverse
+	return *p.InverseTransform
 }

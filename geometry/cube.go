@@ -9,18 +9,20 @@ import (
 )
 
 type Cube struct {
-	Id        string
-	Transform math.Matrix
-	Material  Material
-	Parent    *Group
+	Id               string
+	Transform        math.Matrix
+	Material         Material
+	Parent           *Group
+	InverseTransform *math.Matrix
 }
 
 func CreateCube() *Cube {
 	return &Cube{
-		Id:        uuid.NewString(),
-		Transform: math.IdentityMatrix(),
-		Material:  DefaultMaterial(),
-		Parent:    nil,
+		Id:               uuid.NewString(),
+		Transform:        math.IdentityMatrix(),
+		Material:         DefaultMaterial(),
+		Parent:           nil,
+		InverseTransform: nil,
 	}
 }
 
@@ -60,7 +62,7 @@ func (c *Cube) Equals(other Shape) bool {
 }
 
 func (c *Cube) Intersect(ray Ray) []Intersection {
-	transformedRay := ray.Transform(c.Transform.Inverse())
+	transformedRay := ray.Transform(c.GetInverseTransform())
 	b := c.Bounds()
 	return BoundingBoxIntersect(transformedRay, c, b.Minimum, b.Maximum)
 }
@@ -135,4 +137,14 @@ func (c *Cube) ScaledBounds() *Bounds {
 		Minimum: c.Transform.MulT(math.CreatePoint(-1.0, -1.0, -1.0)),
 		Maximum: c.Transform.MulT(math.CreatePoint(1.0, 1.0, 1.0)),
 	}
+}
+
+func (c *Cube) GetInverseTransform() math.Matrix {
+	if c.InverseTransform != nil {
+		return *c.InverseTransform
+	}
+
+	inverse := c.Transform.Inverse()
+	c.InverseTransform = &inverse
+	return *c.InverseTransform
 }

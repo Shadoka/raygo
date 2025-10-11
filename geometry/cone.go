@@ -9,24 +9,26 @@ import (
 )
 
 type Cone struct {
-	Id        string
-	Transform math.Matrix
-	Material  Material
-	Minimum   float64
-	Maximum   float64
-	Closed    bool
-	Parent    *Group
+	Id               string
+	Transform        math.Matrix
+	Material         Material
+	Minimum          float64
+	Maximum          float64
+	Closed           bool
+	Parent           *Group
+	InverseTransform *math.Matrix
 }
 
 func CreateCone() *Cone {
 	return &Cone{
-		Id:        uuid.NewString(),
-		Transform: math.IdentityMatrix(),
-		Material:  DefaultMaterial(),
-		Minimum:   gomath.Inf(-1),
-		Maximum:   gomath.Inf(1),
-		Closed:    false,
-		Parent:    nil,
+		Id:               uuid.NewString(),
+		Transform:        math.IdentityMatrix(),
+		Material:         DefaultMaterial(),
+		Minimum:          gomath.Inf(-1),
+		Maximum:          gomath.Inf(1),
+		Closed:           false,
+		Parent:           nil,
+		InverseTransform: nil,
 	}
 }
 
@@ -66,7 +68,7 @@ func (c *Cone) Equals(other Shape) bool {
 }
 
 func (c *Cone) Intersect(ray Ray) []Intersection {
-	transformedRay := ray.Transform(c.Transform.Inverse())
+	transformedRay := ray.Transform(c.GetInverseTransform())
 	return c.localConeIntersect(transformedRay)
 }
 
@@ -174,4 +176,14 @@ func (c *Cone) Bounds() *Bounds {
 		Minimum: math.CreatePoint(-1.0, c.Minimum, -1.0),
 		Maximum: math.CreatePoint(1.0, c.Maximum, 1.0),
 	}
+}
+
+func (c *Cone) GetInverseTransform() math.Matrix {
+	if c.InverseTransform != nil {
+		return *c.InverseTransform
+	}
+
+	inverse := c.Transform.Inverse()
+	c.InverseTransform = &inverse
+	return *c.InverseTransform
 }

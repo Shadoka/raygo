@@ -17,19 +17,14 @@ func main() {
 	// defer pprof.StopCPUProfile()
 
 	begin := time.Now()
-	scene := render.CreateTeapotScene(400, 200)
+	scene := render.CreateTeapotScene(1920, 1080)
 	end := time.Now()
 
 	diff := end.Sub(begin)
 	fmt.Printf("rendering took %v seconds\n", diff.Seconds())
 
 	beginWrite := time.Now()
-	// high res, 400x200 => 5425s
-	// high res, 400x200, amr => 1859s
-	// low res, 400x200, after matrix refactor => 75s
-	// low res, 400x200, amr, single thread => 236s
-	// low res, 400x200, amr, single thread, inverse cache => 300s, IIRC
-	scene.WriteFile("teapot_highres2.ppm")
+	scene.WriteFile("teapot_highres4.ppm")
 	endWrite := time.Now()
 
 	diffWrite := endWrite.Sub(beginWrite)

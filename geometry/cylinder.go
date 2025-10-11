@@ -9,24 +9,26 @@ import (
 )
 
 type Cylinder struct {
-	Id        string
-	Transform math.Matrix
-	Material  Material
-	Minimum   float64
-	Maximum   float64
-	Closed    bool
-	Parent    *Group
+	Id               string
+	Transform        math.Matrix
+	Material         Material
+	Minimum          float64
+	Maximum          float64
+	Closed           bool
+	Parent           *Group
+	InverseTransform *math.Matrix
 }
 
 func CreateCylinder() *Cylinder {
 	return &Cylinder{
-		Id:        uuid.NewString(),
-		Transform: math.IdentityMatrix(),
-		Material:  DefaultMaterial(),
-		Minimum:   gomath.Inf(-1.0),
-		Maximum:   gomath.Inf(1.0),
-		Closed:    false,
-		Parent:    nil,
+		Id:               uuid.NewString(),
+		Transform:        math.IdentityMatrix(),
+		Material:         DefaultMaterial(),
+		Minimum:          gomath.Inf(-1.0),
+		Maximum:          gomath.Inf(1.0),
+		Closed:           false,
+		Parent:           nil,
+		InverseTransform: nil,
 	}
 }
 
@@ -66,7 +68,7 @@ func (c *Cylinder) Equals(other Shape) bool {
 }
 
 func (c *Cylinder) Intersect(ray Ray) []Intersection {
-	transformedRay := ray.Transform(c.Transform.Inverse())
+	transformedRay := ray.Transform(c.GetInverseTransform())
 	return c.localCylinderIntersect(transformedRay)
 }
 
@@ -162,4 +164,14 @@ func (c *Cylinder) Bounds() *Bounds {
 		Minimum: math.CreatePoint(-1.0, c.Minimum, -1.0),
 		Maximum: math.CreatePoint(1.0, c.Maximum, 1.0),
 	}
+}
+
+func (c *Cylinder) GetInverseTransform() math.Matrix {
+	if c.InverseTransform != nil {
+		return *c.InverseTransform
+	}
+
+	inverse := c.Transform.Inverse()
+	c.InverseTransform = &inverse
+	return *c.InverseTransform
 }

@@ -16,17 +16,18 @@ type Shape interface {
 	GetParent() *Group
 	SetParent(g *Group)
 	Bounds() *Bounds
+	GetInverseTransform() math.Matrix
 }
 
 func WorldToObject(s Shape, p math.Point) math.Point {
 	if s.GetParent() != nil {
 		p = WorldToObject(s.GetParent(), p)
 	}
-	return s.GetTransform().Inverse().MulT(p)
+	return s.GetInverseTransform().MulT(p)
 }
 
 func NormalToWorld(s Shape, normal math.Vector) math.Vector {
-	normal = s.GetTransform().Inverse().Transpose().MulT(normal)
+	normal = s.GetInverseTransform().Transpose().MulT(normal)
 	normal.W = 0
 	normal = normal.Normalize()
 
