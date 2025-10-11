@@ -72,7 +72,7 @@ func (o *ObjData) PrintStats() {
 	fmt.Printf("Groups: %v\n", len(o.Groups))
 }
 
-func (o *ObjData) ToGroup() *geometry.Group {
+func (o *ObjData) ToGroup(preCalcBB bool) *geometry.Group {
 	root := geometry.EmptyGroup()
 	root.GetMaterial().SetShininess(50.0)
 
@@ -90,6 +90,10 @@ func (o *ObjData) ToGroup() *geometry.Group {
 			}
 		}
 		root.AddChild(grp)
+	}
+
+	if preCalcBB {
+		root.Bounds()
 	}
 
 	return root

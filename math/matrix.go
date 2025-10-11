@@ -1,7 +1,6 @@
 package math
 
 import (
-	"fmt"
 	"math"
 	"slices"
 )
@@ -36,14 +35,6 @@ func (m Matrix) Equals(other Matrix) bool {
 }
 
 func (m Matrix) MulM(other Matrix) Matrix {
-	if m.dimension != other.dimension {
-		panic(fmt.Sprintf("matrices have unequal dimensions: %v & %v", m.dimension, other.dimension))
-	}
-
-	if m.dimension != 4 {
-		panic("matrix multiplication only implemented for matrices of dim 4")
-	}
-
 	mulData := make([]float64, len(m.data))
 	for y := range m.dimension {
 		for x := range m.dimension {
@@ -58,10 +49,6 @@ func (m Matrix) MulM(other Matrix) Matrix {
 }
 
 func (m Matrix) MulT(t Tuple) Tuple {
-	if m.dimension != 4 {
-		panic("matrix/tuple multiplication only implemented for matrices of dim 4")
-	}
-
 	return Tuple{
 		X: m.Get(0, 0)*t.X + m.Get(0, 1)*t.Y + m.Get(0, 2)*t.Z + m.Get(0, 3)*t.W,
 		Y: m.Get(1, 0)*t.X + m.Get(1, 1)*t.Y + m.Get(1, 2)*t.Z + m.Get(1, 3)*t.W,
@@ -108,8 +95,8 @@ func (m Matrix) Submatrix(row int, column int) Matrix {
 	// delete the row
 	dataCopy = slices.Delete(dataCopy, rowOffset, rowOffset+m.dimension)
 	// delete the column
-	for currentDeleteIndex := 0; currentDeleteIndex < m.dimension-1; currentDeleteIndex++ {
-		deletionIndex := column + currentDeleteIndex*m.dimension - currentDeleteIndex
+	for i := 0; i < m.dimension-1; i++ {
+		deletionIndex := column + i*m.dimension - i
 		dataCopy = slices.Delete(dataCopy, deletionIndex, deletionIndex+1)
 	}
 

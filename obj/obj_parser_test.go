@@ -78,7 +78,7 @@ f 1 3 4
 	assert.Assert(t, len(objData.Normals) == 0)
 	assert.Assert(t, objData.IgnoredLines == 3)
 
-	object := objData.ToGroup()
+	object := objData.ToGroup(false)
 
 	assert.Assert(t, len(object.Children) == 2)
 	t1 := object.Children[0].(*geometry.Triangle)
@@ -115,7 +115,7 @@ f 1/2/3 3/4/5 4/5/6
 	assert.Assert(t, len(objData.Faces) == 2)
 	assert.Assert(t, objData.IgnoredLines == 4)
 
-	object := objData.ToGroup()
+	object := objData.ToGroup(false)
 
 	assert.Assert(t, len(object.Children) == 2)
 	t1 := object.Children[0].(*geometry.Triangle)
@@ -145,7 +145,7 @@ f 1 2 3 4 5
 	assert.Assert(t, len(objData.Faces) == 1)
 	assert.Assert(t, objData.IgnoredLines == 3)
 
-	object := objData.ToGroup()
+	object := objData.ToGroup(false)
 
 	assert.Assert(t, len(object.Children) == 3)
 	t1 := object.Children[0].(*geometry.Triangle)
@@ -183,7 +183,7 @@ f 1 3 4
 	assert.Assert(t, len(objData.Groups) == 2)
 	assert.Assert(t, objData.IgnoredLines == 3)
 
-	object := objData.ToGroup()
+	object := objData.ToGroup(false)
 
 	assert.Assert(t, len(object.Children) == 3)
 	t1 := object.Children[0].(*geometry.Triangle)

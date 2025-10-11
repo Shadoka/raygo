@@ -125,6 +125,5 @@ func (g *Group) Bounds() *Bounds {
 
 	alignedMinimumBB := FindMinimalContainingBoundingBox(nonAlignedBoundingBoxes)
 	g.CachedBoundingBox = alignedMinimumBB
-	//g.CachedBoundingBox = alignedMinimumBB.ApplyTransform(g.Transform)
 	return g.CachedBoundingBox
 }

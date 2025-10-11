@@ -7,7 +7,7 @@ import (
 	"raygo/math"
 )
 
-const MAX_REFLECTION_LIMIT = 8
+const MAX_REFLECTION_LIMIT = 4
 
 type World struct {
 	Objects []g.Shape
