@@ -17,7 +17,7 @@ func main() {
 	// defer pprof.StopCPUProfile()
 
 	begin := time.Now()
-	scene := render.CreateTeapotScene(1920, 1080)
+	scene := render.CreateTeapotScene(400, 200)
 	end := time.Now()
 
 	diff := end.Sub(begin)

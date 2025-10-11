@@ -50,10 +50,10 @@ func (m Matrix) MulM(other Matrix) Matrix {
 
 func (m Matrix) MulT(t Tuple) Tuple {
 	return Tuple{
-		X: m.Get(0, 0)*t.X + m.Get(0, 1)*t.Y + m.Get(0, 2)*t.Z + m.Get(0, 3)*t.W,
-		Y: m.Get(1, 0)*t.X + m.Get(1, 1)*t.Y + m.Get(1, 2)*t.Z + m.Get(1, 3)*t.W,
-		Z: m.Get(2, 0)*t.X + m.Get(2, 1)*t.Y + m.Get(2, 2)*t.Z + m.Get(2, 3)*t.W,
-		W: m.Get(3, 0)*t.X + m.Get(3, 1)*t.Y + m.Get(3, 2)*t.Z + m.Get(3, 3)*t.W,
+		X: m.data[0]*t.X + m.data[1]*t.Y + m.data[2]*t.Z + m.data[3]*t.W,
+		Y: m.data[4]*t.X + m.data[5]*t.Y + m.data[6]*t.Z + m.data[7]*t.W,
+		Z: m.data[8]*t.X + m.data[9]*t.Y + m.data[10]*t.Z + m.data[11]*t.W,
+		W: m.data[12]*t.X + m.data[13]*t.Y + m.data[14]*t.Z + m.data[15]*t.W,
 	}
 }
 
