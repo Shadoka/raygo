@@ -7,16 +7,18 @@ import (
 )
 
 type RingPattern struct {
-	ColorA    math.Color
-	ColorB    math.Color
-	Transform math.Matrix
+	ColorA           math.Color
+	ColorB           math.Color
+	Transform        math.Matrix
+	InverseTransform *math.Matrix
 }
 
 func CreateRingPattern(a math.Color, b math.Color) *RingPattern {
 	return &RingPattern{
-		ColorA:    a,
-		ColorB:    b,
-		Transform: math.IdentityMatrix(),
+		ColorA:           a,
+		ColorB:           b,
+		Transform:        math.IdentityMatrix(),
+		InverseTransform: nil,
 	}
 }
 
@@ -30,7 +32,7 @@ func (rp *RingPattern) ColorAt(point math.Point) math.Color {
 
 func (rp *RingPattern) ColorAtObject(point math.Point, obj Shape) math.Color {
 	objectPoint := WorldToObject(obj, point)
-	patternPoint := rp.GetTransform().Inverse().MulT(objectPoint)
+	patternPoint := rp.GetInverseTransform().MulT(objectPoint)
 
 	return rp.ColorAt(patternPoint)
 }
@@ -51,4 +53,14 @@ func (rp *RingPattern) Equals(other Pattern) bool {
 			rp.Transform.Equals(otherStruct.GetTransform())
 	}
 	return false
+}
+
+func (rp *RingPattern) GetInverseTransform() math.Matrix {
+	if rp.InverseTransform != nil {
+		return *rp.InverseTransform
+	}
+
+	inverse := rp.Transform.Inverse()
+	rp.InverseTransform = &inverse
+	return *rp.InverseTransform
 }

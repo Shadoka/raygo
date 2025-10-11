@@ -14,6 +14,7 @@ type Group struct {
 	Children          []Shape
 	Parent            *Group
 	CachedBoundingBox *Bounds
+	InverseTransform  *math.Matrix
 }
 
 func EmptyGroup() *Group {
@@ -24,6 +25,7 @@ func EmptyGroup() *Group {
 		Children:          make([]Shape, 0),
 		Parent:            nil,
 		CachedBoundingBox: nil,
+		InverseTransform:  nil,
 	}
 }
 
@@ -89,7 +91,7 @@ func (g *Group) Size() int {
 }
 
 func (g *Group) Intersect(ray Ray) []Intersection {
-	transformedRay := ray.Transform(g.Transform.Inverse())
+	transformedRay := ray.Transform(g.GetInverseTransform())
 	return g.localIntersect(transformedRay)
 }
 
@@ -126,4 +128,14 @@ func (g *Group) Bounds() *Bounds {
 	alignedMinimumBB := FindMinimalContainingBoundingBox(nonAlignedBoundingBoxes)
 	g.CachedBoundingBox = alignedMinimumBB
 	return g.CachedBoundingBox
+}
+
+func (g *Group) GetInverseTransform() math.Matrix {
+	if g.InverseTransform != nil {
+		return *g.InverseTransform
+	}
+
+	inverse := g.Transform.Inverse()
+	g.InverseTransform = &inverse
+	return *g.InverseTransform
 }

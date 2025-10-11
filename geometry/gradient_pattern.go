@@ -7,16 +7,18 @@ import (
 )
 
 type GradientPattern struct {
-	ColorA    math.Color
-	ColorB    math.Color
-	Transform math.Matrix
+	ColorA           math.Color
+	ColorB           math.Color
+	Transform        math.Matrix
+	InverseTransform *math.Matrix
 }
 
 func CreateGradientPattern(a math.Color, b math.Color) *GradientPattern {
 	return &GradientPattern{
-		ColorA:    a,
-		ColorB:    b,
-		Transform: math.IdentityMatrix(),
+		ColorA:           a,
+		ColorB:           b,
+		Transform:        math.IdentityMatrix(),
+		InverseTransform: nil,
 	}
 }
 
@@ -29,7 +31,7 @@ func (gp *GradientPattern) ColorAt(point math.Point) math.Color {
 
 func (gp *GradientPattern) ColorAtObject(point math.Point, obj Shape) math.Color {
 	objectPoint := WorldToObject(obj, point)
-	patternPoint := gp.GetTransform().Inverse().MulT(objectPoint)
+	patternPoint := gp.GetInverseTransform().MulT(objectPoint)
 
 	return gp.ColorAt(patternPoint)
 }
@@ -50,4 +52,14 @@ func (gp *GradientPattern) Equals(other Pattern) bool {
 			gp.Transform.Equals(otherStruct.GetTransform())
 	}
 	return false
+}
+
+func (gp *GradientPattern) GetInverseTransform() math.Matrix {
+	if gp.InverseTransform != nil {
+		return *gp.InverseTransform
+	}
+
+	inverse := gp.Transform.Inverse()
+	gp.InverseTransform = &inverse
+	return *gp.InverseTransform
 }

@@ -7,16 +7,18 @@ import (
 )
 
 type CheckerPattern struct {
-	ColorA    math.Color
-	ColorB    math.Color
-	Transform math.Matrix
+	ColorA           math.Color
+	ColorB           math.Color
+	Transform        math.Matrix
+	InverseTransform *math.Matrix
 }
 
 func CreateCheckerPattern(a math.Color, b math.Color) *CheckerPattern {
 	return &CheckerPattern{
-		ColorA:    a,
-		ColorB:    b,
-		Transform: math.IdentityMatrix(),
+		ColorA:           a,
+		ColorB:           b,
+		Transform:        math.IdentityMatrix(),
+		InverseTransform: nil,
 	}
 }
 
@@ -30,7 +32,7 @@ func (c *CheckerPattern) ColorAt(point math.Point) math.Color {
 
 func (c *CheckerPattern) ColorAtObject(point math.Point, obj Shape) math.Color {
 	objectPoint := WorldToObject(obj, point)
-	patternPoint := c.GetTransform().Inverse().MulT(objectPoint)
+	patternPoint := c.GetInverseTransform().MulT(objectPoint)
 
 	return c.ColorAt(patternPoint)
 }
@@ -51,4 +53,14 @@ func (c *CheckerPattern) Equals(other Pattern) bool {
 			c.Transform.Equals(otherStruct.GetTransform())
 	}
 	return false
+}
+
+func (c *CheckerPattern) GetInverseTransform() math.Matrix {
+	if c.InverseTransform != nil {
+		return *c.InverseTransform
+	}
+
+	inverse := c.Transform.Inverse()
+	c.InverseTransform = &inverse
+	return *c.InverseTransform
 }

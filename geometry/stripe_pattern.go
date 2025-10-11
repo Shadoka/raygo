@@ -7,16 +7,18 @@ import (
 )
 
 type StripePattern struct {
-	ColorA    math.Color
-	ColorB    math.Color
-	Transform math.Matrix
+	ColorA           math.Color
+	ColorB           math.Color
+	Transform        math.Matrix
+	InverseTransform *math.Matrix
 }
 
 func CreateStripePattern(a math.Color, b math.Color) *StripePattern {
 	return &StripePattern{
-		ColorA:    a,
-		ColorB:    b,
-		Transform: math.IdentityMatrix(),
+		ColorA:           a,
+		ColorB:           b,
+		Transform:        math.IdentityMatrix(),
+		InverseTransform: nil,
 	}
 }
 
@@ -29,7 +31,7 @@ func (sp *StripePattern) ColorAt(point math.Point) math.Color {
 
 func (sp *StripePattern) ColorAtObject(point math.Point, obj Shape) math.Color {
 	objectPoint := WorldToObject(obj, point)
-	patternPoint := sp.GetTransform().Inverse().MulT(objectPoint)
+	patternPoint := sp.GetInverseTransform().MulT(objectPoint)
 
 	return sp.ColorAt(patternPoint)
 }
@@ -50,4 +52,14 @@ func (sp *StripePattern) Equals(other Pattern) bool {
 			sp.Transform.Equals(concreteType.GetTransform())
 	}
 	return false
+}
+
+func (sp *StripePattern) GetInverseTransform() math.Matrix {
+	if sp.InverseTransform != nil {
+		return *sp.InverseTransform
+	}
+
+	inverse := sp.Transform.Inverse()
+	sp.InverseTransform = &inverse
+	return *sp.InverseTransform
 }
