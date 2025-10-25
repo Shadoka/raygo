@@ -128,6 +128,39 @@ f 1/2/3 3/4/5 4/5/6
 	assert.Assert(t, t2.P3.Equals(objData.GetV(4)))
 }
 
+func TestParseDataFaceEmptyTextureVertex(t *testing.T) {
+	input := `
+v 0 1 0
+v -1 0 0
+v 1 0 0
+
+vn -1.0 0.0 0.0
+vn 1.0 0.0 0.0
+vn 0.0 1.0 0.0
+
+f 1//3 2//1 3//2
+f 1/0/3 2/102/1 3/14/2
+`
+	objData := CreateObjData()
+	ParseData(objData, input)
+
+	assert.Assert(t, len(objData.Vertices) == 3)
+	assert.Assert(t, len(objData.Faces) == 2)
+	assert.Assert(t, objData.IgnoredLines == 4)
+
+	object := objData.ToGroup(false)
+
+	assert.Assert(t, len(object.Children) == 2)
+	t1 := object.Children[0].(*geometry.Triangle)
+	// t2 := object.Children[1].(*geometry.Triangle)
+	assert.Assert(t, t1.P1.Equals(objData.GetV(1)))
+	assert.Assert(t, t1.P2.Equals(objData.GetV(2)))
+	assert.Assert(t, t1.P3.Equals(objData.GetV(3)))
+	assert.Assert(t, t1.N1.Equals(objData.GetN(3)))
+	assert.Assert(t, t1.N2.Equals(objData.GetN(1)))
+	assert.Assert(t, t1.N3.Equals(objData.GetN(2)))
+}
+
 func TestParseDataTriangulation(t *testing.T) {
 	input := `
 v -1 1 0

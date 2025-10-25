@@ -63,10 +63,6 @@ func (t Tuple) Equals(other Tuple) bool {
 }
 
 func (t Tuple) Add(other Tuple) Tuple {
-	if t.W+other.W > 1 {
-		panic("tuple addition leads to w component > 1")
-	}
-
 	return Tuple{
 		X: t.X + other.X,
 		Y: t.Y + other.Y,

@@ -19,6 +19,11 @@ type Shape interface {
 	GetInverseTransform() math.Matrix
 }
 
+func GetCenter(s Shape) math.Point {
+	tfBounds := s.Bounds().ApplyTransform(s.GetTransform())
+	return tfBounds.Maximum.Add(tfBounds.Minimum).Mul(0.5)
+}
+
 func WorldToObject(s Shape, p math.Point) math.Point {
 	if s.GetParent() != nil {
 		p = WorldToObject(s.GetParent(), p)
