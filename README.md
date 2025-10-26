@@ -118,6 +118,7 @@ configurable:
 * Camera rotation in Radians
 * Duration of the movement in seconds
 * How many frames per second are to be rendered
+
 For still images it is easiest to set the duration to 1 and define via FPS parameter how many images you want
 to be rendered.
 
