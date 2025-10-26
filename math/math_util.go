@@ -28,3 +28,18 @@ func ClampToByte(n float64) uint64 {
 func BToF(c int) float64 {
 	return float64(c) / 255.0
 }
+
+// see https://gist.github.com/LyleScott/e36e08bfb23b1f87af68c9051f985302
+func RotateAroundPoint(toRotate Point, radians float64, rotationCenter Point) Point {
+	adjustedX := toRotate.X - rotationCenter.X
+	adjustedZ := toRotate.Z - rotationCenter.Z
+	cosRad := gomath.Cos(radians)
+	sinRad := gomath.Sin(radians)
+	rotatedX := rotationCenter.X + cosRad*adjustedX + sinRad*adjustedZ
+	rotatedZ := rotationCenter.Z + (-sinRad)*adjustedX + cosRad*adjustedZ
+	return CreatePoint(rotatedX, toRotate.Y, rotatedZ)
+}
+
+func Radians(degree float64) float64 {
+	return degree * (gomath.Pi / 180.0)
+}

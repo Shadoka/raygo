@@ -6,7 +6,6 @@ import (
 	"raygo/math"
 	"strconv"
 	"strings"
-	"time"
 )
 
 type Canvas struct {
@@ -81,17 +80,9 @@ func (c *Canvas) CreatePPMBody() string {
 }
 
 func (c *Canvas) WriteFile(location string) {
-	beginStringProcessing := time.Now()
 	fileContent := fmt.Sprintf("%v%v", c.CreatePPMHeader(), c.CreatePPMBody())
-	endStringProcessing := time.Now()
-	diffStringProcessing := endStringProcessing.Sub(beginStringProcessing)
-	fmt.Printf("string processing took %v seconds\n", diffStringProcessing.Seconds())
 
-	beginDiskWrite := time.Now()
 	err := os.WriteFile(location, []byte(fileContent), 0644)
-	endDiskWrite := time.Now()
-	diffDiskWrite := endDiskWrite.Sub(beginDiskWrite)
-	fmt.Printf("writing to disk took %v seconds\n", diffDiskWrite.Seconds())
 
 	if err != nil {
 		panic(err)

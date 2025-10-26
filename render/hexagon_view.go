@@ -48,7 +48,7 @@ func CreateHexagonScene(width int, height int) *canvas.Canvas {
 	from := math.CreatePoint(0.0, 2.5, -3.0)
 	to := math.CreatePoint(0.0, 0.5, 0.0)
 	up := math.CreateVector(0.0, 1.0, 0.0)
-	cam.SetTransform(math.ViewTransform(from, to, up))
+	cam.Position = scene.CreateCameraPosition(from, to, up)
 
 	return cam.RenderMultithreaded(w, height/2)
 }

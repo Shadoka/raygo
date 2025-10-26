@@ -17,18 +17,16 @@ func main() {
 	// defer pprof.StopCPUProfile()
 
 	begin := time.Now()
-	scene := render.CreateTeapotScene(400, 200)
+	images := render.CreateTeapotMultiframeScene(400, 200)
 	end := time.Now()
 
 	diff := end.Sub(begin)
 	fmt.Printf("rendering took %v seconds\n", diff.Seconds())
 
-	beginWrite := time.Now()
-	scene.WriteFile("teapot_highres4.ppm")
-	endWrite := time.Now()
-
-	diffWrite := endWrite.Sub(beginWrite)
-	fmt.Printf("writing file took %v seconds\n", diffWrite.Seconds())
+	baseFilename := "teapot_multi"
+	for i, image := range images {
+		image.WriteFile(baseFilename + fmt.Sprintf("_%v.ppm", i))
+	}
 
 	// begin := time.Now()
 	// teapot := obj.ParseFile("resources/teapot_high.obj")

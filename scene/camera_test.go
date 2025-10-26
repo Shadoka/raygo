@@ -96,10 +96,10 @@ func TestRender(t *testing.T) {
 	from := math.CreatePoint(0.0, 0.0, -5.0)
 	to := math.CreatePoint(0.0, 0.0, 0.0)
 	up := math.CreateVector(0.0, 1.0, 0.0)
-	c.SetTransform(math.ViewTransform(from, to, up))
+	c.Position = CreateCameraPosition(from, to, up)
 	expectedColor := math.CreateColor(0.38066, 0.47583, 0.2855)
 
-	canv := c.Render(w)
+	canv := c.RenderSinglethreaded(w)
 
 	assert.Assert(t, expectedColor.Equals(canv.GetPixelAt(5, 5)))
 }
@@ -144,4 +144,62 @@ func TestInvestigateAcneBug(t *testing.T) {
 	actual := w.ColorAt(r, MAX_REFLECTION_LIMIT)
 
 	assert.Assert(t, expected.Equals(actual))
+}
+
+func TestCameraPositionEquals(t *testing.T) {
+	from := math.CreatePoint(0.0, 25.0, -30.0)
+	to := math.CreatePoint(0.0, 0.0, 0.0)
+	up := math.CreateVector(0.0, 1.0, 0.0)
+	p1 := CreateCameraPosition(from, to, up)
+	p2 := CreateCameraPosition(from, to, up)
+
+	assert.Assert(t, p1.Equals(&p2))
+}
+
+func TestCameraPositionEqualsFailure(t *testing.T) {
+	from := math.CreatePoint(0.0, 25.0, -30.0)
+	to := math.CreatePoint(0.0, 0.0, 0.0)
+	up := math.CreateVector(0.0, 1.0, 0.0)
+	p1 := CreateCameraPosition(from, to, up)
+	to2 := math.CreatePoint(0.0, 1.0, 0.0)
+	p2 := CreateCameraPosition(from, to2, up)
+
+	assert.Assert(t, !p1.Equals(&p2))
+}
+
+func TestCreateAnimationStatesNoMovement(t *testing.T) {
+	cam := CreateCamera(400, 200, gomath.Pi/3.0)
+	from := math.CreatePoint(0.0, 25.0, -30.0)
+	to := math.CreatePoint(0.0, 0.0, 0.0)
+	up := math.CreateVector(0.0, 1.0, 0.0)
+	cam.Position = CreateCameraPosition(from, to, up)
+
+	cam.createAnimationStates()
+
+	assert.Assert(t, len(cam.PositionStates) == 1)
+	assert.Assert(t, cam.Position.Equals(&cam.PositionStates[0]))
+}
+
+func TestCreateAnimationStatesQuarterCircleMovement(t *testing.T) {
+	cam := CreateCamera(400, 200, gomath.Pi/3.0)
+	rotationDegrees := 90.0
+	from := math.CreatePoint(0.0, 25.0, -30.0)
+	to := math.CreatePoint(0.0, 0.0, 0.0)
+	up := math.CreateVector(0.0, 1.0, 0.0)
+	startPosition := CreateCameraPosition(from, to, up)
+	cam.Position = startPosition
+
+	// in our test case we have only 2 frames
+	// so 1 start position, 1 end position
+	endFrom := math.RotateAroundPoint(from, math.Radians(rotationDegrees), to)
+	endPosition := CreateCameraPosition(endFrom, to, up)
+
+	animation := CreateCameraAnimation(math.Radians(rotationDegrees), 1, 2)
+	cam.Animation = animation
+
+	cam.createAnimationStates()
+
+	assert.Assert(t, len(cam.PositionStates) == 2)
+	assert.Assert(t, startPosition.Equals(&cam.PositionStates[0]))
+	assert.Assert(t, endPosition.Equals(&cam.PositionStates[1]))
 }

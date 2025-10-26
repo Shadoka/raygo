@@ -81,9 +81,8 @@ func CreateCubeScene(width int, height int) *canvas.Canvas {
 	// slightly angled from top
 	from := math.CreatePoint(-9.0, -4.5, -6.0)
 	to := math.CreatePoint(0.0, -5.67, 0.0)
-
 	up := math.CreateVector(0.0, 1.0, 0.0)
-	cam.SetTransform(math.ViewTransform(from, to, up))
+	cam.Position = scene.CreateCameraPosition(from, to, up)
 
 	return cam.RenderMultithreaded(w, height/2)
 }

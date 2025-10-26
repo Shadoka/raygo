@@ -16,7 +16,23 @@ type Camera struct {
 	HalfWidth        float64
 	HalfHeight       float64
 	PixelSize        float64
-	InverseTransform *math.Matrix
+	Animation        *CameraAnimation
+	Position         CameraPosition
+	PositionStates   []CameraPosition
+	InverseTransform *math.Matrix // <-- invalidate cache after rendering of frame
+}
+
+// only circular motion around point for now
+type CameraAnimation struct {
+	FullMotionRadians float64
+	MovementTime      float64
+	TargetFps         float64
+}
+
+type CameraPosition struct {
+	From math.Point
+	To   math.Point
+	Up   math.Vector
 }
 
 func CreateCamera(hsize int, vsize int, fov float64) *Camera {
@@ -32,6 +48,31 @@ func CreateCamera(hsize int, vsize int, fov float64) *Camera {
 	return c
 }
 
+func CreateCameraAnimation(radians float64, time float64, fps float64) *CameraAnimation {
+	ca := &CameraAnimation{
+		FullMotionRadians: radians,
+		MovementTime:      time,
+		TargetFps:         fps,
+	}
+	return ca
+}
+
+func CreateCameraPosition(from math.Point, to math.Point, up math.Vector) CameraPosition {
+	cp := CameraPosition{
+		From: from,
+		To:   to,
+		Up:   up,
+	}
+	return cp
+}
+
+func (cp *CameraPosition) Equals(other *CameraPosition) bool {
+	return other != nil &&
+		cp.From.Equals(other.From) &&
+		cp.To.Equals(other.To) &&
+		cp.Up.Equals(other.Up)
+}
+
 func (c *Camera) calculateCameraProperties() {
 	halfView := gomath.Tan(c.FieldOfView / 2.0)
 	aspect := float64(c.Hsize) / float64(c.Vsize)
@@ -45,6 +86,36 @@ func (c *Camera) calculateCameraProperties() {
 	}
 
 	c.PixelSize = (c.HalfWidth * 2.0) / float64(c.Hsize)
+}
+
+// the initial camera position has to be set before calling this function
+func (c *Camera) createAnimationStates() {
+	if c.Animation == nil {
+		states := make([]CameraPosition, 0, 1)
+		states = append(states, c.Position)
+		c.PositionStates = states
+		return
+	}
+
+	totalFrames := c.Animation.MovementTime * c.Animation.TargetFps
+	// if I want to enable camera smoothing radianFrameDelta needs to be variable
+	// -1 because we start with the non-rotated starting position
+	radianFrameDelta := c.Animation.FullMotionRadians / (totalFrames - 1.0)
+	totalFramesInt := int(totalFrames)
+
+	states := make([]CameraPosition, 0, totalFramesInt)
+	states = append(states, c.Position)
+
+	for frameIndex := range totalFramesInt {
+		if frameIndex == 0 {
+			continue
+		}
+		previousFrom := states[frameIndex-1].From
+		currentFrameFrom := math.RotateAroundPoint(previousFrom, radianFrameDelta, c.Position.To)
+		states = append(states, CreateCameraPosition(currentFrameFrom, c.Position.To, c.Position.Up))
+	}
+
+	c.PositionStates = states
 }
 
 func (c *Camera) RayForPixel(x int, y int) g.Ray {
@@ -71,7 +142,23 @@ func (c *Camera) SetTransform(tf math.Matrix) {
 	c.Transform = tf
 }
 
-func (c *Camera) Render(w *World) *canvas.Canvas {
+func (c *Camera) Render(w *World, multithreaded bool) []*canvas.Canvas {
+	c.createAnimationStates()
+	images := make([]*canvas.Canvas, 0, len(c.PositionStates))
+	for _, currentPosition := range c.PositionStates {
+		c.Position = currentPosition
+		c.InverseTransform = nil
+		if multithreaded {
+			images = append(images, c.RenderMultithreaded(w, c.Hsize/2))
+		} else {
+			images = append(images, c.RenderSinglethreaded(w))
+		}
+	}
+	return images
+}
+
+func (c *Camera) RenderSinglethreaded(w *World) *canvas.Canvas {
+	c.Transform = math.ViewTransform(c.Position.From, c.Position.To, c.Position.Up)
 	canv := canvas.CreateCanvas(c.Hsize, c.Vsize)
 
 	for y := range c.Vsize {
@@ -86,6 +173,7 @@ func (c *Camera) Render(w *World) *canvas.Canvas {
 }
 
 func (c *Camera) RenderMultithreaded(w *World, workerThreads int) *canvas.Canvas {
+	c.Transform = math.ViewTransform(c.Position.From, c.Position.To, c.Position.Up)
 	var wg sync.WaitGroup
 	canv := canvas.CreateCanvas(c.Hsize, c.Vsize)
 

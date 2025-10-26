@@ -25,6 +25,11 @@ Go lang implementation of [The Ray Tracer Challenge](http://raytracerchallenge.c
 I don't think that I'll implement CSG, because I don't see the use case for myself at this point.
 Feel free to submit a PR though.
 
+## Custom improvements
+
+1. Performance optimisations (multithreaded rendering + caching)
+2. Camera movement & multi frame rendering
+
 ## Examples
 
 ### Chapter 5
@@ -106,10 +111,33 @@ according to [this blog article](https://tavianator.com/2011/ray_box.html)
 ### Chapter 15
 ![Exercise 15](examples/chapter15_teapot.png)
 
+### Multi frame rendering & camera movement
+
+It is now possible to define a simple, circular camera movement around a given point. Following parameters are
+configurable:
+* Camera rotation in Radians
+* Duration of the movement in seconds
+* How many frames per second are to be rendered
+For still images it is easiest to set the duration to 1 and define via FPS parameter how many images you want
+to be rendered.
+
+Here is an example with the following parameters:
+```golang
+animation := scene.CreateCameraAnimation(math.Radians(90), 1, 3)
+cam.Animation = animation
+```
+
+Image #1
+![Multiframe 1](examples/multiframe1.png)
+Image #2
+![Multiframe 1](examples/multiframe2.png)
+Image #3
+![Multiframe 1](examples/multiframe3.png)
+
 ## Outlook
 
 These are the next steps for me:
 
 * Scene descriptions in YAML format
-* Add test case for third possible face format in OBJ files
-* Implement an 'autofocus' on a shape, so that you don't have to manually position the camera to see an object
+* Camera smoothing for stop & start of movement
+* More sophisticated camera movement options (define anchor points and have the camera move to them in order)
