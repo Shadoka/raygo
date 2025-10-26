@@ -129,8 +129,10 @@ cam.Animation = animation
 
 Image #1
 ![Multiframe 1](examples/multiframe1.png)
+
 Image #2
 ![Multiframe 1](examples/multiframe2.png)
+
 Image #3
 ![Multiframe 1](examples/multiframe3.png)
 
