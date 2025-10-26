@@ -142,4 +142,5 @@ These are the next steps for me:
 
 * Scene descriptions in YAML format
 * Camera smoothing for stop & start of movement
+* Video output
 * More sophisticated camera movement options (define anchor points and have the camera move to them in order)
