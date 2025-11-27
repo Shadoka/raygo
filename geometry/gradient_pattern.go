@@ -46,7 +46,7 @@ func (gp *GradientPattern) GetTransform() math.Matrix {
 
 func (gp *GradientPattern) Equals(other Pattern) bool {
 	if reflect.TypeOf(gp) == reflect.TypeOf(other) {
-		otherStruct := other.(*StripePattern)
+		otherStruct := other.(*GradientPattern)
 		return gp.ColorA.Equals(otherStruct.ColorA) &&
 			gp.ColorB.Equals(otherStruct.ColorB) &&
 			gp.Transform.Equals(otherStruct.GetTransform())

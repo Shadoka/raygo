@@ -16,17 +16,26 @@ func main() {
 	// pprof.StartCPUProfile(f)
 	// defer pprof.StopCPUProfile()
 
+	// begin := time.Now()
+	// images := render.CreateTeapotMultiframeScene(400, 200)
+	// end := time.Now()
+
+	// diff := end.Sub(begin)
+	// fmt.Printf("rendering took %v seconds\n", diff.Seconds())
+
+	// baseFilename := "teapot_multi"
+	// for i, image := range images {
+	// 	image.WriteFile(baseFilename + fmt.Sprintf("_%v.ppm", i))
+	// }
+
 	begin := time.Now()
-	images := render.CreateTeapotMultiframeScene(400, 200)
+	image := render.CreateGradientPatternScene(400, 200)
 	end := time.Now()
 
 	diff := end.Sub(begin)
 	fmt.Printf("rendering took %v seconds\n", diff.Seconds())
 
-	baseFilename := "teapot_multi"
-	for i, image := range images {
-		image.WriteFile(baseFilename + fmt.Sprintf("_%v.ppm", i))
-	}
+	image.WriteFile("gradient_shadoka.ppm")
 
 	// begin := time.Now()
 	// teapot := obj.ParseFile("resources/teapot_high.obj")

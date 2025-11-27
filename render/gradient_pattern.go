@@ -75,5 +75,5 @@ func CreateGradientPatternScene(width int, height int) *canvas.Canvas {
 	up := math.CreateVector(0.0, 1.0, 0.0)
 	cam.Position = scene.CreateCameraPosition(from, to, up)
 
-	return cam.RenderSinglethreaded(w)
+	return cam.RenderMultithreaded(w, height/2)
 }

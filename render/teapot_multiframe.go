@@ -67,7 +67,7 @@ func CreateTeapotMultiframeScene(width int, height int) []*canvas.Canvas {
 	up := math.CreateVector(0.0, 1.0, 0.0)
 	cam.Position = scene.CreateCameraPosition(from, to, up)
 
-	animation := scene.CreateCameraAnimation(math.Radians(90), 1, 3)
+	animation := scene.CreateCameraAnimation(math.Radians(-90), 1, 3)
 	cam.Animation = animation
 
 	return cam.Render(w, true)
