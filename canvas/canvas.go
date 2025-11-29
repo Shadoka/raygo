@@ -2,6 +2,10 @@ package canvas
 
 import (
 	"fmt"
+	"image"
+	"image/color"
+	"image/png"
+	"log"
 	"os"
 	"raygo/math"
 	"strconv"
@@ -79,7 +83,7 @@ func (c *Canvas) CreatePPMBody() string {
 	return b.String()
 }
 
-func (c *Canvas) WriteFile(location string) {
+func (c *Canvas) WritePPM(location string) {
 	fileContent := fmt.Sprintf("%v%v", c.CreatePPMHeader(), c.CreatePPMBody())
 
 	err := os.WriteFile(location, []byte(fileContent), 0644)
@@ -87,6 +91,42 @@ func (c *Canvas) WriteFile(location string) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func (c *Canvas) WritePng(location string) {
+	img := c.CreateImage()
+
+	f, err := os.Create(location)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := png.Encode(f, img); err != nil {
+		f.Close()
+		log.Fatal(err)
+	}
+
+	if err := f.Close(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func (c *Canvas) CreateImage() *image.NRGBA {
+	img := image.NewNRGBA(image.Rect(0, 0, c.Width, c.Height))
+
+	for y := 0; y < c.Height; y++ {
+		for x := 0; x < c.Width; x++ {
+			rgbPixel := mapToTrueColor(c.GetPixelAt(x, y))
+			img.Set(x, y, color.NRGBA{
+				R: uint8(rgbPixel.r),
+				G: uint8(rgbPixel.g),
+				B: uint8(rgbPixel.b),
+				A: 255,
+			})
+		}
+	}
+
+	return img
 }
 
 func mapToTrueColor(mColor math.Color) ppmColor {

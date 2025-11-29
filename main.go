@@ -35,7 +35,7 @@ func main() {
 	diff := end.Sub(begin)
 	fmt.Printf("rendering took %v seconds\n", diff.Seconds())
 
-	image.WriteFile("gradient_shadoka.ppm")
+	image.WritePng("gradient_shadoka.png")
 
 	// begin := time.Now()
 	// teapot := obj.ParseFile("resources/teapot_high.obj")
