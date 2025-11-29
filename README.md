@@ -20,7 +20,6 @@ Go lang implementation of [The Ray Tracer Challenge](http://raytracerchallenge.c
 14. Groups ✔
 15. Triangles ✔
 16. Constructive Solid Geometry (CSG)
-17. Next Steps
 
 I don't think that I'll implement CSG, because I don't see the use case for myself at this point.
 Feel free to submit a PR though.
@@ -29,6 +28,8 @@ Feel free to submit a PR though.
 
 1. Performance optimisations (multithreaded rendering + caching)
 2. Camera movement & multi frame rendering
+3. PNG output
+4. GIF output
 
 ## Examples
 
@@ -136,6 +137,13 @@ Image #2
 
 Image #3
 ![Multiframe 1](examples/multiframe3.png)
+
+### GIF generation
+
+In conjunction with multi frame rendering it is now possible to output the result as a single GIF, instead
+of multiple images.
+
+![Teapot GIF](examples/teapot.gif)
 
 ## Outlook
 

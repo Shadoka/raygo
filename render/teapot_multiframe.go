@@ -10,7 +10,7 @@ import (
 	"raygo/scene"
 )
 
-func CreateTeapotMultiframeScene(width int, height int) []*canvas.Canvas {
+func CreateTeapotMultiframeScene(width int, height int, animation *scene.CameraAnimation) []*canvas.Canvas {
 	lightGray := math.CreateColor(0.9, 0.9, 0.9)
 	black := math.CreateColor(0.0, 0.0, 0.0)
 	red := math.CreateColor(0.9, 0.1, 0.1)
@@ -67,7 +67,6 @@ func CreateTeapotMultiframeScene(width int, height int) []*canvas.Canvas {
 	up := math.CreateVector(0.0, 1.0, 0.0)
 	cam.Position = scene.CreateCameraPosition(from, to, up)
 
-	animation := scene.CreateCameraAnimation(math.Radians(-90), 1, 3)
 	cam.Animation = animation
 
 	return cam.Render(w, true)

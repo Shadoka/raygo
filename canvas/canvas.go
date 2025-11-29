@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"image"
 	"image/color"
+	"image/color/palette"
+	"image/gif"
 	"image/png"
 	"log"
 	"os"
@@ -127,6 +129,54 @@ func (c *Canvas) CreateImage() *image.NRGBA {
 	}
 
 	return img
+}
+
+func (c *Canvas) CreatePalettedImage() *image.Paletted {
+	img := image.NewPaletted(image.Rect(0, 0, c.Width, c.Height), palette.Plan9)
+
+	for y := 0; y < c.Height; y++ {
+		for x := 0; x < c.Width; x++ {
+			rgbPixel := mapToTrueColor(c.GetPixelAt(x, y))
+			img.Set(x, y, color.NRGBA{
+				R: uint8(rgbPixel.r),
+				G: uint8(rgbPixel.g),
+				B: uint8(rgbPixel.b),
+				A: 255,
+			})
+		}
+	}
+
+	return img
+}
+
+func WriteGif(renderedImages []*Canvas, animationDuration float64, path string) {
+	if len(renderedImages) == 0 || animationDuration == 0.0 {
+		return
+	}
+
+	rgbImages := make([]*image.Paletted, 0, len(renderedImages))
+	delays := make([]int, 0, len(renderedImages))
+	// delay is given in 100ths of a second
+	singleDelay := int((animationDuration * 100) / float64(len(renderedImages)))
+
+	for _, renderedImage := range renderedImages {
+		rgbImages = append(rgbImages, renderedImage.CreatePalettedImage())
+		delays = append(delays, singleDelay)
+	}
+
+	f, err := os.Create(path)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer f.Close()
+
+	err = gif.EncodeAll(f, &gif.GIF{
+		Image: rgbImages,
+		Delay: delays,
+	})
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func mapToTrueColor(mColor math.Color) ppmColor {

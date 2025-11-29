@@ -2,7 +2,11 @@ package main
 
 import (
 	"fmt"
+	"raygo/canvas"
+	"raygo/math"
+	"raygo/obj"
 	"raygo/render"
+	"raygo/scene"
 	"time"
 )
 
@@ -16,18 +20,10 @@ func main() {
 	// pprof.StartCPUProfile(f)
 	// defer pprof.StopCPUProfile()
 
-	// begin := time.Now()
-	// images := render.CreateTeapotMultiframeScene(400, 200)
-	// end := time.Now()
+	RenderGif()
+}
 
-	// diff := end.Sub(begin)
-	// fmt.Printf("rendering took %v seconds\n", diff.Seconds())
-
-	// baseFilename := "teapot_multi"
-	// for i, image := range images {
-	// 	image.WriteFile(baseFilename + fmt.Sprintf("_%v.ppm", i))
-	// }
-
+func RenderSingleImage() {
 	begin := time.Now()
 	image := render.CreateGradientPatternScene(400, 200)
 	end := time.Now()
@@ -36,12 +32,42 @@ func main() {
 	fmt.Printf("rendering took %v seconds\n", diff.Seconds())
 
 	image.WritePng("gradient_shadoka.png")
+}
 
-	// begin := time.Now()
-	// teapot := obj.ParseFile("resources/teapot_high.obj")
-	// end := time.Now()
-	// diff := end.Sub(begin)
+func RenderMultipleImages() {
+	begin := time.Now()
+	anim := scene.CreateCameraAnimation(math.Radians(-90), 1, 3)
+	images := render.CreateTeapotMultiframeScene(400, 200, anim)
+	end := time.Now()
 
-	// fmt.Printf("parsing obj took %v seconds\n", diff.Seconds())
-	// teapot.PrintStats()
+	diff := end.Sub(begin)
+	fmt.Printf("rendering took %v seconds\n", diff.Seconds())
+
+	baseFilename := "teapot_multi"
+	for i, image := range images {
+		image.WritePPM(baseFilename + fmt.Sprintf("_%v.ppm", i))
+	}
+}
+
+func RenderGif() {
+	begin := time.Now()
+	animDuration := 5.0
+	anim := scene.CreateCameraAnimation(math.Radians(360), animDuration, 24)
+	images := render.CreateTeapotMultiframeScene(400, 200, anim)
+	end := time.Now()
+
+	diff := end.Sub(begin)
+	fmt.Printf("rendering took %v seconds\n", diff.Seconds())
+
+	canvas.WriteGif(images, animDuration, "teapot.gif")
+}
+
+func ReadOBJStats(path string) {
+	begin := time.Now()
+	teapot := obj.ParseFile(path)
+	end := time.Now()
+	diff := end.Sub(begin)
+
+	fmt.Printf("parsing obj took %v seconds\n", diff.Seconds())
+	teapot.PrintStats()
 }
