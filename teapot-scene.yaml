@@ -1,0 +1,24 @@
+colors:
+  - name: light_gray
+    r: 229
+    g: 229
+    b: 229
+  - name: black
+    r: 0
+    g: 0
+    b: 0
+  - name: red
+    r: 229
+    g: 25
+    b: 25
+  - name: burnt_umber
+    r: 110
+    g: 38
+    b: 14
+
+patterns:
+  checker:
+    - name: gray_black_pattern
+      colorA: light_gray
+      colorB: black
+
