@@ -16,9 +16,9 @@ colors:
     g: 38
     b: 14
 
-patterns:
-  checker:
-    - name: gray_black_pattern
-      colorA: light_gray
-      colorB: black
+# patterns:
+#   checker:
+#     - name: gray_black_pattern
+#       colorA: light_gray
+#       colorB: black
 
