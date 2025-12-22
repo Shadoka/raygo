@@ -16,9 +16,46 @@ colors:
     g: 38
     b: 14
 
-# patterns:
-#   checker:
-#     - name: gray_black_pattern
-#       colorA: light_gray
-#       colorB: black
+patterns:
+  checker:
+    - name: gray_black_pattern
+      colorA: light_gray
+      colorB: black
+      transforms:
+        - type: rotation
+          x: 90.0
+        - type: translation
+          x: 100.
+          y: 0.
+          z: 0.
+        - type: scaling
+          x: 1.4
+          z: 0.4
+        - type: shearing
+          y: 1.2
+          z: 9.3
 
+materials:
+  - name: black_mat
+    color: black
+    ambient: 0.1
+    diffuse: 0.2
+    specular: 0.3
+    shininess: 0.4
+    reflective: 0.5
+    transparency: 0.6
+    refractiveIndex: 0.7
+
+scene:
+  planes:
+  triangles:
+  cones:
+  cubes:
+  cylinders:
+  spheres:
+  group:
+    name: 
+    children:
+    parent:
+    transform:
+    material:
