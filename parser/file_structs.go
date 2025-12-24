@@ -5,6 +5,10 @@ type YamlDescription struct {
 	Materials []NamedMaterialModel `yaml:"materials"`
 	Patterns  PatternContainer     `yaml:"patterns"`
 	Scene     SceneContainer       `yaml:"scene"`
+	Light     LightModel           `yaml:"light"`
+	Camera    CameraModel          `yaml:"camera"`
+	Width     int                  `yaml:"width"`
+	Height    int                  `yaml:"height"`
 }
 
 type ColorModel struct {
@@ -23,10 +27,10 @@ type PatternContainer struct {
 
 // embedding struct
 type DualColorPattern struct {
-	Name       string            `yaml:"name"`
-	ColorA     string            `yaml:"colorA"`
-	ColorB     string            `yaml:"colorB"`
-	Transforms []*TransformModel `yaml:"transforms"`
+	Name       string           `yaml:"name"`
+	ColorA     string           `yaml:"colorA"`
+	ColorB     string           `yaml:"colorB"`
+	Transforms []TransformModel `yaml:"transforms"`
 }
 
 type CheckerPatternModel struct {
@@ -80,23 +84,27 @@ type PointModel struct {
 	Z float64
 }
 
+type VectorModel struct {
+	PointModel `yaml:",inline"`
+}
+
 type SceneContainer struct {
-	Planes    []*PlaneModel    `yaml:"planes"`
-	Cubes     []*CubeModel     `yaml:"cubes"`
-	Spheres   []*SphereModel   `yaml:"spheres"`
-	Groups    []*GroupModel    `yaml:"groups"`
-	Triangles []*TriangleModel `yaml:"triangles"`
-	Cylinders []*CylinderModel `yaml:"cylinders"`
-	Cones     []*ConeModel     `yaml:"cones"`
-	Objects   []*ObjectModel   `yaml:"objects"`
+	Planes    []PlaneModel    `yaml:"planes"`
+	Cubes     []CubeModel     `yaml:"cubes"`
+	Spheres   []SphereModel   `yaml:"spheres"`
+	Groups    []GroupModel    `yaml:"groups"`
+	Triangles []TriangleModel `yaml:"triangles"`
+	Cylinders []CylinderModel `yaml:"cylinders"`
+	Cones     []ConeModel     `yaml:"cones"`
+	Objects   []ObjectModel   `yaml:"objects"`
 }
 
 type CommonSceneObject struct {
-	Name       string            `yaml:"name"`
-	Parent     string            `yaml:"parent"`
-	Material   string            `yaml:"material"`
-	Transform  string            `yaml:"transform"`
-	Transforms []*TransformModel `yaml:"transforms"`
+	Name       string           `yaml:"name"`
+	Parent     string           `yaml:"parent"`
+	Material   string           `yaml:"material"`
+	Transform  string           `yaml:"transform"`
+	Transforms []TransformModel `yaml:"transforms"`
 }
 
 type PlaneModel struct {
@@ -118,9 +126,9 @@ type GroupModel struct {
 
 type TriangleModel struct {
 	CommonSceneObject `yaml:",inline"`
-	P1                PointModel `yaml:"p1"`
-	P2                PointModel `yaml:"p2"`
-	P3                PointModel `yaml:"p3"`
+	P1                *PointModel `yaml:"p1"`
+	P2                *PointModel `yaml:"p2"`
+	P3                *PointModel `yaml:"p3"`
 }
 
 type CylinderModel struct {
@@ -137,4 +145,22 @@ type ConeModel struct {
 type ObjectModel struct {
 	CommonSceneObject `yaml:",inline"`
 	File              string `yaml:"file"`
+}
+
+type LightModel struct {
+	Position  *PointModel `yaml:"p"`
+	Intensity *ColorModel `yaml:"intensity"`
+}
+
+type CircularCameraAnimation struct {
+	Radians float64 `yaml:"radians"`
+	Time    float64 `yaml:"timeSec"`
+}
+
+type CameraModel struct {
+	From      *PointModel              `yaml:"from"`
+	To        *PointModel              `yaml:"to"`
+	LookAt    string                   `yaml:"lookAt"`
+	Up        *VectorModel             `yaml:"up"`
+	Animation *CircularCameraAnimation `yaml:"animation"`
 }

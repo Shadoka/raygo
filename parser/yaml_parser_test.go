@@ -247,3 +247,33 @@ scene:
 	assert.Assert(t, desc.Scene.Objects[0].Transform == "rotate_right_90")
 	assert.Assert(t, desc.Scene.Objects[0].File == "../obj/test.obj")
 }
+
+func TestParseCamera(t *testing.T) {
+	yml := `
+width: 400
+height: 200
+camera:
+  from:
+    x: 0.0
+    y: 0.0
+    z: 0.0
+  to:
+    x: 1.0
+    y: 1.0
+    z: 1.0
+  up:
+    x: 0.0
+    y: 1.0
+    z: 0.0`
+
+	desc := ParseYaml(yml)
+
+	assert.Assert(t, desc != nil)
+	assert.Assert(t, desc.Width == 400)
+	assert.Assert(t, desc.Height == 200)
+	assert.Assert(t, desc.Camera.From.X == 0.0)
+	assert.Assert(t, desc.Camera.To.Y == 1.0)
+	assert.Assert(t, desc.Camera.Up.Y == 1.0)
+	assert.Assert(t, desc.Camera.LookAt == "")
+	assert.Assert(t, desc.Camera.Animation == nil)
+}
