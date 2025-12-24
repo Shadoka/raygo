@@ -74,8 +74,21 @@ type NamedMaterialModel struct {
 	Name          string `yaml:"name"`
 }
 
+type PointModel struct {
+	X float64
+	Y float64
+	Z float64
+}
+
 type SceneContainer struct {
-	Planes []*PlaneModel `yaml:"planes"`
+	Planes    []*PlaneModel    `yaml:"planes"`
+	Cubes     []*CubeModel     `yaml:"cubes"`
+	Spheres   []*SphereModel   `yaml:"spheres"`
+	Groups    []*GroupModel    `yaml:"groups"`
+	Triangles []*TriangleModel `yaml:"triangles"`
+	Cylinders []*CylinderModel `yaml:"cylinders"`
+	Cones     []*ConeModel     `yaml:"cones"`
+	Objects   []*ObjectModel   `yaml:"objects"`
 }
 
 type CommonSceneObject struct {
@@ -96,4 +109,32 @@ type SphereModel struct {
 
 type CubeModel struct {
 	CommonSceneObject `yaml:",inline"`
+}
+
+type GroupModel struct {
+	CommonSceneObject `yaml:",inline"`
+	Children          []string `yaml:"children"`
+}
+
+type TriangleModel struct {
+	CommonSceneObject `yaml:",inline"`
+	P1                PointModel `yaml:"p1"`
+	P2                PointModel `yaml:"p2"`
+	P3                PointModel `yaml:"p3"`
+}
+
+type CylinderModel struct {
+	CommonSceneObject `yaml:",inline"`
+	Minimum           float64 `yaml:"min"`
+	Maximum           float64 `yaml:"max"`
+	Closed            bool    `yaml:"closed"`
+}
+
+type ConeModel struct {
+	CylinderModel `yaml:",inline"`
+}
+
+type ObjectModel struct {
+	CommonSceneObject `yaml:",inline"`
+	File              string `yaml:"file"`
 }
