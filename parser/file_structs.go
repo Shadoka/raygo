@@ -454,7 +454,7 @@ func (patterns *PatternContainer) validate() []error {
 	return valResult
 }
 
-func (yml *YamlDescription) validate() []error {
+func (yml *YamlDescription) Validate() []error {
 	valResult := make([]error, 0)
 
 	if yml.Width <= 0 {

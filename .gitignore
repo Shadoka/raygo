@@ -2,3 +2,4 @@
 *.exe
 *.pprof
 raygo
+.vscode/

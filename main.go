@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"raygo/app"
 	"raygo/canvas"
 	"raygo/math"
 	"raygo/obj"
@@ -20,7 +22,26 @@ func main() {
 	// pprof.StartCPUProfile(f)
 	// defer pprof.StopCPUProfile()
 
-	RenderGif()
+	app.Run(os.Args)
+	// if fileFlagIndex := slices.Index(os.Args, "-f"); fileFlagIndex != -1 {
+	// 	if len(os.Args) <= fileFlagIndex+1 {
+	// 		panic("missing file path after -f flag")
+	// 	}
+	// 	data, err := os.ReadFile(os.Args[fileFlagIndex+1])
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+	// 	yml := parser.ParseYaml(string(data))
+	// 	validationResult := yml.Validate()
+	// 	validationResult = append(validationResult, parser.ValidateReferences(yml)...)
+	// 	if len(validationResult) != 0 {
+	// 		for i, vr := range validationResult {
+	// 			fmt.Printf("%v. %v\n", i, vr.Error())
+	// 		}
+	// 	}
+	// } else {
+	// 	RenderGif()
+	// }
 }
 
 func RenderSingleImage() {
