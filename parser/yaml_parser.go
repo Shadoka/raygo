@@ -3,9 +3,17 @@ package parser
 import (
 	"fmt"
 	"log"
+	"raygo/geometry"
+	"raygo/math"
+	"raygo/scene"
 
 	"github.com/goccy/go-yaml"
 )
+
+const SHEARING_TF = "shearing"
+const TRANSLATION_TF = "translation"
+const SCALING_TF = "scaling"
+const ROTATION_TF = "rotation"
 
 var yamlColors map[string]*NamedColorModel
 var yamlTransforms map[string]*NamedTransformModel
@@ -22,6 +30,12 @@ var yamlStripePatterns map[string]*StripePatternModel
 var yamlGradientPatterns map[string]*GradientPatternModel
 var yamlRingPatterns map[string]*RingPatternModel
 var yamlCheckerPatterns map[string]*CheckerPatternModel
+
+var raygoColors map[string]*math.Color
+var raygoMaterials map[string]*geometry.Material
+var raygoTransforms map[string]math.Matrix
+var raygoPatterns map[string]*geometry.Pattern
+var raygoShapes map[string]*geometry.Shape
 
 func ParseYaml(content string) *YamlDescription {
 	description := YamlDescription{}
@@ -263,4 +277,55 @@ func containsPattern(name string) bool {
 		yamlGradientPatterns[name] != nil ||
 		yamlRingPatterns[name] != nil ||
 		yamlCheckerPatterns[name] != nil
+}
+
+func CreateWorld(yml *YamlDescription) *scene.World {
+	world := scene.EmptyWorld()
+
+	createRaygoColors()
+	createRaygoTransformations()
+
+	return world
+}
+
+func createRaygoColors() {
+	raygoColors = make(map[string]*math.Color)
+	for _, v := range yamlColors {
+		rc := math.CreateColor(math.BToF(v.R), math.BToF(v.G), math.BToF(v.B))
+		raygoColors[v.Name] = &rc
+	}
+}
+
+func createRaygoTransformations() {
+	raygoTransforms = make(map[string]math.Matrix)
+	for name, ytf := range yamlTransforms {
+		tf, err := mapTransform(&ytf.TransformModel)
+		if err != nil {
+			panic(fmt.Sprintf("could not map transform '%v'", name))
+		}
+		raygoTransforms[name] = tf
+	}
+}
+
+func mapTransform(ymlTransform *TransformModel) (math.Matrix, error) {
+	switch ymlTransform.Type {
+	case SCALING_TF:
+		return math.Scaling(ymlTransform.X, ymlTransform.Y, ymlTransform.Z), nil
+	case TRANSLATION_TF:
+		return math.Translation(ymlTransform.X, ymlTransform.Y, ymlTransform.Z), nil
+	case SHEARING_TF:
+		return math.Shearing(ymlTransform.XY, ymlTransform.XZ, ymlTransform.YX, ymlTransform.YZ,
+			ymlTransform.ZX, ymlTransform.ZY), nil
+	case ROTATION_TF:
+		var tf math.Matrix
+		if ymlTransform.X != 0.0 {
+			tf = math.Rotation_X(ymlTransform.X)
+		} else if ymlTransform.Y != 0.0 {
+			tf = math.Rotation_Y(ymlTransform.Y)
+		} else {
+			tf = math.Rotation_Z(ymlTransform.Z)
+		}
+		return tf, nil
+	}
+	return math.Matrix{}, fmt.Errorf("unknown transform type '%v'", ymlTransform.Type)
 }

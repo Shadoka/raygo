@@ -61,6 +61,13 @@ type TransformModel struct {
 	X    float64 `yaml:"x"`
 	Y    float64 `yaml:"y"`
 	Z    float64 `yaml:"z"`
+	// hack for shearing
+	XY float64 `yaml:"xy"`
+	XZ float64 `yaml:"xz"`
+	YX float64 `yaml:"yx"`
+	YZ float64 `yaml:"yz"`
+	ZX float64 `yaml:"zx"`
+	ZY float64 `yaml:"zy"`
 }
 
 type NamedTransformModel struct {
