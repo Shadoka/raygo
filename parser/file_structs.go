@@ -76,15 +76,15 @@ type NamedTransformModel struct {
 }
 
 type MaterialModel struct {
-	Color           string  `yaml:"color"`
-	Pattern         string  `yaml:"pattern"`
-	Ambient         float64 `yaml:"ambient"`
-	Diffuse         float64 `yaml:"diffuse"`
-	Specular        float64 `yaml:"specular"`
-	Shininess       float64 `yaml:"shininess"`
-	Reflective      float64 `yaml:"reflective"`
-	Transparency    float64 `yaml:"transparency"`
-	RefractiveIndex float64 `yaml:"refractiveIndex"`
+	Color           string   `yaml:"color"`
+	Pattern         string   `yaml:"pattern"`
+	Ambient         *float64 `yaml:"ambient"`
+	Diffuse         *float64 `yaml:"diffuse"`
+	Specular        *float64 `yaml:"specular"`
+	Shininess       *float64 `yaml:"shininess"`
+	Reflective      *float64 `yaml:"reflective"`
+	Transparency    *float64 `yaml:"transparency"`
+	RefractiveIndex *float64 `yaml:"refractiveIndex"`
 }
 
 type NamedMaterialModel struct {
@@ -147,9 +147,9 @@ type TriangleModel struct {
 
 type CylinderModel struct {
 	CommonSceneObject `yaml:",inline"`
-	Minimum           float64 `yaml:"min"`
-	Maximum           float64 `yaml:"max"`
-	Closed            bool    `yaml:"closed"`
+	Minimum           *float64 `yaml:"min"`
+	Maximum           *float64 `yaml:"max"`
+	Closed            bool     `yaml:"closed"`
 }
 
 type ConeModel struct {
@@ -167,8 +167,9 @@ type LightModel struct {
 }
 
 type CircularCameraAnimation struct {
-	Radians float64 `yaml:"radians"`
+	Degrees float64 `yaml:"degrees"`
 	Time    float64 `yaml:"timeSec"`
+	Fps     float64 `yaml:"fps"`
 }
 
 type CameraModel struct {
@@ -253,12 +254,16 @@ func (obj *ObjectModel) validate() []error {
 func (c *CylinderModel) validate() []error {
 	valResult := make([]error, 0)
 
-	if c.Minimum == c.Maximum {
+	if c.Minimum == nil || c.Maximum == nil {
+		return valResult
+	}
+
+	if *c.Minimum == *c.Maximum {
 		err := fmt.Errorf("min of scene object '%v' is equal to max", c.Name)
 		valResult = append(valResult, err)
 	}
 
-	if c.Minimum > c.Maximum {
+	if *c.Minimum > *c.Maximum {
 		err := fmt.Errorf("min(%v) of scene object '%v' is greater than max(%v)", c.Minimum, c.Name, c.Maximum)
 		valResult = append(valResult, err)
 	}

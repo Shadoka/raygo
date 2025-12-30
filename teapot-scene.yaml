@@ -59,50 +59,50 @@ scene:
     - name: back_wall
       material: wall_mat
       transforms:
-        - type: rotation
-          x: 1.570796 # pi / 2
-        - type: translation
-          x: 0
-          y: 0
-          z: 40
-    - name: left_wall
-      material: wall_mat
-      transforms:
-        - type: rotation
-          x: 1.570796
-        - type: rotation
-          y: 1.570796
-        - type: translation
-          x: -40
-          y: 0
-          z: 0
-    - name: right_wall
-      material: wall_mat
-      transforms:
-        - type: rotation
-          x: 1.570796
-        - type: rotation
-          y: 1.570796
-        - type: translation
-          x: 40
-          y: 0
-          z: 0
-    - name: front_wall
-      material: wall_mat
-      transforms:
-        - type: rotation
-          x: 1.570796
         - type: translation
           x: 0
           y: 0
           z: -40
+        - type: rotation
+          x: 1.570796 # pi / 2
+    - name: left_wall
+      material: wall_mat
+      transforms:
+        - type: translation
+          x: -40
+          y: 0
+          z: 0
+        - type: rotation
+          y: 1.570796
+        - type: rotation
+          x: 1.570796
+    - name: right_wall
+      material: wall_mat
+      transforms:
+        - type: translation
+          x: 40
+          y: 0
+          z: 0
+        - type: rotation
+          y: 1.570796
+        - type: rotation
+          x: 1.570796
+    - name: front_wall
+      material: wall_mat
+      transforms:
+        - type: translation
+          x: 0
+          y: 0
+          z: 40
+        - type: rotation
+          x: 1.570796
   objects:
     - name: teapot
-      file: ./resources/teapot_high.obj
+      file: resources/teapot_high.obj
       material: teapot_mat
       transforms:
         - type: rotation
-          x: 1.570796
+          x: -1.570796
 
 light:
   p:
@@ -124,3 +124,7 @@ camera:
     x: 0
     y: 1
     z: 0
+  animation:
+    degrees: 90
+    timeSec: 1
+    fps: 3 

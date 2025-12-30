@@ -82,7 +82,7 @@ func TestParseMaterial(t *testing.T) {
 materials:
   - name: black_mat
     color: black
-    ambient: 0.1
+    #ambient: 0.1
     diffuse: 0.2
     specular: 0.3
     shininess: 0.4
@@ -98,13 +98,13 @@ materials:
 	assert.Assert(t, len(desc.Materials) == 1)
 	assert.Assert(t, desc.Materials[0].Name == "black_mat")
 	assert.Assert(t, desc.Materials[0].Pattern == "")
-	assert.Assert(t, desc.Materials[0].Ambient == 0.1)
-	assert.Assert(t, desc.Materials[0].Diffuse == 0.2)
-	assert.Assert(t, desc.Materials[0].Specular == 0.3)
-	assert.Assert(t, desc.Materials[0].Shininess == 0.4)
-	assert.Assert(t, desc.Materials[0].Reflective == 0.5)
-	assert.Assert(t, desc.Materials[0].Transparency == 0.6)
-	assert.Assert(t, desc.Materials[0].RefractiveIndex == 0.7)
+	assert.Assert(t, desc.Materials[0].Ambient == nil)
+	assert.Assert(t, *desc.Materials[0].Diffuse == 0.2)
+	assert.Assert(t, *desc.Materials[0].Specular == 0.3)
+	assert.Assert(t, *desc.Materials[0].Shininess == 0.4)
+	assert.Assert(t, *desc.Materials[0].Reflective == 0.5)
+	assert.Assert(t, *desc.Materials[0].Transparency == 0.6)
+	assert.Assert(t, *desc.Materials[0].RefractiveIndex == 0.7)
 }
 
 func TestParseSceneObject(t *testing.T) {
@@ -220,8 +220,8 @@ scene:
 	assert.Assert(t, desc.Scene.Cones[0].Name == "c1")
 	assert.Assert(t, desc.Scene.Cones[0].Material == "black_mat")
 	assert.Assert(t, desc.Scene.Cones[0].Transform == "rotate_right_90")
-	assert.Assert(t, desc.Scene.Cones[0].Minimum == 80.0)
-	assert.Assert(t, desc.Scene.Cones[0].Maximum == 100.0)
+	assert.Assert(t, *desc.Scene.Cones[0].Minimum == 80.0)
+	assert.Assert(t, *desc.Scene.Cones[0].Maximum == 100.0)
 	assert.Assert(t, desc.Scene.Cones[0].Closed == false)
 }
 
