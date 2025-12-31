@@ -28,129 +28,129 @@ width: 400
 height: 200
 
 colors:
-- name: light_gray
+  - name: light_gray
     r: 229
     g: 229
     b: 229
-- name: black
+  - name: black
     r: 0
     g: 0
     b: 0
-- name: red
+  - name: red
     r: 229
     g: 25
     b: 25
-- name: burnt_umber
+  - name: burnt_umber
     r: 110
     g: 38
     b: 14
 
 patterns:
-checker:
+  checker:
     - name: gray_black_pattern
-    colorA: light_gray
-    colorB: black
-    transforms:
+      colorA: light_gray
+      colorB: black
+      transforms:
         - type: scaling
-        x: 0.33
-        y: 0.33
-        z: 0.33
-stripe:
+          x: 0.33
+          y: 0.33
+          z: 0.33
+  stripe:
     - name: umber_red_stripe
-    colorA: burnt_umber
-    colorB: red
+      colorA: burnt_umber
+      colorB: red
 
 materials:
-- name: ceiling_mat
+  - name: ceiling_mat
     pattern: gray_black_pattern
-- name: floor_mat
+  - name: floor_mat
     pattern: gray_black_pattern
     reflective: 0.3
-- name: wall_mat
+  - name: wall_mat
     pattern: umber_red_stripe
-- name: teapot_mat
+  - name: teapot_mat
     reflective: 0.0
 
 scene:
-planes:
+  planes:
     - name: floor
-    material: floor_mat
+      material: floor_mat
     - name: ceiling
-    material: ceiling_mat
-    transforms:
+      material: ceiling_mat
+      transforms:
         - type: translation
-        x: 0
-        y: 40
-        z: 0
+          x: 0
+          y: 40
+          z: 0
     - name: back_wall
-    material: wall_mat
-    transforms:
+      material: wall_mat
+      transforms:
         - type: translation
-        x: 0
-        y: 0
-        z: -40
+          x: 0
+          y: 0
+          z: -40
         - type: rotation
-        x: 1.570796 # pi / 2
+          x: 1.570796 # pi / 2
     - name: left_wall
-    material: wall_mat
-    transforms:
+      material: wall_mat
+      transforms:
         - type: translation
-        x: -40
-        y: 0
-        z: 0
+          x: -40
+          y: 0
+          z: 0
         - type: rotation
-        y: 1.570796
+          y: 1.570796
         - type: rotation
-        x: 1.570796
+          x: 1.570796
     - name: right_wall
-    material: wall_mat
-    transforms:
+      material: wall_mat
+      transforms:
         - type: translation
-        x: 40
-        y: 0
-        z: 0
+          x: 40
+          y: 0
+          z: 0
         - type: rotation
-        y: 1.570796
+          y: 1.570796
         - type: rotation
-        x: 1.570796
+          x: 1.570796
     - name: front_wall
-    material: wall_mat
-    transforms:
+      material: wall_mat
+      transforms:
         - type: translation
-        x: 0
-        y: 0
-        z: 40
+          x: 0
+          y: 0
+          z: 40
         - type: rotation
-        x: 1.570796
-objects:
+          x: 1.570796
+  objects:
     - name: teapot
-    file: resources/teapot_high.obj
-    material: teapot_mat
-    transforms:
+      file: resources/teapot_high.obj
+      material: teapot_mat
+      transforms:
         - type: rotation
-        x: -1.570796
+          x: -1.570796
 
 light:
-p:
+  p:
     x: -3
     y: 30
     z: -20
-intensity:
+  intensity:
     r: 255
     g: 255
     b: 255
 
 camera:
-from:
+  from:
     x: 0
     y: 25
     z: -30
-lookAt: teapot
-up:
+  lookAt: teapot
+  up:
     x: 0
     y: 1
     z: 0
-animation:
+  animation:
     degrees: 360
     timeSec: 5
     fps: 24
