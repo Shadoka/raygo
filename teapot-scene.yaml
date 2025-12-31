@@ -124,7 +124,7 @@ camera:
     x: 0
     y: 1
     z: 0
-  animation:
-    degrees: 90
-    timeSec: 1
-    fps: 3 
+  # animation:
+  #   degrees: 360
+  #   timeSec: 5
+  #   fps: 24

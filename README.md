@@ -1,155 +1,158 @@
 ## raygo
 
-Go lang implementation of [The Ray Tracer Challenge](http://raytracerchallenge.com/)
+raygo is a CPU implemented raytracer with a YAML description interface. The algorithms are based on the book
+by Jamis Buck [The Ray Tracer Challenge](http://raytracerchallenge.com/).
 
-## Implementation progress
+Images can be rendered as still images (PPM (default) and PNG) or as GIFs. For GIF rendering you need to
+describe an animation in your description.
 
-1. Tuples, Points and Vectors ✔
-2. Drawing on a Canvas ✔
-3. Matrices ✔
-4. Matrix Transformations ✔
-5. Ray-Sphere Intersections ✔
-6. Light and Shading ✔
-7. Making a Scene ✔
-8. Shadows ✔
-9. Planes ✔
-10. Patterns ✔
-11. Reflection and Refraction ✔
-12. Cubes ✔
-13. Cylinders ✔
-14. Groups ✔
-15. Triangles ✔
-16. Constructive Solid Geometry (CSG)
+Below a table of available commands and one example with corresponding YAML description. The rest of this
+documentation will be about the elements that you can use in your YAML descriptions.
 
-I don't think that I'll implement CSG, because I don't see the use case for myself at this point.
-Feel free to submit a PR though.
+| Command |  Description  | Example | Mandatory? |
+|:-----|:--------|:--------|:--------|
+| -f <path>   | Input YAML file | `./raygo -f teapot-scene.yaml` | ✔️ |
+| -o <name>   |  Output file name  | `./raygo -f teapot-scene.yaml -o teapot` | ✖️ (default: 'default') |
+| --png   |  Flag for PNG format  | `./raygo -f teapot-scene.yaml -o teapot --png` | ✖️ (default: ppm) |
 
-## Custom improvements
-
-1. Performance optimisations (multithreaded rendering + caching)
-2. Camera movement & multi frame rendering
-3. PNG output
-4. GIF output
-
-## Examples
-
-### Chapter 5
-![Exercise 5](examples/chapter5.png)
-
-Drawing of a sphere via ray-sphere intersections.
-
-### Chapter 6
-![Exercise 6](examples/chapter6.png)
-
-Drawing of a sphere with lightning via phong shader.
-
-### Chapter 7
-![Exercise 7](examples/chapter7.png)
-
-Scene drawn from the viewpoint of a camera
-
-### Chapter 8
-![Exercise 8](examples/chapter8.png)
-
-Shapes now cast shadows
-
-### Chapter 9
-![Exercise 9](examples/chapter9.png)
-
-Plane got added as additional shape
-
-![Exercise 9 with backdrop](examples/chapter9_backdrop.png)
-
-An additional plane got added as backdrop.
-
-I think the reason why the ground looks so much darker is because I lowered the light. The flat reflection angle is probably why
-the floor looks so dark compared with the other image.
-
-The following image is fundamentally the same besides the light being higher.
-
-![Exercise 9 with backdrop and higher light](examples/chapter9_backdrop_higherlight.png)
-
-### Chapter 10
-![Exercise 10](examples/chapter10_stripes.png)
-
-Spheres with attached stripe patterns
-
-![Exercise 10](examples/chapter10_gradients.png)
-
-Spheres with attached gradient patterns
-
-![Exercise 10](examples/chapter10_patterns.png)
-
-Multiple patterns at once
-
-### Chapter 11
-![Exercise 11](examples/chapter11_reflections.png)
-
-Material can now be reflective
-
-![Exercise 11](examples/chapter11_refractions.png)
-
-A glass sphere on the outside that contains a sphere of air in the inside
-
-### Chapter 12
-![Exercise 12](examples/chapter12_cubes.png)
-
-Cubes got added as shapes
-
-### Chapter 13
-![Exercise 13](examples/chapter13_cylinders.png)
-
-Cylinders and cones got added
-
-### Chapter 14
-![Exercise 14](examples/chapter14_groups.png)
-
-Groups are now added, allowing for creating reusable complex shapes and performance improvements.
-
-The implementation differs slightly from the book. The implementation of the bounding box intersection is
-according to [this blog article](https://tavianator.com/2011/ray_box.html)
-
-### Chapter 15
-![Exercise 15](examples/chapter15_teapot.png)
-
-### Multi frame rendering & camera movement
-
-It is now possible to define a simple, circular camera movement around a given point. Following parameters are
-configurable:
-* Camera rotation in Radians
-* Duration of the movement in seconds
-* How many frames per second are to be rendered
-
-For still images it is easiest to set the duration to 1 and define via FPS parameter how many images you want
-to be rendered.
-
-Here is an example with the following parameters:
-```golang
-animation := scene.CreateCameraAnimation(math.Radians(90), 1, 3)
-cam.Animation = animation
-```
-
-Image #1
-![Multiframe 1](examples/multiframe1.png)
-
-Image #2
-![Multiframe 1](examples/multiframe2.png)
-
-Image #3
-![Multiframe 1](examples/multiframe3.png)
-
-### GIF generation
-
-In conjunction with multi frame rendering it is now possible to output the result as a single GIF, instead
-of multiple images.
+Example:
 
 ![Teapot GIF](examples/teapot.gif)
 
-## Outlook
+<details>
 
-These are the next steps for me:
+<summary>YAML to generate this GIF</summary>
 
-* Scene descriptions in YAML format
-* Camera smoothing for stop & start of movement
-* Video output
-* More sophisticated camera movement options (define anchor points and have the camera move to them in order)
+```yaml
+width: 400
+height: 200
+
+colors:
+- name: light_gray
+    r: 229
+    g: 229
+    b: 229
+- name: black
+    r: 0
+    g: 0
+    b: 0
+- name: red
+    r: 229
+    g: 25
+    b: 25
+- name: burnt_umber
+    r: 110
+    g: 38
+    b: 14
+
+patterns:
+checker:
+    - name: gray_black_pattern
+    colorA: light_gray
+    colorB: black
+    transforms:
+        - type: scaling
+        x: 0.33
+        y: 0.33
+        z: 0.33
+stripe:
+    - name: umber_red_stripe
+    colorA: burnt_umber
+    colorB: red
+
+materials:
+- name: ceiling_mat
+    pattern: gray_black_pattern
+- name: floor_mat
+    pattern: gray_black_pattern
+    reflective: 0.3
+- name: wall_mat
+    pattern: umber_red_stripe
+- name: teapot_mat
+    reflective: 0.0
+
+scene:
+planes:
+    - name: floor
+    material: floor_mat
+    - name: ceiling
+    material: ceiling_mat
+    transforms:
+        - type: translation
+        x: 0
+        y: 40
+        z: 0
+    - name: back_wall
+    material: wall_mat
+    transforms:
+        - type: translation
+        x: 0
+        y: 0
+        z: -40
+        - type: rotation
+        x: 1.570796 # pi / 2
+    - name: left_wall
+    material: wall_mat
+    transforms:
+        - type: translation
+        x: -40
+        y: 0
+        z: 0
+        - type: rotation
+        y: 1.570796
+        - type: rotation
+        x: 1.570796
+    - name: right_wall
+    material: wall_mat
+    transforms:
+        - type: translation
+        x: 40
+        y: 0
+        z: 0
+        - type: rotation
+        y: 1.570796
+        - type: rotation
+        x: 1.570796
+    - name: front_wall
+    material: wall_mat
+    transforms:
+        - type: translation
+        x: 0
+        y: 0
+        z: 40
+        - type: rotation
+        x: 1.570796
+objects:
+    - name: teapot
+    file: resources/teapot_high.obj
+    material: teapot_mat
+    transforms:
+        - type: rotation
+        x: -1.570796
+
+light:
+p:
+    x: -3
+    y: 30
+    z: -20
+intensity:
+    r: 255
+    g: 255
+    b: 255
+
+camera:
+from:
+    x: 0
+    y: 25
+    z: -30
+lookAt: teapot
+up:
+    x: 0
+    y: 1
+    z: 0
+animation:
+    degrees: 360
+    timeSec: 5
+    fps: 24
+```
+</details>

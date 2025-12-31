@@ -318,7 +318,9 @@ func CreateCamera(yml *YamlDescription) scene.Camera {
 
 	up := math.CreateVector(0.0, 1.0, 0.0)
 	camera.Position = scene.CreateCameraPosition(from, to, up)
-	camera.Animation = createCameraAnimation(yml.Camera.Animation)
+	if yml.Camera.Animation != nil {
+		camera.Animation = createCameraAnimation(yml.Camera.Animation)
+	}
 
 	return *camera
 }
@@ -589,7 +591,7 @@ func createRaygoTriangles() {
 
 func createRaygoObjects(directory string) {
 	for name, yo := range yamlObjects {
-		objData := obj.ParseFile(fmt.Sprintf("%v/%v", directory, yo.File))
+		objData := obj.ParseFile(fmt.Sprintf("%v%v", directory, yo.File))
 		objGroup := objData.ToGroup(true)
 
 		if yo.Transform != "" {
