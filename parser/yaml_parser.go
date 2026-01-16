@@ -377,12 +377,21 @@ func mapTransform(ymlTransform *TransformModel) (math.Matrix, error) {
 			ymlTransform.ZX, ymlTransform.ZY), nil
 	case ROTATION_TF:
 		var tf math.Matrix
-		if ymlTransform.X != 0.0 {
-			tf = math.Rotation_X(ymlTransform.X)
-		} else if ymlTransform.Y != 0.0 {
-			tf = math.Rotation_Y(ymlTransform.Y)
+		
+		xRotation := ymlTransform.X
+		yRotation := ymlTransform.Y
+		zRotation := ymlTransform.Z
+		
+		xRotation = xRotation * gomath.Pi / 180.0
+		yRotation = yRotation * gomath.Pi / 180.0
+		zRotation = zRotation * gomath.Pi / 180.0
+
+		if xRotation != 0.0 {
+			tf = math.Rotation_X(xRotation)
+		} else if yRotation != 0.0 {
+			tf = math.Rotation_Y(yRotation)
 		} else {
-			tf = math.Rotation_Z(ymlTransform.Z)
+			tf = math.Rotation_Z(zRotation)
 		}
 		return tf, nil
 	}
