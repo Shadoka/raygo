@@ -64,7 +64,7 @@ scene:
           y: 0
           z: -40
         - type: rotation
-          x: 1.570796 # pi / 2
+          x: 90 # pi / 2
     - name: left_wall
       material: wall_mat
       transforms:
@@ -73,9 +73,9 @@ scene:
           y: 0
           z: 0
         - type: rotation
-          y: 1.570796
+          y: 90
         - type: rotation
-          x: 1.570796
+          x: 90
     - name: right_wall
       material: wall_mat
       transforms:
@@ -84,9 +84,9 @@ scene:
           y: 0
           z: 0
         - type: rotation
-          y: 1.570796
+          y: 90
         - type: rotation
-          x: 1.570796
+          x: 90
     - name: front_wall
       material: wall_mat
       transforms:
@@ -95,14 +95,14 @@ scene:
           y: 0
           z: 40
         - type: rotation
-          x: 1.570796
+          x: 90
   objects:
     - name: teapot
       file: resources/teapot_high.obj
       material: teapot_mat
       transforms:
         - type: rotation
-          x: -1.570796
+          x: -90
 
 light:
   p:
