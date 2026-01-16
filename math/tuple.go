@@ -1,6 +1,7 @@
 package math
 
 import (
+	"fmt"
 	gomath "math"
 )
 
@@ -153,4 +154,8 @@ func (c Color) Blend(other Color) Color {
 
 func (v Vector) Reflect(n Vector) Vector {
 	return v.Subtract(n.Mul(2.0).Mul(v.Dot(n)))
+}
+
+func (p Point) ToString() string {
+	return fmt.Sprintf("(%v, %v, %v)", p.X, p.Y, p.Z)
 }

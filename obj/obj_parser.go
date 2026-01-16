@@ -66,10 +66,14 @@ func CreateObjGroup() *ObjGroup {
 }
 
 func (o *ObjData) PrintStats() {
+	objBounds := o.ToGroup(true).Bounds()
 	fmt.Printf("Vertices: %v\n", len(o.Vertices))
 	fmt.Printf("Faces(root): %v\n", len(o.Faces))
 	fmt.Printf("Normals: %v\n", len(o.Normals))
 	fmt.Printf("Groups: %v\n", len(o.Groups))
+	fmt.Printf("Bounds:\n")
+	fmt.Printf("\tMin: %v\n", objBounds.Minimum.ToString())
+	fmt.Printf("\tMax: %v\n", objBounds.Maximum.ToString())
 }
 
 func (o *ObjData) ToGroup(preCalcBB bool) *geometry.Group {

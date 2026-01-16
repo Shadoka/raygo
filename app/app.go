@@ -4,9 +4,18 @@ import (
 	"fmt"
 	"os"
 	"raygo/canvas"
+	"raygo/obj"
 	"raygo/parser"
 	"slices"
 	"strings"
+)
+
+type FileType int
+
+const (
+	OBJ FileType = iota
+	YAML
+	UNKNOWN
 )
 
 func Run(args []string) {
@@ -16,30 +25,46 @@ func Run(args []string) {
 		}
 		filepath := args[fileFlagIndex+1]
 
-		outputFilename := getOutputFilename(args)
-		writePng := checkPngFlag(args)
-
-		yml := parseYamlFile(filepath)
-
-		lastDirSep := strings.LastIndex(filepath, "/")
-		dirpath := ""
-		if lastDirSep != -1 {
-			dirpath = filepath[:lastDirSep+1]
+		switch determineFileType(filepath) {
+		case OBJ:
+			handleObjStats(filepath)
+		case YAML:
+			handleRendering(args, filepath)
+		case UNKNOWN:
+			fmt.Printf("encountered input file with unfamiliar file ending: '%v'\n", filepath)
 		}
+	}
+}
 
-		world := parser.CreateWorld(yml, dirpath)
-		camera := parser.CreateCamera(yml)
+func handleObjStats(filepath string) {
+	object := obj.ParseFile(filepath)
+	object.PrintStats()
+}
 
-		c := camera.Render(world, true)
-		if len(c) == 1 {
-			if writePng {
-				c[0].WritePng(fmt.Sprintf("%v.png", outputFilename))
-			} else {
-				c[0].WritePPM(fmt.Sprintf("%v.ppm", outputFilename))
-			}
+func handleRendering(args []string, filepath string) {
+	outputFilename := getOutputFilename(args)
+	writePng := checkPngFlag(args)
+
+	yml := parseYamlFile(filepath)
+
+	lastDirSep := strings.LastIndex(filepath, "/")
+	dirpath := ""
+	if lastDirSep != -1 {
+		dirpath = filepath[:lastDirSep+1]
+	}
+
+	world := parser.CreateWorld(yml, dirpath)
+	camera := parser.CreateCamera(yml)
+
+	c := camera.Render(world, true)
+	if len(c) == 1 {
+		if writePng {
+			c[0].WritePng(fmt.Sprintf("%v.png", outputFilename))
 		} else {
-			canvas.WriteGif(c, yml.Camera.Animation.Time, fmt.Sprintf("%v.gif", outputFilename))
+			c[0].WritePPM(fmt.Sprintf("%v.ppm", outputFilename))
 		}
+	} else {
+		canvas.WriteGif(c, yml.Camera.Animation.Time, fmt.Sprintf("%v.gif", outputFilename))
 	}
 }
 
@@ -78,4 +103,14 @@ func checkPngFlag(args []string) bool {
 		return true
 	}
 	return false
+}
+
+func determineFileType(file string) FileType {
+	if strings.HasSuffix(file, ".obj") {
+		return OBJ
+	} else if strings.HasSuffix(file, ".yaml") || strings.HasSuffix(file, ".yml") {
+		return YAML
+	} else {
+		return UNKNOWN
+	}
 }

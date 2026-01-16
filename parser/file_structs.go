@@ -76,15 +76,16 @@ type NamedTransformModel struct {
 }
 
 type MaterialModel struct {
-	Color           string   `yaml:"color"`
-	Pattern         string   `yaml:"pattern"`
-	Ambient         *float64 `yaml:"ambient"`
-	Diffuse         *float64 `yaml:"diffuse"`
-	Specular        *float64 `yaml:"specular"`
-	Shininess       *float64 `yaml:"shininess"`
-	Reflective      *float64 `yaml:"reflective"`
-	Transparency    *float64 `yaml:"transparency"`
-	RefractiveIndex *float64 `yaml:"refractiveIndex"`
+	Color           string      `yaml:"color"`
+	RawColor        *ColorModel `yaml:"rawColor"`
+	Pattern         string      `yaml:"pattern"`
+	Ambient         *float64    `yaml:"ambient"`
+	Diffuse         *float64    `yaml:"diffuse"`
+	Specular        *float64    `yaml:"specular"`
+	Shininess       *float64    `yaml:"shininess"`
+	Reflective      *float64    `yaml:"reflective"`
+	Transparency    *float64    `yaml:"transparency"`
+	RefractiveIndex *float64    `yaml:"refractiveIndex"`
 }
 
 type NamedMaterialModel struct {

@@ -1,4 +1,4 @@
-## raygo
+# raygo
 
 raygo is a CPU implemented raytracer with a YAML description interface. The algorithms are based on the book
 by Jamis Buck [The Ray Tracer Challenge](http://raytracerchallenge.com/).
@@ -11,7 +11,7 @@ documentation will be about the elements that you can use in your YAML descripti
 
 | Command |  Description  | Example | Mandatory? |
 |:-----|:--------|:--------|:--------|
-| -f <path>   | Input YAML file | `./raygo -f teapot-scene.yaml` | ✔️ |
+| -f <path>   | Input file | `./raygo -f teapot-scene.yaml` | ✔️ |
 | -o <name>   |  Output file name  | `./raygo -f teapot-scene.yaml -o teapot` | ✖️ (default: 'default') |
 | --png   |  Flag for PNG format  | `./raygo -f teapot-scene.yaml -o teapot --png` | ✖️ (default: ppm) |
 
@@ -156,3 +156,56 @@ camera:
     fps: 24
 ```
 </details>
+
+## General information
+
+There are some entities that can either be used directly (as in: define them where they are needed) or via
+a named version of that entity. The named version has the advantage of being reusable and being given a
+hopefully descriptive name.
+
+Those entities are:
+* Colors
+* Transforms
+
+It is syntactically not forbidden to define both in a containing entity. Consider for example following yaml:
+```yaml
+width: 400
+height: 200
+
+colors:
+  - name: light_gray
+    r: 229
+    g: 229
+    b: 229
+
+materials:
+  - name: example_mat
+    color: light_gray
+    rawColor:
+      r: 0
+      g: 0
+      b: 0
+```
+
+That is a valid material. The **named version always takes precedence** over non-named versions.
+This also holds true for transformations.
+
+## Printing OBJ information
+
+To get information about the contents of an obj file you can call raygo with an obj file as input.
+
+```
+./raygo -f resources/teapot_high.obj
+```
+
+This gives following information:
+
+```
+Vertices: 3241
+Faces(root): 0
+Normals: 3242
+Groups: 1
+Bounds:
+        Min: (-15, -10, 0)
+        Max: (17.17, 10, 15.75)
+```

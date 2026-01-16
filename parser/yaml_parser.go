@@ -444,6 +444,10 @@ func createRaygoMaterials() {
 			m.RefractiveIndex = *ym.RefractiveIndex
 		}
 
+		if ym.RawColor != nil {
+			m.Color = mapColor(ym.RawColor)
+		}
+
 		if ym.Color != "" {
 			m.Color = *raygoColors[ym.Color]
 		}
