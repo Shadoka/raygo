@@ -146,7 +146,7 @@ func (c *Camera) SetTransform(tf math.Matrix) {
 func (c *Camera) Render(w *World, multithreaded bool, prog *progress.Progress) []*canvas.Canvas {
 	c.createAnimationStates()
 	totalFrames := 1
-	if c.Animation != nil {
+	if c.Animation != nil && prog != nil {
 		totalFrames = int(c.Animation.MovementTime * c.Animation.TargetFps)
 		prog.TotalFrames(totalFrames)
 	}
