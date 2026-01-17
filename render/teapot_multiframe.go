@@ -69,5 +69,5 @@ func CreateTeapotMultiframeScene(width int, height int, animation *scene.CameraA
 
 	cam.Animation = animation
 
-	return cam.Render(w, true)
+	return cam.Render(w, true, nil)
 }
