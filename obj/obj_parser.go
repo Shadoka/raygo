@@ -125,7 +125,7 @@ func (f *Face) ToTriangles(o *ObjData) []*geometry.Triangle {
 func ParseFile(objPath string) *ObjData {
 	content, err := os.ReadFile(objPath)
 	if err != nil {
-		panic("cannot open obj file")
+		panic(fmt.Sprintf("cannot open obj file: '%v'", objPath))
 	}
 
 	data := CreateObjData()

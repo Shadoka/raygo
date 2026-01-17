@@ -59,43 +59,43 @@ scene:
     - name: back_wall
       material: wall_mat
       transforms:
+        - type: rotation
+          x: 90
         - type: translation
           x: 0
           y: 0
           z: -40
-        - type: rotation
-          x: 90 # pi / 2
     - name: left_wall
       material: wall_mat
       transforms:
+        - type: rotation
+          x: 90
+        - type: rotation
+          y: 90
         - type: translation
           x: -40
           y: 0
           z: 0
-        - type: rotation
-          y: 90
-        - type: rotation
-          x: 90
     - name: right_wall
       material: wall_mat
       transforms:
+        - type: rotation
+          x: 90
+        - type: rotation
+          y: 90
         - type: translation
           x: 40
           y: 0
           z: 0
-        - type: rotation
-          y: 90
-        - type: rotation
-          x: 90
     - name: front_wall
       material: wall_mat
       transforms:
+        - type: rotation
+          x: 90
         - type: translation
           x: 0
           y: 0
           z: 40
-        - type: rotation
-          x: 90
   objects:
     - name: teapot
       file: ../resources/teapot_high.obj
@@ -124,7 +124,7 @@ camera:
     x: 0
     y: 1
     z: 0
-  # animation:
-  #   degrees: 360
-  #   timeSec: 5
-  #   fps: 24
+  animation:
+    degrees: 360
+    timeSec: 5
+    fps: 24

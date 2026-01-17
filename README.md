@@ -85,50 +85,50 @@ scene:
     - name: back_wall
       material: wall_mat
       transforms:
+        - type: rotation
+          x: 90
         - type: translation
           x: 0
           y: 0
           z: -40
-        - type: rotation
-          x: 1.570796 # pi / 2
     - name: left_wall
       material: wall_mat
       transforms:
+        - type: rotation
+          x: 90
+        - type: rotation
+          y: 90
         - type: translation
           x: -40
           y: 0
           z: 0
-        - type: rotation
-          y: 1.570796
-        - type: rotation
-          x: 1.570796
     - name: right_wall
       material: wall_mat
       transforms:
+        - type: rotation
+          x: 90
+        - type: rotation
+          y: 90
         - type: translation
           x: 40
           y: 0
           z: 0
-        - type: rotation
-          y: 1.570796
-        - type: rotation
-          x: 1.570796
     - name: front_wall
       material: wall_mat
       transforms:
+        - type: rotation
+          x: 90
         - type: translation
           x: 0
           y: 0
           z: 40
-        - type: rotation
-          x: 1.570796
   objects:
     - name: teapot
       file: resources/teapot_high.obj
       material: teapot_mat
       transforms:
         - type: rotation
-          x: -1.570796
+          x: -90
 
 light:
   p:
@@ -158,6 +158,8 @@ camera:
 </details>
 
 ## General information
+
+### Named and unnamed entities
 
 There are some entities that can either be used directly (as in: define them where they are needed) or via
 a named version of that entity. The named version has the advantage of being reusable and being given a
@@ -189,6 +191,108 @@ materials:
 
 That is a valid material. The **named version always takes precedence** over non-named versions.
 This also holds true for transformations.
+
+### Order of transformations
+
+Transformations are defined in lists. Those transformations are applied from top to bottom.
+
+Assume we have an object that we want to scale and then translate. If we apply the transformations in the
+wrong order then we scale the translation as well and move the object too far.
+
+![Correct transformation](examples/tf_correct.png)
+
+<details>
+
+<summary>YAML for correct order</summary>
+
+```yaml
+width: 400
+height: 200
+
+scene:
+  cubes:
+    - name: example
+      transforms:
+        - type: scaling
+          x: 5
+          y: 5
+          z: 5
+        - type: translation
+          x: 3
+
+camera:
+  from:
+    x: 0
+    y: 10
+    z: -20
+  to:
+    x: 0
+    y: 0
+    z: 0
+  up:
+    x: 0
+    y: 1
+    z: 0
+
+light:
+  p:
+    x: 0
+    y: 30
+    z: -20
+  intensity:
+    r: 255
+    g: 255
+    b: 255
+```
+</details>
+
+![Incorrect transformation](examples/tf_incorrect.png)
+
+<details>
+
+<summary>YAML for incorrect order</summary>
+
+```yaml
+width: 400
+height: 200
+
+scene:
+  cubes:
+    - name: example
+      transforms:
+        - type: translation
+          x: 3
+        - type: scaling
+          x: 5
+          y: 5
+          z: 5
+
+camera:
+  from:
+    x: 0
+    y: 10
+    z: -20
+  to:
+    x: 0
+    y: 0
+    z: 0
+  up:
+    x: 0
+    y: 1
+    z: 0
+
+light:
+  p:
+    x: 0
+    y: 30
+    z: -20
+  intensity:
+    r: 255
+    g: 255
+    b: 255
+```
+</details>
+
 
 ## Printing OBJ information
 

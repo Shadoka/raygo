@@ -1,6 +1,6 @@
 module raygo
 
-go 1.23.4
+go 1.25.6
 
 require (
 	github.com/goccy/go-yaml v1.19.1

@@ -9,6 +9,7 @@ import (
 	"raygo/math"
 	"raygo/obj"
 	"raygo/scene"
+	"slices"
 
 	"github.com/goccy/go-yaml"
 )
@@ -377,11 +378,11 @@ func mapTransform(ymlTransform *TransformModel) (math.Matrix, error) {
 			ymlTransform.ZX, ymlTransform.ZY), nil
 	case ROTATION_TF:
 		var tf math.Matrix
-		
+
 		xRotation := ymlTransform.X
 		yRotation := ymlTransform.Y
 		zRotation := ymlTransform.Z
-		
+
 		xRotation = math.Radians(xRotation)
 		yRotation = math.Radians(yRotation)
 		zRotation = math.Radians(zRotation)
@@ -649,12 +650,18 @@ func createRaygoGroups() {
 func createTransformFromList(tfList []TransformModel) math.Matrix {
 	result := math.IdentityMatrix()
 
+	transforms := make([]math.Matrix, 0)
 	for _, tf := range tfList {
 		mappedTf, err := mapTransform(&tf)
 		if err != nil {
 			panic(err)
 		}
-		result = result.MulM(mappedTf)
+		transforms = append(transforms, mappedTf)
+	}
+
+	slices.Reverse(transforms)
+	for _, tf := range transforms {
+		result = result.MulM(tf)
 	}
 
 	return result

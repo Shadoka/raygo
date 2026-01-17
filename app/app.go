@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"raygo/canvas"
 	"raygo/obj"
 	"raygo/parser"
@@ -23,34 +24,38 @@ func Run(args []string) {
 		if len(args) <= fileFlagIndex+1 {
 			panic("missing file path after -f flag")
 		}
-		filepath := args[fileFlagIndex+1]
+		fp := args[fileFlagIndex+1]
 
-		switch determineFileType(filepath) {
+		switch determineFileType(fp) {
 		case OBJ:
-			handleObjStats(filepath)
+			handleObjStats(fp)
 		case YAML:
-			handleRendering(args, filepath)
+			handleRendering(args, fp)
 		case UNKNOWN:
-			fmt.Printf("encountered input file with unfamiliar file ending: '%v'\n", filepath)
+			fmt.Printf("encountered input file with unfamiliar file ending: '%v'\n", fp)
 		}
 	}
 }
 
-func handleObjStats(filepath string) {
-	object := obj.ParseFile(filepath)
+func handleObjStats(fp string) {
+	object := obj.ParseFile(fp)
 	object.PrintStats()
 }
 
-func handleRendering(args []string, filepath string) {
+func handleRendering(args []string, fp string) {
 	outputFilename := getOutputFilename(args)
 	writePng := checkPngFlag(args)
 
-	yml := parseYamlFile(filepath)
+	yml := parseYamlFile(fp)
+	absolutePath, err := filepath.Abs(fp)
+	if err != nil {
+		panic("unable to get absolute file path for yaml file")
+	}
 
-	lastDirSep := strings.LastIndex(filepath, "/")
+	lastDirSep := strings.LastIndex(absolutePath, string(os.PathSeparator))
 	dirpath := ""
 	if lastDirSep != -1 {
-		dirpath = filepath[:lastDirSep+1]
+		dirpath = absolutePath[:lastDirSep+1]
 	}
 
 	world := parser.CreateWorld(yml, dirpath)
