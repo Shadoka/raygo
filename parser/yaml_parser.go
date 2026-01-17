@@ -382,9 +382,9 @@ func mapTransform(ymlTransform *TransformModel) (math.Matrix, error) {
 		yRotation := ymlTransform.Y
 		zRotation := ymlTransform.Z
 		
-		xRotation = xRotation * gomath.Pi / 180.0
-		yRotation = yRotation * gomath.Pi / 180.0
-		zRotation = zRotation * gomath.Pi / 180.0
+		xRotation = math.Radians(xRotation)
+		yRotation = math.Radians(yRotation)
+		zRotation = math.Radians(zRotation)
 
 		if xRotation != 0.0 {
 			tf = math.Rotation_X(xRotation)

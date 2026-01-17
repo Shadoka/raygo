@@ -98,7 +98,7 @@ scene:
           x: 90
   objects:
     - name: teapot
-      file: resources/teapot_high.obj
+      file: ../resources/teapot_high.obj
       material: teapot_mat
       transforms:
         - type: rotation
