@@ -7,8 +7,10 @@ import (
 	"raygo/canvas"
 	"raygo/obj"
 	"raygo/parser"
+	"raygo/progress"
 	"slices"
 	"strings"
+	"time"
 )
 
 type FileType int
@@ -43,10 +45,14 @@ func handleObjStats(fp string) {
 }
 
 func handleRendering(args []string, fp string) {
+	startTime := time.Now()
+
 	outputFilename := getOutputFilename(args)
 	writePng := checkPngFlag(args)
-
+	progress.Step("Parsing Yaml")
 	yml := parseYamlFile(fp)
+	progress.Step("Validating Yaml")	
+	progress.Step("Creating Scene from Yaml")
 	absolutePath, err := filepath.Abs(fp)
 	if err != nil {
 		panic("unable to get absolute file path for yaml file")
@@ -62,6 +68,7 @@ func handleRendering(args []string, fp string) {
 	camera := parser.CreateCamera(yml)
 
 	c := camera.Render(world, true)
+	progress.Step("Writing output file")
 	if len(c) == 1 {
 		if writePng {
 			c[0].WritePng(fmt.Sprintf("%v.png", outputFilename))
@@ -71,6 +78,8 @@ func handleRendering(args []string, fp string) {
 	} else {
 		canvas.WriteGif(c, yml.Camera.Animation.Time, fmt.Sprintf("%v.gif", outputFilename))
 	}
+	elapsed := time.Since(startTime)
+	progress.Complete(fmt.Sprintf("%.2f seconds", elapsed.Seconds()))
 }
 
 func parseYamlFile(path string) *parser.YamlDescription {
