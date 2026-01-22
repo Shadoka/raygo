@@ -5,6 +5,7 @@ import (
 	"raygo/canvas"
 	g "raygo/geometry"
 	"raygo/math"
+	"raygo/progress"
 	"sync"
 )
 
@@ -166,8 +167,12 @@ func (c *Camera) SetTransform(tf math.Matrix) {
 
 func (c *Camera) Render(w *World, multithreaded bool) []*canvas.Canvas {
 	c.createAnimationStates()
+	totalFrames := len(c.PositionStates)
+	progress.TotalFrames(totalFrames)
+
 	images := make([]*canvas.Canvas, 0, len(c.PositionStates))
-	for _, currentPosition := range c.PositionStates {
+	for frameIndex, currentPosition := range c.PositionStates {
+		progress.SetFrameInfo(frameIndex+1, totalFrames)
 		c.Position = currentPosition
 		c.InverseTransform = nil
 		if multithreaded {
