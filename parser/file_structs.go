@@ -115,8 +115,7 @@ type SceneContainer struct {
 }
 
 type CommonSceneObject struct {
-	Name string `yaml:"name"`
-	//Parent     string           `yaml:"parent"`
+	Name       string           `yaml:"name"`
 	Material   string           `yaml:"material"`
 	Transform  string           `yaml:"transform"`
 	Transforms []TransformModel `yaml:"transforms"`

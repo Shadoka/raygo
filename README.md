@@ -14,6 +14,7 @@ documentation will be about the elements that you can use in your YAML descripti
 | -f <path>   | Input file | `./raygo -f teapot-scene.yaml` | ✔️ |
 | -o <name>   |  Output file name  | `./raygo -f teapot-scene.yaml -o teapot` | ✖️ (default: 'default') |
 | --png   |  Flag for PNG format  | `./raygo -f teapot-scene.yaml -o teapot --png` | ✖️ (default: ppm) |
+| --aa   |  Flag to enable antialiasing  | `./raygo -f teapot-scene.yaml -o teapot --png --aa` | ✖️ (default: off) |
 
 Example:
 
@@ -293,6 +294,18 @@ light:
 ```
 </details>
 
+### Antialiasing
+
+Raygo supports antialiasing via supersampling. This method casts a lot more rays and
+takes a little bit more than twice as long on my system.
+
+Example for no antialiasing:
+
+![No antialiasing](examples/teapot_no_aa.png)
+
+Example with antialiasing turned on:
+
+![No antialiasing](examples/teapot_aa.png)
 
 ## Printing OBJ information
 
