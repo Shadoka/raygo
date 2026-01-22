@@ -20,8 +20,9 @@ type Camera struct {
 	Animation        *CameraAnimation
 	Position         CameraPosition
 	PositionStates   []CameraPosition
-	CanvasColorCache map[math.Point]math.Color // <-- invalidate after rendering of frame
-	InverseTransform *math.Matrix              // <-- invalidate after rendering of frame
+	Antialias        bool
+	ColorCache       ColorCache
+	InverseTransform *math.Matrix // <-- invalidate after rendering of frame
 }
 
 // only circular motion around point for now
@@ -37,6 +38,23 @@ type CameraPosition struct {
 	Up   math.Vector
 }
 
+type ColorCache struct {
+	mu               sync.Mutex
+	CanvasColorCache map[math.Point]*math.Color // <-- invalidate after rendering of frame
+}
+
+func (cc *ColorCache) Set(p math.Point, color *math.Color) {
+	cc.mu.Lock()
+	defer cc.mu.Unlock()
+	cc.CanvasColorCache[p] = color
+}
+
+func (cc *ColorCache) Get(p math.Point) *math.Color {
+	cc.mu.Lock()
+	defer cc.mu.Unlock()
+	return cc.CanvasColorCache[p]
+}
+
 func CreateCamera(hsize int, vsize int, fov float64) *Camera {
 	c := &Camera{
 		Hsize:            hsize,
@@ -44,7 +62,10 @@ func CreateCamera(hsize int, vsize int, fov float64) *Camera {
 		FieldOfView:      fov,
 		Transform:        math.IdentityMatrix(),
 		InverseTransform: nil,
-		CanvasColorCache: make(map[math.Point]math.Color, 0),
+		ColorCache: ColorCache{
+			CanvasColorCache: make(map[math.Point]*math.Color, 0),
+		},
+		Antialias: false,
 	}
 	c.calculateCameraProperties()
 
@@ -122,39 +143,22 @@ func (c *Camera) createAnimationStates() {
 }
 
 func (c *Camera) RayForPixel(x int, y int) g.Ray {
-	// the offset from the edge of the canvas to the pixels center
-	xOffset := (float64(x) + 0.5) * c.PixelSize
-	yOffset := (float64(y) + 0.5) * c.PixelSize
-
-	// the untransformed coordinates of the pixel in world space
-	// (remember that the camera looks toward -z, so +x is to the *left*)
-	worldX := c.HalfWidth - xOffset
-	worldY := c.HalfHeight - yOffset
+	coordinate := c.calculateWorldCoordinateWithOffset(float64(x), float64(y), 0.5, 0.5)
 
 	// using the camera matrix, transform the canvas point and the origin,
 	// and then compute the rays direction vector.
 	// (remember that the canvas is at z = -1)
-	pixel := c.GetInverseTransform().MulT(math.CreatePoint(worldX, worldY, -1.0))
+	pixel := c.GetInverseTransform().MulT(coordinate)
 	origin := c.GetInverseTransform().MulT(math.CreatePoint(0.0, 0.0, 0.0))
 	direction := pixel.Subtract(origin).Normalize()
 
 	return g.CreateRay(origin, direction)
 }
 
-func (c *Camera) CornerRaysForPixel(x int, y int) []g.Ray {
-	// the offset from the edge of the canvas to the pixels center
-	xOffset := (float64(x) + 0.5) * c.PixelSize
-	yOffset := (float64(y) + 0.5) * c.PixelSize
-
-	// the untransformed coordinates of the pixel in world space
-	// (remember that the camera looks toward -z, so +x is to the *left*)
-	worldX := c.HalfWidth - xOffset
-	worldY := c.HalfHeight - yOffset
-
+func (c *Camera) RayForCoordinate(coordinate math.Point) g.Ray {
 	// using the camera matrix, transform the canvas point and the origin,
 	// and then compute the rays direction vector.
-	// (remember that the canvas is at z = -1)
-	pixel := c.GetInverseTransform().MulT(math.CreatePoint(worldX, worldY, -1.0))
+	pixel := c.GetInverseTransform().MulT(coordinate)
 	origin := c.GetInverseTransform().MulT(math.CreatePoint(0.0, 0.0, 0.0))
 	direction := pixel.Subtract(origin).Normalize()
 
@@ -172,7 +176,6 @@ func (c *Camera) Render(w *World, multithreaded bool) []*canvas.Canvas {
 
 	images := make([]*canvas.Canvas, 0, len(c.PositionStates))
 	for frameIndex, currentPosition := range c.PositionStates {
-		progress.SetFrameInfo(frameIndex+1, totalFrames)
 		c.Position = currentPosition
 		c.InverseTransform = nil
 		if multithreaded {
@@ -180,11 +183,12 @@ func (c *Camera) Render(w *World, multithreaded bool) []*canvas.Canvas {
 		} else {
 			images = append(images, c.RenderSinglethreaded(w))
 		}
+		progress.SetFrameInfo(frameIndex+1, totalFrames)
 	}
 	return images
 }
 
-func (c *Camera) RenderSinglethreaded(w *World, antialias bool) *canvas.Canvas {
+func (c *Camera) RenderSinglethreaded(w *World) *canvas.Canvas {
 	c.Transform = math.ViewTransform(c.Position.From, c.Position.To, c.Position.Up)
 	canv := canvas.CreateCanvas(c.Hsize, c.Vsize)
 
@@ -192,8 +196,8 @@ func (c *Camera) RenderSinglethreaded(w *World, antialias bool) *canvas.Canvas {
 		for x := range c.Hsize {
 			r := c.RayForPixel(x, y)
 			color := w.ColorAt(r, MAX_REFLECTION_LIMIT)
-			if antialias {
-				relevantPixelColors := c.getCornerColors(x, y)
+			if c.Antialias {
+				relevantPixelColors := c.getCornerColors(w, x, y)
 				relevantPixelColors = append(relevantPixelColors, color)
 				color = getMeanColor(relevantPixelColors)
 			}
@@ -204,7 +208,7 @@ func (c *Camera) RenderSinglethreaded(w *World, antialias bool) *canvas.Canvas {
 	return &canv
 }
 
-func (c *Camera) RenderMultithreaded(w *World, workerThreads int, antialias bool) *canvas.Canvas {
+func (c *Camera) RenderMultithreaded(w *World, workerThreads int) *canvas.Canvas {
 	c.Transform = math.ViewTransform(c.Position.From, c.Position.To, c.Position.Up)
 	var wg sync.WaitGroup
 	canv := canvas.CreateCanvas(c.Hsize, c.Vsize)
@@ -236,6 +240,11 @@ func (c *Camera) renderPartially(fromY int, toY int, w *World, cv *canvas.Canvas
 		for x := range c.Hsize {
 			r := c.RayForPixel(x, y)
 			color := w.ColorAt(r, MAX_REFLECTION_LIMIT)
+			if c.Antialias {
+				relevantPixelColors := c.getCornerColors(w, x, y)
+				relevantPixelColors = append(relevantPixelColors, color)
+				color = getMeanColor(relevantPixelColors)
+			}
 			cv.WritePixel(x, y, color)
 		}
 	}
@@ -244,8 +253,53 @@ func (c *Camera) renderPartially(fromY int, toY int, w *World, cv *canvas.Canvas
 /**
 * Gets the colors the 4 corners of the pixel.
  */
-func (c *Camera) getCornerColors(x int, y int) []math.Color {
+func (c *Camera) getCornerColors(w *World, x int, y int) []math.Color {
+	xFloat := float64(x)
+	yFloat := float64(y)
+	points := make([]math.Point, 0)
+	points = append(points, c.calculateWorldCoordinateWithOffset(xFloat, yFloat, 0.0, 0.0))
+	points = append(points, c.calculateWorldCoordinateWithOffset(xFloat, yFloat, 0.0, 1.0))
+	points = append(points, c.calculateWorldCoordinateWithOffset(xFloat, yFloat, 1.0, 0.0))
+	points = append(points, c.calculateWorldCoordinateWithOffset(xFloat, yFloat, 1.0, 1.0))
 
+	colors := make([]math.Color, 0)
+	for _, corner := range points {
+		if cornerColor := c.ColorCache.Get(corner); cornerColor == nil {
+			cornerRay := c.RayForCoordinate(corner)
+			color := w.ColorAt(cornerRay, MAX_REFLECTION_LIMIT)
+			c.ColorCache.Set(corner, &color)
+			colors = append(colors, color)
+		} else {
+			colors = append(colors, *cornerColor)
+		}
+	}
+
+	return colors
+}
+
+func getMeanColor(colors []math.Color) math.Color {
+	r := 0.0
+	g := 0.0
+	b := 0.0
+
+	for _, color := range colors {
+		r += color.X
+		g += color.Y
+		b += color.Z
+	}
+
+	colorCount := float64(len(colors))
+	return math.CreateColor(r/colorCount, g/colorCount, b/colorCount)
+}
+
+func (c *Camera) calculateWorldCoordinateWithOffset(x float64, y float64, xOff float64, yOff float64) math.Point {
+	// the offset from the edge of the canvas to the pixels center
+	xOffset := (float64(x) + xOff) * c.PixelSize
+	yOffset := (float64(y) + yOff) * c.PixelSize
+
+	// the untransformed coordinates of the pixel in world space
+	// (remember that the camera looks toward -z, so +x is to the *left*)
+	return math.CreatePoint(c.HalfWidth-xOffset, c.HalfHeight-yOffset, -1.0)
 }
 
 func (c *Camera) GetInverseTransform() math.Matrix {

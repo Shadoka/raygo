@@ -49,23 +49,25 @@ func handleRendering(args []string, fp string) {
 
 	outputFilename := getOutputFilename(args)
 	writePng := checkPngFlag(args)
+	antialias := checkAntialiasFlag(args)
+
 	progress.Step("Parsing Yaml")
 	yml := parseYamlFile(fp)
-	progress.Step("Validating Yaml")	
-	progress.Step("Creating Scene from Yaml")
+
 	absolutePath, err := filepath.Abs(fp)
 	if err != nil {
 		panic("unable to get absolute file path for yaml file")
 	}
-
 	lastDirSep := strings.LastIndex(absolutePath, string(os.PathSeparator))
 	dirpath := ""
 	if lastDirSep != -1 {
 		dirpath = absolutePath[:lastDirSep+1]
 	}
 
+	progress.Step("Creating Scene from Yaml")
 	world := parser.CreateWorld(yml, dirpath)
 	camera := parser.CreateCamera(yml)
+	camera.Antialias = antialias
 
 	c := camera.Render(world, true)
 	progress.Step("Writing output file")
@@ -89,6 +91,7 @@ func parseYamlFile(path string) *parser.YamlDescription {
 	}
 
 	yml := parser.ParseYaml(string(data))
+	progress.Step("Validating Yaml")
 	validationResult := yml.Validate()
 	validationResult = append(validationResult, parser.ValidateReferences(yml)...)
 	if len(validationResult) != 0 {
@@ -114,6 +117,13 @@ func getOutputFilename(args []string) string {
 
 func checkPngFlag(args []string) bool {
 	if outputFlagIndex := slices.Index(args, "--png"); outputFlagIndex != -1 {
+		return true
+	}
+	return false
+}
+
+func checkAntialiasFlag(args []string) bool {
+	if antialiasFlagIndex := slices.Index(args, "--aa"); antialiasFlagIndex != -1 {
 		return true
 	}
 	return false
