@@ -99,6 +99,7 @@ func TestRender(t *testing.T) {
 	c.Position = CreateCameraPosition(from, to, up)
 	expectedColor := math.CreateColor(0.38066, 0.47583, 0.2855)
 
+	w.CalculateInverseTransforms()
 	canv := c.RenderSinglethreaded(w)
 
 	assert.Assert(t, expectedColor.Equals(canv.GetPixelAt(5, 5)))
@@ -114,6 +115,7 @@ func TestInvestigateAcneBug(t *testing.T) {
 
 	grayBlackCheckerPattern := g.CreateCheckerPattern(lightGray, black)
 	grayBlackCheckerPattern.SetTransform(math.Scaling(0.33, 0.33, 0.33))
+	grayBlackCheckerPattern.CalculateInverseTransform()
 
 	room := g.CreateCube()
 	room.SetTransform(math.Scaling(10.0, 10.0, 10.0))
@@ -131,6 +133,7 @@ func TestInvestigateAcneBug(t *testing.T) {
 	w := EmptyWorld()
 	w.Light = &light
 	w.Objects = objs
+	w.CalculateInverseTransforms()
 
 	cam := CreateCamera(400, 200, gomath.Pi/3.0)
 	from := math.CreatePoint(-9.0, -4.0, 0.0)

@@ -10,6 +10,7 @@ import (
 	"raygo/obj"
 	"raygo/scene"
 	"slices"
+	"sync"
 
 	"github.com/goccy/go-yaml"
 )
@@ -298,6 +299,8 @@ func CreateWorld(yml *YamlDescription, directory string) *scene.World {
 	createRaygoMaterials()
 	createRaygoShapes(directory)
 
+	calculateInverseTransforms()
+
 	sceneObjects := collectRootElements()
 	world.Objects = sceneObjects
 
@@ -324,6 +327,24 @@ func CreateCamera(yml *YamlDescription) scene.Camera {
 	}
 
 	return *camera
+}
+
+func calculateInverseTransforms() {
+	var wg sync.WaitGroup
+
+	for _, pattern := range raygoPatterns {
+		wg.Go(func() {
+			pattern.CalculateInverseTransform()
+		})
+	}
+
+	for _, shape := range raygoShapes {
+		wg.Go(func() {
+			shape.CalculateInverseTransform()
+		})
+	}
+
+	wg.Wait()
 }
 
 func createCameraAnimation(yamlAnimation *CircularCameraAnimation) *scene.CameraAnimation {

@@ -10,4 +10,5 @@ type Pattern interface {
 	SetTransform(tf math.Matrix)
 	GetTransform() math.Matrix
 	Equals(other Pattern) bool
+	CalculateInverseTransform()
 }

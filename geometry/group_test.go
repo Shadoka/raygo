@@ -49,6 +49,7 @@ func TestNavigateTree(t *testing.T) {
 
 func TestLocalIntersectEmptyGroup(t *testing.T) {
 	g := EmptyGroup()
+	g.CalculateInverseTransform()
 	r := CreateRay(math.CreatePoint(0.0, 0.0, 0.0), math.CreateVector(0.0, 0.0, 1.0))
 
 	actual := g.localIntersect(r)
@@ -64,6 +65,7 @@ func TestLocalIntersectNonEmptyGroup(t *testing.T) {
 	s2.SetTransform(math.Translation(0.0, 0.0, -3.0))
 	s3.SetTransform(math.Translation(5.0, 0.0, 0.0))
 	g.AddChild(s1).AddChild(s2).AddChild(s3)
+	g.CalculateInverseTransform()
 
 	r := CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
 
@@ -86,6 +88,7 @@ func TestNonEmptyGroupBounds(t *testing.T) {
 		Minimum: math.CreatePoint(4.0, -1.0, -1.0),
 		Maximum: math.CreatePoint(6.0, 1.0, 1.0),
 	}
+	g.CalculateInverseTransform()
 
 	b := g.Bounds()
 
@@ -98,6 +101,7 @@ func TestIntersectGroupWithTransformations(t *testing.T) {
 	g.SetTransform(math.Scaling(2.0, 2.0, 2.0))
 	s1.SetTransform(math.Translation(5.0, 0.0, 0.0))
 	g.AddChild(s1)
+	g.CalculateInverseTransform()
 
 	r := CreateRay(math.CreatePoint(10.0, 0.0, -10.0), math.CreateVector(0.0, 0.0, 1.0))
 
@@ -116,6 +120,7 @@ func TestWorldToObject(t *testing.T) {
 	s.SetTransform(math.Translation(5.0, 0.0, 0.0))
 	g2.AddChild(s)
 	expected := math.CreatePoint(0.0, 0.0, -1.0)
+	g1.CalculateInverseTransform()
 
 	actual := WorldToObject(s, math.CreatePoint(-2.0, 0.0, -10.0))
 
@@ -132,6 +137,7 @@ func TestNormalToWorld(t *testing.T) {
 	s.SetTransform(math.Translation(5.0, 0.0, 0.0))
 	g2.AddChild(s)
 	expected := math.CreateVector(0.28571, 0.42857, -0.85714)
+	g1.CalculateInverseTransform()
 
 	actual := NormalToWorld(s, math.CreateVector(gomath.Sqrt(3)/3.0, gomath.Sqrt(3)/3.0, gomath.Sqrt(3)/3.0))
 
@@ -148,6 +154,7 @@ func TestGroupNormalAt(t *testing.T) {
 	s.SetTransform(math.Translation(5.0, 0.0, 0.0))
 	g2.AddChild(s)
 	expected := math.CreateVector(0.28570, 0.42854, -0.85716)
+	g1.CalculateInverseTransform()
 
 	actual := s.NormalAt(math.CreatePoint(1.7321, 1.1547, -5.5774), Intersection{})
 

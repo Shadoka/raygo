@@ -3,7 +3,7 @@
 raygo is a CPU implemented raytracer with a YAML description interface. The algorithms are based on the book
 by Jamis Buck [The Ray Tracer Challenge](http://raytracerchallenge.com/).
 
-Images can be rendered as still images (PPM (default) and PNG) or as GIFs. For GIF rendering you need to
+Images can be rendered as still images (PNG (default) and PPM) or as GIFs. For GIF rendering you need to
 describe an animation in your description.
 
 Below a table of available commands and one example with corresponding YAML description. The rest of this
@@ -13,7 +13,6 @@ documentation will be about the elements that you can use in your YAML descripti
 |:-----|:--------|:--------|:--------|
 | -f <path>   | Input file | `./raygo -f teapot-scene.yaml` | ✔️ |
 | -o <name>   |  Output file name  | `./raygo -f teapot-scene.yaml -o teapot` | ✖️ (default: 'default') |
-| --png   |  Flag for PNG format  | `./raygo -f teapot-scene.yaml -o teapot --png` | ✖️ (default: ppm) |
 | --aa   |  Flag to enable antialiasing  | `./raygo -f teapot-scene.yaml -o teapot --png --aa` | ✖️ (default: off) |
 
 Example:
@@ -306,6 +305,16 @@ Example for no antialiasing:
 Example with antialiasing turned on:
 
 ![No antialiasing](examples/teapot_aa.png)
+
+### Calculation of inverse transforms
+
+To prevent a race condition when rendering scenes multithreaded all shapes and patterns need to have their
+inverse transforms calculated before rendering starts.
+
+The alternative would be using a mutex to access the cached inverse which incurs a hefty performance penalty.
+
+Shapes, patterns and world structs all have a method `CalculateInverseTransform` that precalculates the
+inverse transforms.
 
 ## Printing OBJ information
 

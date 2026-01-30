@@ -153,3 +153,9 @@ func (w *World) RefractedColor(precomps g.IntersectionComputations, remainingRef
 
 	return color
 }
+
+func (w *World) CalculateInverseTransforms() {
+	for _, object := range w.Objects {
+		object.CalculateInverseTransform()
+	}
+}

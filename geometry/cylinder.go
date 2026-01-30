@@ -16,19 +16,18 @@ type Cylinder struct {
 	Maximum          float64
 	Closed           bool
 	Parent           *Group
-	InverseTransform *math.Matrix
+	InverseTransform math.Matrix
 }
 
 func CreateCylinder() *Cylinder {
 	return &Cylinder{
-		Id:               uuid.NewString(),
-		Transform:        math.IdentityMatrix(),
-		Material:         DefaultMaterial(),
-		Minimum:          gomath.Inf(-1.0),
-		Maximum:          gomath.Inf(1.0),
-		Closed:           false,
-		Parent:           nil,
-		InverseTransform: nil,
+		Id:        uuid.NewString(),
+		Transform: math.IdentityMatrix(),
+		Material:  DefaultMaterial(),
+		Minimum:   gomath.Inf(-1.0),
+		Maximum:   gomath.Inf(1.0),
+		Closed:    false,
+		Parent:    nil,
 	}
 }
 
@@ -167,11 +166,15 @@ func (c *Cylinder) Bounds() *Bounds {
 }
 
 func (c *Cylinder) GetInverseTransform() math.Matrix {
-	if c.InverseTransform != nil {
-		return *c.InverseTransform
-	}
+	// if c.InverseTransform != nil {
+	// 	return *c.InverseTransform
+	// }
 
-	inverse := c.Transform.Inverse()
-	c.InverseTransform = &inverse
-	return *c.InverseTransform
+	// inverse := c.Transform.Inverse()
+	// c.InverseTransform = &inverse
+	return c.InverseTransform
+}
+
+func (c *Cylinder) CalculateInverseTransform() {
+	c.InverseTransform = c.Transform.Inverse()
 }

@@ -11,6 +11,7 @@ import (
 
 func TestLightingEyeBetweenLightAndSurface(t *testing.T) {
 	s := g.CreateSphere()
+	s.CalculateInverseTransform()
 	eyev := math.CreateVector(0.0, 0.0, -1.0)
 	normalv := math.CreateVector(0.0, 0.0, -1.0)
 	m := g.DefaultMaterial()
@@ -25,6 +26,7 @@ func TestLightingEyeBetweenLightAndSurface(t *testing.T) {
 
 func TestLightingEyeOffsetBetweenLightAndSurface(t *testing.T) {
 	s := g.CreateSphere()
+	s.CalculateInverseTransform()
 	eyev := math.CreateVector(0.0, gomath.Sqrt(2)/2, -gomath.Sqrt(2)/2)
 	normalv := math.CreateVector(0.0, 0.0, -1.0)
 	m := g.DefaultMaterial()
@@ -37,6 +39,7 @@ func TestLightingEyeOffsetBetweenLightAndSurface(t *testing.T) {
 
 func TestLightingEyeBetweenLightOffsetAndSurface(t *testing.T) {
 	s := g.CreateSphere()
+	s.CalculateInverseTransform()
 	eyev := math.CreateVector(0.0, 0.0, -1.0)
 	normalv := math.CreateVector(0.0, 0.0, -1.0)
 	m := g.DefaultMaterial()
@@ -49,6 +52,7 @@ func TestLightingEyeBetweenLightOffsetAndSurface(t *testing.T) {
 
 func TestLightingEyeInReflectionVector(t *testing.T) {
 	s := g.CreateSphere()
+	s.CalculateInverseTransform()
 	eyev := math.CreateVector(0.0, -gomath.Sqrt(2)/2, -gomath.Sqrt(2)/2)
 	normalv := math.CreateVector(0.0, 0.0, -1.0)
 	m := g.DefaultMaterial()
@@ -61,6 +65,7 @@ func TestLightingEyeInReflectionVector(t *testing.T) {
 
 func TestLightingLightBehindSurface(t *testing.T) {
 	s := g.CreateSphere()
+	s.CalculateInverseTransform()
 	eyev := math.CreateVector(0.0, 0.0, -1.0)
 	normalv := math.CreateVector(0.0, 0.0, -1.0)
 	m := g.DefaultMaterial()
@@ -73,6 +78,7 @@ func TestLightingLightBehindSurface(t *testing.T) {
 
 func TestLightingEyeBetweenLightAndSurfaceShadow(t *testing.T) {
 	s := g.CreateSphere()
+	s.CalculateInverseTransform()
 	eyev := math.CreateVector(0.0, 0.0, -1.0)
 	normalv := math.CreateVector(0.0, 0.0, -1.0)
 	m := g.DefaultMaterial()
@@ -87,9 +93,11 @@ func TestLightingEyeBetweenLightAndSurfaceShadow(t *testing.T) {
 
 func TestMaterialWithPattern(t *testing.T) {
 	s := g.CreateSphere()
+	s.CalculateInverseTransform()
 	white := math.CreateColor(1.0, 1.0, 1.0)
 	black := math.CreateColor(0.0, 0.0, 0.0)
 	p := g.CreateStripePattern(white, black)
+	p.CalculateInverseTransform()
 	m := g.DefaultMaterial()
 	m.SetPattern(p)
 	m.SetAmbient(1.0)

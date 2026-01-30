@@ -17,6 +17,7 @@ type Shape interface {
 	SetParent(g *Group)
 	Bounds() *Bounds
 	GetInverseTransform() math.Matrix
+	CalculateInverseTransform()
 }
 
 func GetCenter(s Shape) math.Point {

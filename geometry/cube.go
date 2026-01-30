@@ -13,16 +13,15 @@ type Cube struct {
 	Transform        math.Matrix
 	Material         Material
 	Parent           *Group
-	InverseTransform *math.Matrix
+	InverseTransform math.Matrix
 }
 
 func CreateCube() *Cube {
 	return &Cube{
-		Id:               uuid.NewString(),
-		Transform:        math.IdentityMatrix(),
-		Material:         DefaultMaterial(),
-		Parent:           nil,
-		InverseTransform: nil,
+		Id:        uuid.NewString(),
+		Transform: math.IdentityMatrix(),
+		Material:  DefaultMaterial(),
+		Parent:    nil,
 	}
 }
 
@@ -140,11 +139,15 @@ func (c *Cube) ScaledBounds() *Bounds {
 }
 
 func (c *Cube) GetInverseTransform() math.Matrix {
-	if c.InverseTransform != nil {
-		return *c.InverseTransform
-	}
+	// if c.InverseTransform != nil {
+	// 	return *c.InverseTransform
+	// }
 
-	inverse := c.Transform.Inverse()
-	c.InverseTransform = &inverse
-	return *c.InverseTransform
+	// inverse := c.Transform.Inverse()
+	// c.InverseTransform = &inverse
+	return c.InverseTransform
+}
+
+func (c *Cube) CalculateInverseTransform() {
+	c.InverseTransform = c.Transform.Inverse()
 }

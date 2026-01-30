@@ -127,6 +127,7 @@ func TestScaleRay(t *testing.T) {
 func TestPrepareComputation(t *testing.T) {
 	r := CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
 	s := CreateSphere()
+	s.CalculateInverseTransform()
 	i := CreateIntersection(4.0, s)
 	expected := IntersectionComputations{
 		IntersectionAt: i.IntersectionAt,
@@ -150,6 +151,7 @@ func TestPrepareComputation(t *testing.T) {
 func TestPrepareComputationRayInside(t *testing.T) {
 	r := CreateRay(math.CreatePoint(0.0, 0.0, 0.0), math.CreateVector(0.0, 0.0, 1.0))
 	s := CreateSphere()
+	s.CalculateInverseTransform()
 	i := CreateIntersection(1.0, s)
 	expected := IntersectionComputations{
 		IntersectionAt: i.IntersectionAt,
@@ -174,6 +176,7 @@ func TestPrepareComputationsOverPoint(t *testing.T) {
 	r := CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
 	s := CreateSphere()
 	s.SetTransform(math.Translation(0.0, 0.0, 1.0))
+	s.CalculateInverseTransform()
 	i := CreateIntersection(5.0, s)
 
 	comps := i.PrepareComputation(r, make([]Intersection, 0))
@@ -184,6 +187,7 @@ func TestPrepareComputationsOverPoint(t *testing.T) {
 
 func TestPrepareComputationReflectV(t *testing.T) {
 	p := CreatePlane()
+	p.CalculateInverseTransform()
 	r := CreateRay(math.CreatePoint(0.0, 1.0, -1.0), math.CreateVector(0.0, -gomath.Sqrt(2)/2.0, gomath.Sqrt(2)/2.0))
 	i := CreateIntersection(gomath.Sqrt(2.0), p)
 	expected := math.CreateVector(0.0, gomath.Sqrt(2)/2.0, gomath.Sqrt(2)/2.0)
@@ -196,14 +200,17 @@ func TestPrepareComputationReflectV(t *testing.T) {
 func TestPrepareComputationRefractiveIndices(t *testing.T) {
 	a := CreateGlassSphere()
 	a.SetTransform(math.Scaling(2.0, 2.0, 2.0))
+	a.CalculateInverseTransform()
 	a.GetMaterial().SetRefractiveIndex(1.5)
 
 	b := CreateGlassSphere()
 	b.SetTransform(math.Translation(0.0, 0.0, -0.25))
+	b.CalculateInverseTransform()
 	b.GetMaterial().SetRefractiveIndex(2.0)
 
 	c := CreateGlassSphere()
 	c.SetTransform(math.Translation(0.0, 0.0, 0.25))
+	c.CalculateInverseTransform()
 	c.GetMaterial().SetRefractiveIndex(2.5)
 
 	r := CreateRay(math.CreatePoint(0.0, 0.0, -4.0), math.CreateVector(0.0, 0.0, 1.0))
@@ -237,6 +244,7 @@ func TestPrepareComputationUnderPoint(t *testing.T) {
 	r := CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
 	s := CreateGlassSphere()
 	s.SetTransform(math.Translation(0.0, 0.0, 1.0))
+	s.CalculateInverseTransform()
 	i := CreateIntersection(5.0, s)
 	xs := []Intersection{i}
 
@@ -248,6 +256,7 @@ func TestPrepareComputationUnderPoint(t *testing.T) {
 
 func TestSchlickTotalInternalReflection(t *testing.T) {
 	s := CreateGlassSphere()
+	s.CalculateInverseTransform()
 	r := CreateRay(math.CreatePoint(0.0, 0.0, gomath.Sqrt(2)/2.0), math.CreateVector(0.0, 1.0, 0.0))
 	xs := []Intersection{
 		CreateIntersection(-gomath.Sqrt(2)/2.0, s),
@@ -261,6 +270,7 @@ func TestSchlickTotalInternalReflection(t *testing.T) {
 
 func TestSchlickPerpendicularRay(t *testing.T) {
 	s := CreateGlassSphere()
+	s.CalculateInverseTransform()
 	r := CreateRay(math.CreatePoint(0.0, 0.0, 0), math.CreateVector(0.0, 1.0, 0.0))
 	xs := []Intersection{
 		CreateIntersection(-1, s),
@@ -274,6 +284,7 @@ func TestSchlickPerpendicularRay(t *testing.T) {
 
 func TestSchlickSmallViewAngle(t *testing.T) {
 	s := CreateGlassSphere()
+	s.CalculateInverseTransform()
 	r := CreateRay(math.CreatePoint(0.0, 0.99, -2.0), math.CreateVector(0.0, 0.0, 1.0))
 	xs := []Intersection{
 		CreateIntersection(1.8589, s),
@@ -296,6 +307,7 @@ func TestCreateIntersectionWithUV(t *testing.T) {
 
 func TestPrepareComputationUV(t *testing.T) {
 	tri := DefaultSmoothTriangle()
+	tri.CalculateInverseTransform()
 	i := CreateIntersectionWithUV(1.0, tri, 0.45, 0.25)
 	r := CreateRay(p(-0.2, 0.3, -2.0), v(0.0, 0.0, 1.0))
 	expected := v(-0.5547, 0.83205, 0.0)

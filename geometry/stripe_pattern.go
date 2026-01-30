@@ -10,15 +10,14 @@ type StripePattern struct {
 	ColorA           math.Color
 	ColorB           math.Color
 	Transform        math.Matrix
-	InverseTransform *math.Matrix
+	InverseTransform math.Matrix
 }
 
 func CreateStripePattern(a math.Color, b math.Color) *StripePattern {
 	return &StripePattern{
-		ColorA:           a,
-		ColorB:           b,
-		Transform:        math.IdentityMatrix(),
-		InverseTransform: nil,
+		ColorA:    a,
+		ColorB:    b,
+		Transform: math.IdentityMatrix(),
 	}
 }
 
@@ -55,11 +54,15 @@ func (sp *StripePattern) Equals(other Pattern) bool {
 }
 
 func (sp *StripePattern) GetInverseTransform() math.Matrix {
-	if sp.InverseTransform != nil {
-		return *sp.InverseTransform
-	}
+	// if sp.InverseTransform != nil {
+	// 	return *sp.InverseTransform
+	// }
 
-	inverse := sp.Transform.Inverse()
-	sp.InverseTransform = &inverse
-	return *sp.InverseTransform
+	// inverse := sp.Transform.Inverse()
+	// sp.InverseTransform = &inverse
+	return sp.InverseTransform
+}
+
+func (sp *StripePattern) CalculateInverseTransform() {
+	sp.InverseTransform = sp.Transform.Inverse()
 }

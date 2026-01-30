@@ -10,15 +10,14 @@ type CheckerPattern struct {
 	ColorA           math.Color
 	ColorB           math.Color
 	Transform        math.Matrix
-	InverseTransform *math.Matrix
+	InverseTransform math.Matrix
 }
 
 func CreateCheckerPattern(a math.Color, b math.Color) *CheckerPattern {
 	return &CheckerPattern{
-		ColorA:           a,
-		ColorB:           b,
-		Transform:        math.IdentityMatrix(),
-		InverseTransform: nil,
+		ColorA:    a,
+		ColorB:    b,
+		Transform: math.IdentityMatrix(),
 	}
 }
 
@@ -56,11 +55,15 @@ func (c *CheckerPattern) Equals(other Pattern) bool {
 }
 
 func (c *CheckerPattern) GetInverseTransform() math.Matrix {
-	if c.InverseTransform != nil {
-		return *c.InverseTransform
-	}
+	// if c.InverseTransform != nil {
+	// 	return *c.InverseTransform
+	// }
 
-	inverse := c.Transform.Inverse()
-	c.InverseTransform = &inverse
-	return *c.InverseTransform
+	// inverse := c.Transform.Inverse()
+	// c.InverseTransform = &inverse
+	return c.InverseTransform
+}
+
+func (c *CheckerPattern) CalculateInverseTransform() {
+	c.InverseTransform = c.Transform.Inverse()
 }

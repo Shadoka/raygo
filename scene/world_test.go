@@ -39,6 +39,7 @@ func TestDefaultWorld(t *testing.T) {
 
 func TestIntersectWorld(t *testing.T) {
 	w := DefaultWorld()
+	w.CalculateInverseTransforms()
 	r := g.CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
 
 	xs := w.Intersect(r)
@@ -52,6 +53,7 @@ func TestIntersectWorld(t *testing.T) {
 
 func TestShadeHitDefault(t *testing.T) {
 	w := DefaultWorld()
+	w.CalculateInverseTransforms()
 	r := g.CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
 	i := g.CreateIntersection(4.0, w.Objects[0])
 	expected := math.CreateColor(0.38066, 0.47583, 0.2855)
@@ -64,6 +66,7 @@ func TestShadeHitDefault(t *testing.T) {
 
 func TestShadeHitInside(t *testing.T) {
 	w := DefaultWorld()
+	w.CalculateInverseTransforms()
 	l := lighting.CreateLight(math.CreatePoint(0.0, 0.25, 0.0), math.CreateColor(1.0, 1.0, 1.0))
 	w.Light = &l
 
@@ -79,6 +82,7 @@ func TestShadeHitInside(t *testing.T) {
 
 func TestColorAtRayMiss(t *testing.T) {
 	w := DefaultWorld()
+	w.CalculateInverseTransforms()
 	r := g.CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 1.0, 0.0))
 	expected := math.CreateColor(0.0, 0.0, 0.0)
 
@@ -89,6 +93,7 @@ func TestColorAtRayMiss(t *testing.T) {
 
 func TestColorAtRayHit(t *testing.T) {
 	w := DefaultWorld()
+	w.CalculateInverseTransforms()
 	r := g.CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
 	expected := math.CreateColor(0.38066, 0.47583, 0.2855)
 
@@ -119,6 +124,7 @@ func TestColorAtHitBehindRay(t *testing.T) {
 	objects = append(objects, s2)
 
 	w.Objects = objects
+	w.CalculateInverseTransforms()
 
 	light := lighting.CreateLight(math.CreatePoint(-10.0, 10.0, -10.0), math.CreateColor(1.0, 1.0, 1.0))
 	w.Light = &light
@@ -132,6 +138,7 @@ func TestColorAtHitBehindRay(t *testing.T) {
 
 func TestIsShadowedColinearPoint(t *testing.T) {
 	w := DefaultWorld()
+	w.CalculateInverseTransforms()
 	p := math.CreatePoint(0.0, 10.0, 0.0)
 
 	assert.Assert(t, w.IsShadowed(p) == false)
@@ -139,6 +146,7 @@ func TestIsShadowedColinearPoint(t *testing.T) {
 
 func TestIsShadowedBehindSphere(t *testing.T) {
 	w := DefaultWorld()
+	w.CalculateInverseTransforms()
 	p := math.CreatePoint(10.0, -10.0, 10.0)
 
 	assert.Assert(t, w.IsShadowed(p) == true)
@@ -146,6 +154,7 @@ func TestIsShadowedBehindSphere(t *testing.T) {
 
 func TestIsShadowedBehindLight(t *testing.T) {
 	w := DefaultWorld()
+	w.CalculateInverseTransforms()
 	p := math.CreatePoint(-20.0, 20.0, -20.0)
 
 	assert.Assert(t, w.IsShadowed(p) == false)
@@ -153,6 +162,7 @@ func TestIsShadowedBehindLight(t *testing.T) {
 
 func TestIsShadowedBetweenLightAndShape(t *testing.T) {
 	w := DefaultWorld()
+	w.CalculateInverseTransforms()
 	p := math.CreatePoint(-2.0, 2.0, -2.0)
 
 	assert.Assert(t, w.IsShadowed(p) == false)
@@ -168,6 +178,7 @@ func TestShadeHitInShadow(t *testing.T) {
 	s2.SetTransform(math.Translation(0.0, 0.0, 10.0))
 	objs = append(objs, s1, s2)
 	w.Objects = objs
+	w.CalculateInverseTransforms()
 
 	light := lighting.CreateLight(math.CreatePoint(0.0, 0.0, -10.0), math.CreateColor(1.0, 1.0, 1.0))
 	w.Light = &light
@@ -183,6 +194,7 @@ func TestShadeHitInShadow(t *testing.T) {
 
 func TestReflectedColorWithNonreflectiveMaterial(t *testing.T) {
 	w := DefaultWorld()
+	w.CalculateInverseTransforms()
 	r := g.CreateRay(math.CreatePoint(0.0, 0.0, 0.0), math.CreateVector(0.0, 0.0, 1.0))
 	m := w.Objects[1].GetMaterial()
 	m.SetAmbient(1.0)
@@ -200,6 +212,7 @@ func TestReflectedColorWithReflectiveMaterial(t *testing.T) {
 	p.GetMaterial().SetReflective(0.5)
 	p.SetTransform(math.Translation(0.0, -1.0, 0.0))
 	w.Objects = append(w.Objects, p)
+	w.CalculateInverseTransforms()
 
 	r := g.CreateRay(math.CreatePoint(0.0, 0.0, -3.0), math.CreateVector(0.0, -gomath.Sqrt(2)/2.0, gomath.Sqrt(2)/2.0))
 	i := g.CreateIntersection(gomath.Sqrt(2), p)
@@ -217,6 +230,7 @@ func TestShadeHitWithReflectiveMaterial(t *testing.T) {
 	p.GetMaterial().SetReflective(0.5)
 	p.SetTransform(math.Translation(0.0, -1.0, 0.0))
 	w.Objects = append(w.Objects, p)
+	w.CalculateInverseTransforms()
 
 	r := g.CreateRay(math.CreatePoint(0.0, 0.0, -3.0), math.CreateVector(0.0, -gomath.Sqrt(2)/2.0, gomath.Sqrt(2)/2.0))
 	i := g.CreateIntersection(gomath.Sqrt(2), p)
@@ -243,6 +257,7 @@ func TestColorAtNoEndlessRecursion(t *testing.T) {
 	upper.GetMaterial().SetReflective(1.0)
 	upper.SetTransform(math.Translation(0.0, 1.0, 0.0))
 	w.Objects = append(w.Objects, upper)
+	w.CalculateInverseTransforms()
 
 	r := g.CreateRay(math.CreatePoint(0.0, 0.0, 0.0), math.CreateVector(0.0, 1.0, 0.0))
 	expected := math.CreateColor(3.8, 3.8, 3.8)
@@ -254,6 +269,7 @@ func TestColorAtNoEndlessRecursion(t *testing.T) {
 
 func TestRefractedColorOpaqueSurface(t *testing.T) {
 	w := DefaultWorld()
+	w.CalculateInverseTransforms()
 	r := g.CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
 	xs := []g.Intersection{g.CreateIntersection(4.0, w.Objects[0]),
 		g.CreateIntersection(6.0, w.Objects[0]),
@@ -267,6 +283,7 @@ func TestRefractedColorOpaqueSurface(t *testing.T) {
 
 func TestRefractedColorMaxDepth(t *testing.T) {
 	w := DefaultWorld()
+	w.CalculateInverseTransforms()
 	w.Objects[0].GetMaterial().SetTransparency(1.0)
 	w.Objects[0].GetMaterial().SetRefractiveIndex(1.5)
 	r := g.CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
@@ -282,6 +299,7 @@ func TestRefractedColorMaxDepth(t *testing.T) {
 
 func TestRefractedColorTotalInternalReflection(t *testing.T) {
 	w := DefaultWorld()
+	w.CalculateInverseTransforms()
 	w.Objects[0].GetMaterial().SetTransparency(1.0)
 	w.Objects[0].GetMaterial().SetRefractiveIndex(1.5)
 	r := g.CreateRay(math.CreatePoint(0.0, 0.0, gomath.Sqrt(2)/2.0), math.CreateVector(0.0, 1.0, 0.0))
@@ -308,6 +326,7 @@ func TestShadeHitWithTransparentMaterial(t *testing.T) {
 	ball.GetMaterial().SetAmbient(0.5)
 	ball.SetTransform(math.Translation(0.0, -3.5, -0.5))
 	w.Objects = append(w.Objects, floor, ball)
+	w.CalculateInverseTransforms()
 
 	r := g.CreateRay(math.CreatePoint(0.0, 0.0, -3.0), math.CreateVector(0.0, -gomath.Sqrt(2)/2.0, gomath.Sqrt(2)/2.0))
 	xs := []g.Intersection{

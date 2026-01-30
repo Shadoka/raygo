@@ -10,6 +10,7 @@ import (
 
 func TestLocalPlaneIntersectParallel(t *testing.T) {
 	p := CreatePlane()
+	p.CalculateInverseTransform()
 	r := CreateRay(math.CreatePoint(0.0, 10.0, 0.0), math.CreateVector(0.0, 0.0, 1.0))
 
 	xs := p.localPlaneIntersect(r)
@@ -19,6 +20,7 @@ func TestLocalPlaneIntersectParallel(t *testing.T) {
 
 func TestLocalPlaneIntersectCoplanar(t *testing.T) {
 	p := CreatePlane()
+	p.CalculateInverseTransform()
 	r := CreateRay(math.CreatePoint(0.0, 0.0, 0.0), math.CreateVector(0.0, 0.0, 1.0))
 
 	xs := p.localPlaneIntersect(r)
@@ -28,6 +30,7 @@ func TestLocalPlaneIntersectCoplanar(t *testing.T) {
 
 func TestLocalPlaneIntersectFromAbove(t *testing.T) {
 	p := CreatePlane()
+	p.CalculateInverseTransform()
 	r := CreateRay(math.CreatePoint(0.0, 1.0, 0.0), math.CreateVector(0.0, -1.0, 0.0))
 	expected := CreateIntersection(1.0, p)
 
@@ -40,6 +43,7 @@ func TestLocalPlaneIntersectFromAbove(t *testing.T) {
 
 func TestLocalPlaneIntersectFromBelow(t *testing.T) {
 	p := CreatePlane()
+	p.CalculateInverseTransform()
 	r := CreateRay(math.CreatePoint(0.0, -2.0, 0.0), math.CreateVector(0.0, 1.0, 0.0))
 	expected := CreateIntersection(2.0, p)
 
@@ -52,6 +56,7 @@ func TestLocalPlaneIntersectFromBelow(t *testing.T) {
 
 func TestNormalAtDefaultPlane(t *testing.T) {
 	p := CreatePlane()
+	p.CalculateInverseTransform()
 	point := math.CreatePoint(0.0, 0.0, 5.0)
 	expected := math.CreateVector(0.0, 1.0, 0.0)
 
@@ -63,6 +68,7 @@ func TestNormalAtDefaultPlane(t *testing.T) {
 func TestNormalAtDefaultPlaneTranslated(t *testing.T) {
 	p := CreatePlane()
 	p.SetTransform(math.Translation(4.0, 0.0, 0.0))
+	p.CalculateInverseTransform()
 	point := math.CreatePoint(0.0, 0.0, 5.0)
 	expected := math.CreateVector(0.0, 1.0, 0.0)
 
@@ -74,6 +80,7 @@ func TestNormalAtDefaultPlaneTranslated(t *testing.T) {
 func TestNormalAtDefaultPlaneRotatedX(t *testing.T) {
 	p := CreatePlane()
 	p.SetTransform(math.Rotation_X(gomath.Pi / 2.0))
+	p.CalculateInverseTransform()
 	point := math.CreatePoint(0.0, 0.0, 5.0)
 	expected := math.CreateVector(0.0, 0.0, 1.0)
 
@@ -84,6 +91,7 @@ func TestNormalAtDefaultPlaneRotatedX(t *testing.T) {
 
 func TestPlaneBoundsUntransformed(t *testing.T) {
 	p := CreatePlane()
+	p.CalculateInverseTransform()
 	b := p.Bounds()
 	expected := Bounds{
 		Minimum: math.CreatePoint(gomath.Inf(-1), -0.1, gomath.Inf(-1)),
@@ -96,6 +104,7 @@ func TestPlaneBoundsUntransformed(t *testing.T) {
 func TestPlaneBoundsTransformed(t *testing.T) {
 	p := CreatePlane()
 	p.SetTransform(math.Translation(1.0, 1.0, 1.0).MulM(math.Scaling(3.0, 3.0, 3.0)))
+	p.CalculateInverseTransform()
 	b := p.Bounds()
 	expected := Bounds{
 		Minimum: math.CreatePoint(gomath.Inf(-1), -0.1, gomath.Inf(-1)),

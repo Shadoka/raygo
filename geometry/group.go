@@ -3,6 +3,7 @@ package geometry
 import (
 	"raygo/math"
 	"reflect"
+	"sync"
 
 	"github.com/google/uuid"
 )
@@ -14,7 +15,7 @@ type Group struct {
 	Children          []Shape
 	Parent            *Group
 	CachedBoundingBox *Bounds
-	InverseTransform  *math.Matrix
+	InverseTransform  math.Matrix
 }
 
 func EmptyGroup() *Group {
@@ -25,7 +26,6 @@ func EmptyGroup() *Group {
 		Children:          make([]Shape, 0),
 		Parent:            nil,
 		CachedBoundingBox: nil,
-		InverseTransform:  nil,
 	}
 }
 
@@ -131,11 +131,24 @@ func (g *Group) Bounds() *Bounds {
 }
 
 func (g *Group) GetInverseTransform() math.Matrix {
-	if g.InverseTransform != nil {
-		return *g.InverseTransform
+	// if g.InverseTransform != nil {
+	// 	return *g.InverseTransform
+	// }
+
+	// inverse := g.Transform.Inverse()
+	// g.InverseTransform = &inverse
+	return g.InverseTransform
+}
+
+func (g *Group) CalculateInverseTransform() {
+	var wg sync.WaitGroup
+
+	g.InverseTransform = g.Transform.Inverse()
+	for _, child := range g.Children {
+		wg.Go(func() {
+			child.CalculateInverseTransform()
+		})
 	}
 
-	inverse := g.Transform.Inverse()
-	g.InverseTransform = &inverse
-	return *g.InverseTransform
+	wg.Wait()
 }

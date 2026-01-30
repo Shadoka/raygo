@@ -26,6 +26,7 @@ func TestSetTransform(t *testing.T) {
 func TestIntersectSphereTwoPoints(t *testing.T) {
 	r := CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
 	s := CreateSphere()
+	s.CalculateInverseTransform()
 
 	xs := s.Intersect(r)
 
@@ -37,6 +38,7 @@ func TestIntersectSphereTwoPoints(t *testing.T) {
 func TestIntersectSphereTangent(t *testing.T) {
 	r := CreateRay(math.CreatePoint(0.0, 1.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
 	s := CreateSphere()
+	s.CalculateInverseTransform()
 
 	xs := s.Intersect(r)
 
@@ -48,6 +50,7 @@ func TestIntersectSphereTangent(t *testing.T) {
 func TestIntersectSphereMiss(t *testing.T) {
 	r := CreateRay(math.CreatePoint(0.0, 2.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
 	s := CreateSphere()
+	s.CalculateInverseTransform()
 
 	xs := s.Intersect(r)
 
@@ -57,6 +60,7 @@ func TestIntersectSphereMiss(t *testing.T) {
 func TestIntersectInsideSphere(t *testing.T) {
 	r := CreateRay(math.CreatePoint(0.0, 0.0, 0.0), math.CreateVector(0.0, 0.0, 1.0))
 	s := CreateSphere()
+	s.CalculateInverseTransform()
 
 	xs := s.Intersect(r)
 
@@ -68,6 +72,7 @@ func TestIntersectInsideSphere(t *testing.T) {
 func TestIntersectBehindSphere(t *testing.T) {
 	r := CreateRay(math.CreatePoint(0.0, 0.0, 2.0), math.CreateVector(0.0, 0.0, 1.0))
 	s := CreateSphere()
+	s.CalculateInverseTransform()
 
 	xs := s.Intersect(r)
 
@@ -79,6 +84,7 @@ func TestIntersectBehindSphere(t *testing.T) {
 func TestIntersectSetsObject(t *testing.T) {
 	r := CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
 	s := CreateSphere()
+	s.CalculateInverseTransform()
 
 	xs := s.Intersect(r)
 
@@ -91,6 +97,7 @@ func TestIntersectSphereWithScaling(t *testing.T) {
 	r := CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
 	s := CreateSphere()
 	s.SetTransform(math.Scaling(2.0, 2.0, 2.0))
+	s.CalculateInverseTransform()
 
 	xs := s.Intersect(r)
 
@@ -103,6 +110,7 @@ func TestIntersectSphereWithTranslation(t *testing.T) {
 	r := CreateRay(math.CreatePoint(0.0, 0.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
 	s := CreateSphere()
 	s.SetTransform(math.Translation(5.0, 0.0, 0.0))
+	s.CalculateInverseTransform()
 
 	xs := s.Intersect(r)
 
@@ -111,6 +119,7 @@ func TestIntersectSphereWithTranslation(t *testing.T) {
 
 func TestNormalAtSphereX(t *testing.T) {
 	s := CreateSphere()
+	s.CalculateInverseTransform()
 	expected := math.CreateVector(1.0, 0.0, 0.0)
 
 	assert.Assert(t, expected.Equals(s.NormalAt(math.CreatePoint(1.0, 0.0, 0.0), Intersection{})))
@@ -118,6 +127,7 @@ func TestNormalAtSphereX(t *testing.T) {
 
 func TestNormalAtSphereY(t *testing.T) {
 	s := CreateSphere()
+	s.CalculateInverseTransform()
 	expected := math.CreateVector(0.0, 1.0, 0.0)
 
 	assert.Assert(t, expected.Equals(s.NormalAt(math.CreatePoint(0.0, 1.0, 0.0), Intersection{})))
@@ -125,6 +135,7 @@ func TestNormalAtSphereY(t *testing.T) {
 
 func TestNormalAtSphereZ(t *testing.T) {
 	s := CreateSphere()
+	s.CalculateInverseTransform()
 	expected := math.CreateVector(0.0, 0.0, 1.0)
 
 	assert.Assert(t, expected.Equals(s.NormalAt(math.CreatePoint(0.0, 0.0, 1.0), Intersection{})))
@@ -132,6 +143,7 @@ func TestNormalAtSphereZ(t *testing.T) {
 
 func TestNormalAtSphereNonaxialPoint(t *testing.T) {
 	s := CreateSphere()
+	s.CalculateInverseTransform()
 	expected := math.CreateVector(gomath.Sqrt(3.0)/3.0, gomath.Sqrt(3.0)/3.0, gomath.Sqrt(3.0)/3.0)
 
 	assert.Assert(t, expected.Equals(s.NormalAt(math.CreatePoint(gomath.Sqrt(3.0)/3.0, gomath.Sqrt(3.0)/3.0, gomath.Sqrt(3.0)/3.0), Intersection{})))
@@ -139,6 +151,7 @@ func TestNormalAtSphereNonaxialPoint(t *testing.T) {
 
 func TestNormalAtSphereIsNormalized(t *testing.T) {
 	s := CreateSphere()
+	s.CalculateInverseTransform()
 	expected := math.CreateVector(gomath.Sqrt(3.0)/3.0, gomath.Sqrt(3.0)/3.0, gomath.Sqrt(3.0)/3.0).Normalize()
 
 	assert.Assert(t, expected.Equals(s.NormalAt(math.CreatePoint(gomath.Sqrt(3.0)/3.0, gomath.Sqrt(3.0)/3.0, gomath.Sqrt(3.0)/3.0), Intersection{})))
@@ -147,6 +160,7 @@ func TestNormalAtSphereIsNormalized(t *testing.T) {
 func TestNormalAtSphereTranslated(t *testing.T) {
 	s := CreateSphere()
 	s.SetTransform(math.Translation(0.0, 1.0, 0.0))
+	s.CalculateInverseTransform()
 	expected := math.CreateVector(0.0, 0.70711, -0.70711)
 
 	n := s.NormalAt(math.CreatePoint(0.0, 1.70711, -0.70711), Intersection{})
@@ -156,6 +170,7 @@ func TestNormalAtSphereTranslated(t *testing.T) {
 func TestNormalAtSphereTransformed(t *testing.T) {
 	s := CreateSphere()
 	s.SetTransform(math.Scaling(1.0, 0.5, 1.0).MulM(math.Rotation_Z(gomath.Pi / 5.0)))
+	s.CalculateInverseTransform()
 	expected := math.CreateVector(0.0, 0.97014, -0.24254)
 
 	n := s.NormalAt(math.CreatePoint(0.0, gomath.Sqrt(2)/2.0, -gomath.Sqrt(2)/2), Intersection{})

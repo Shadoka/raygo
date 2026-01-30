@@ -77,7 +77,7 @@ func (m Matrix) Transpose() Matrix {
 	return CreateMatrixFlat(result)
 }
 
-func (m *Matrix) Determinant() float64 {
+func (m Matrix) Determinant() float64 {
 	result := 0.0
 	if m.dimension == 2 {
 		result = m.Get(0, 0)*m.Get(1, 1) - m.Get(0, 1)*m.Get(1, 0)

@@ -9,6 +9,7 @@ import (
 
 func TestCubeIntersectXFaces(t *testing.T) {
 	c := CreateCube()
+	c.CalculateInverseTransform()
 	rFromRight := CreateRay(math.CreatePoint(5.0, 0.5, 0.0), math.CreateVector(-1.0, 0.0, 0.0))
 	rFromLeft := CreateRay(math.CreatePoint(-5.0, 0.5, 0.0), math.CreateVector(1.0, 0.0, 0.0))
 
@@ -23,6 +24,7 @@ func TestCubeIntersectXFaces(t *testing.T) {
 
 func TestCubeIntersectYFaces(t *testing.T) {
 	c := CreateCube()
+	c.CalculateInverseTransform()
 	rFromTop := CreateRay(math.CreatePoint(0.5, 5.0, 0.0), math.CreateVector(0.0, -1.0, 0.0))
 	rFromBottom := CreateRay(math.CreatePoint(0.5, -5.0, 0.0), math.CreateVector(0.0, 1.0, 0.0))
 
@@ -37,6 +39,7 @@ func TestCubeIntersectYFaces(t *testing.T) {
 
 func TestCubeIntersectZFaces(t *testing.T) {
 	c := CreateCube()
+	c.CalculateInverseTransform()
 	rFromBehind := CreateRay(math.CreatePoint(0.5, 0.0, 5.0), math.CreateVector(0.0, 0.0, -1.0))
 	rFromFront := CreateRay(math.CreatePoint(0.5, 0.0, -5.0), math.CreateVector(0.0, 0.0, 1.0))
 
@@ -51,6 +54,7 @@ func TestCubeIntersectZFaces(t *testing.T) {
 
 func TestCubeIntersectFromInside(t *testing.T) {
 	c := CreateCube()
+	c.CalculateInverseTransform()
 	r := CreateRay(math.CreatePoint(0.0, 0.5, 0.0), math.CreateVector(0.0, 0.0, 1.0))
 
 	xsFromBehind := c.localCubeIntersect(r)
@@ -61,6 +65,7 @@ func TestCubeIntersectFromInside(t *testing.T) {
 
 func TestCubeIntersectRayMiss(t *testing.T) {
 	c := CreateCube()
+	c.CalculateInverseTransform()
 	r1 := CreateRay(math.CreatePoint(-2.0, 0.0, 0.0), math.CreateVector(0.2673, 0.5345, 0.8018))
 	r2 := CreateRay(math.CreatePoint(0.0, -2.0, 0.0), math.CreateVector(0.8018, 0.2673, 0.5345))
 	r3 := CreateRay(math.CreatePoint(0.0, 0.0, -2.0), math.CreateVector(0.5345, 0.8018, 0.2673))
@@ -80,6 +85,7 @@ func TestCubeIntersectRayMiss(t *testing.T) {
 
 func TestCubeLocalNormalAt(t *testing.T) {
 	c := CreateCube()
+	c.CalculateInverseTransform()
 	p1 := math.CreatePoint(1.0, 0.5, -0.8)
 	p2 := math.CreatePoint(-1.0, -0.2, 0.9)
 	p3 := math.CreatePoint(-0.4, 1.0, -0.1)
@@ -109,6 +115,7 @@ func TestCubeLocalNormalAt(t *testing.T) {
 
 func TestCubeBoundsUntransformed(t *testing.T) {
 	c := CreateCube()
+	c.CalculateInverseTransform()
 	b := c.ScaledBounds()
 	expected := Bounds{
 		Minimum: math.CreatePoint(-1.0, -1.0, -1.0),
@@ -121,6 +128,7 @@ func TestCubeBoundsUntransformed(t *testing.T) {
 func TestCubeBoundsScaled(t *testing.T) {
 	c := CreateCube()
 	c.SetTransform(math.Scaling(3.0, 3.0, 3.0))
+	c.CalculateInverseTransform()
 	b := c.ScaledBounds()
 	expected := Bounds{
 		Minimum: math.CreatePoint(-3.0, -3.0, -3.0),
@@ -133,6 +141,7 @@ func TestCubeBoundsScaled(t *testing.T) {
 func TestCubeBoundsTransformed(t *testing.T) {
 	c := CreateCube()
 	c.SetTransform(math.Translation(1.0, 1.0, 1.0).MulM(math.Scaling(3.0, 3.0, 3.0)))
+	c.CalculateInverseTransform()
 	b := c.ScaledBounds()
 	expected := Bounds{
 		Minimum: math.CreatePoint(-2.0, -2.0, -2.0),
@@ -145,6 +154,7 @@ func TestCubeBoundsTransformed(t *testing.T) {
 func TestCubeScaledLocalIntersect(t *testing.T) {
 	c := CreateCube()
 	c.SetTransform(math.Scaling(2.0, 2.0, 2.0).MulM(math.Translation(5.0, 0.0, 0.0)))
+	c.CalculateInverseTransform()
 	r := CreateRay(math.CreatePoint(10.0, 0.0, -10.0), math.CreateVector(0.0, 0.0, 1.0))
 
 	xs := c.Intersect(r)

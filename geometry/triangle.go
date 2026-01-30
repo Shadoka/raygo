@@ -4,6 +4,7 @@ import (
 	gomath "math"
 	"raygo/math"
 	"reflect"
+	"sync"
 
 	"github.com/google/uuid"
 )
@@ -20,7 +21,8 @@ type Triangle struct {
 	Material         Material
 	Parent           *Group
 	CachedBounds     *Bounds
-	InverseTransform *math.Matrix
+	InverseTransform math.Matrix
+	mu               sync.Mutex
 	// smooth triangle fields
 	N1     math.Vector
 	N2     math.Vector
@@ -32,19 +34,18 @@ func CreateTriangle(p1 math.Point, p2 math.Point, p3 math.Point) *Triangle {
 	e1 := p2.Subtract(p1)
 	e2 := p3.Subtract(p1)
 	return &Triangle{
-		P1:               p1,
-		P2:               p2,
-		P3:               p3,
-		E1:               e1,
-		E2:               e2,
-		Normal:           e1.Cross(e2).Normalize(),
-		Id:               uuid.NewString(),
-		Transform:        math.IdentityMatrix(),
-		Material:         DefaultMaterial(),
-		Parent:           nil,
-		CachedBounds:     nil,
-		Smooth:           false,
-		InverseTransform: nil,
+		P1:           p1,
+		P2:           p2,
+		P3:           p3,
+		E1:           e1,
+		E2:           e2,
+		Normal:       e1.Cross(e2).Normalize(),
+		Id:           uuid.NewString(),
+		Transform:    math.IdentityMatrix(),
+		Material:     DefaultMaterial(),
+		Parent:       nil,
+		CachedBounds: nil,
+		Smooth:       false,
 	}
 }
 
@@ -53,22 +54,21 @@ func CreateSmoothTriangle(p1 math.Point, p2 math.Point, p3 math.Point,
 	e1 := p2.Subtract(p1)
 	e2 := p3.Subtract(p1)
 	return &Triangle{
-		P1:               p1,
-		P2:               p2,
-		P3:               p3,
-		E1:               e1,
-		E2:               e2,
-		Normal:           e1.Cross(e2).Normalize(),
-		Id:               uuid.NewString(),
-		Transform:        math.IdentityMatrix(),
-		Material:         DefaultMaterial(),
-		Parent:           nil,
-		CachedBounds:     nil,
-		Smooth:           true,
-		N1:               n1,
-		N2:               n2,
-		N3:               n3,
-		InverseTransform: nil,
+		P1:           p1,
+		P2:           p2,
+		P3:           p3,
+		E1:           e1,
+		E2:           e2,
+		Normal:       e1.Cross(e2).Normalize(),
+		Id:           uuid.NewString(),
+		Transform:    math.IdentityMatrix(),
+		Material:     DefaultMaterial(),
+		Parent:       nil,
+		CachedBounds: nil,
+		Smooth:       true,
+		N1:           n1,
+		N2:           n2,
+		N3:           n3,
 	}
 }
 
@@ -163,7 +163,8 @@ func (t *Triangle) Bounds() *Bounds {
 }
 
 func (t *Triangle) Intersect(ray Ray) []Intersection {
-	localRay := ray.Transform(t.GetInverseTransform())
+	tInverse := t.GetInverseTransform()
+	localRay := ray.Transform(tInverse)
 	return t.localIntersect(localRay)
 }
 
@@ -201,11 +202,17 @@ func (t *Triangle) localIntersect(localRay Ray) []Intersection {
 }
 
 func (t *Triangle) GetInverseTransform() math.Matrix {
-	if t.InverseTransform != nil {
-		return *t.InverseTransform
-	}
+	// t.mu.Lock()
+	// defer t.mu.Unlock()
+	// if t.InverseTransform != nil {
+	// 	return *t.InverseTransform
+	// }
 
-	inverse := t.Transform.Inverse()
-	t.InverseTransform = &inverse
-	return *t.InverseTransform
+	// inverse := t.Transform.Inverse()
+	// t.InverseTransform = &inverse
+	return t.InverseTransform
+}
+
+func (t *Triangle) CalculateInverseTransform() {
+	t.InverseTransform = t.Transform.Inverse()
 }

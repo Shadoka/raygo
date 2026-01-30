@@ -13,16 +13,15 @@ type Plane struct {
 	Transform        math.Matrix
 	Material         Material
 	Parent           *Group
-	InverseTransform *math.Matrix
+	InverseTransform math.Matrix
 }
 
 func CreatePlane() *Plane {
 	return &Plane{
-		Id:               uuid.NewString(),
-		Transform:        math.IdentityMatrix(),
-		Material:         DefaultMaterial(),
-		Parent:           nil,
-		InverseTransform: nil,
+		Id:        uuid.NewString(),
+		Transform: math.IdentityMatrix(),
+		Material:  DefaultMaterial(),
+		Parent:    nil,
 	}
 }
 
@@ -95,11 +94,15 @@ func (p *Plane) Bounds() *Bounds {
 }
 
 func (p *Plane) GetInverseTransform() math.Matrix {
-	if p.InverseTransform != nil {
-		return *p.InverseTransform
-	}
+	// if p.InverseTransform != nil {
+	// 	return *p.InverseTransform
+	// }
 
-	inverse := p.Transform.Inverse()
-	p.InverseTransform = &inverse
-	return *p.InverseTransform
+	// inverse := p.Transform.Inverse()
+	// p.InverseTransform = &inverse
+	return p.InverseTransform
+}
+
+func (p *Plane) CalculateInverseTransform() {
+	p.InverseTransform = p.Transform.Inverse()
 }

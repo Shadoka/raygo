@@ -16,19 +16,18 @@ type Cone struct {
 	Maximum          float64
 	Closed           bool
 	Parent           *Group
-	InverseTransform *math.Matrix
+	InverseTransform math.Matrix
 }
 
 func CreateCone() *Cone {
 	return &Cone{
-		Id:               uuid.NewString(),
-		Transform:        math.IdentityMatrix(),
-		Material:         DefaultMaterial(),
-		Minimum:          gomath.Inf(-1),
-		Maximum:          gomath.Inf(1),
-		Closed:           false,
-		Parent:           nil,
-		InverseTransform: nil,
+		Id:        uuid.NewString(),
+		Transform: math.IdentityMatrix(),
+		Material:  DefaultMaterial(),
+		Minimum:   gomath.Inf(-1),
+		Maximum:   gomath.Inf(1),
+		Closed:    false,
+		Parent:    nil,
 	}
 }
 
@@ -179,11 +178,15 @@ func (c *Cone) Bounds() *Bounds {
 }
 
 func (c *Cone) GetInverseTransform() math.Matrix {
-	if c.InverseTransform != nil {
-		return *c.InverseTransform
-	}
+	// if c.InverseTransform != nil {
+	// 	return *c.InverseTransform
+	// }
 
-	inverse := c.Transform.Inverse()
-	c.InverseTransform = &inverse
-	return *c.InverseTransform
+	// inverse := c.Transform.Inverse()
+	// c.InverseTransform = &inverse
+	return c.InverseTransform
+}
+
+func (c *Cone) CalculateInverseTransform() {
+	c.InverseTransform = c.Transform.Inverse()
 }

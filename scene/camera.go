@@ -55,6 +55,12 @@ func (cc *ColorCache) Get(p math.Point) *math.Color {
 	return cc.CanvasColorCache[p]
 }
 
+func (cc *ColorCache) Reset() {
+	cc.mu.Lock()
+	defer cc.mu.Unlock()
+	cc.CanvasColorCache = make(map[math.Point]*math.Color, 0)
+}
+
 func CreateCamera(hsize int, vsize int, fov float64) *Camera {
 	c := &Camera{
 		Hsize:            hsize,
@@ -178,6 +184,7 @@ func (c *Camera) Render(w *World, multithreaded bool) []*canvas.Canvas {
 	for frameIndex, currentPosition := range c.PositionStates {
 		c.Position = currentPosition
 		c.InverseTransform = nil
+		c.ColorCache.Reset()
 		if multithreaded {
 			images = append(images, c.RenderMultithreaded(w, c.Hsize/2))
 		} else {
@@ -223,12 +230,9 @@ func (c *Camera) RenderMultithreaded(w *World, workerThreads int) *canvas.Canvas
 			to = to + remainingRows
 		}
 
-		wg.Add(1)
-
-		go func() {
-			defer wg.Done()
+		wg.Go(func() {
 			c.renderPartially(from, to, w, &canv)
-		}()
+		})
 	}
 
 	wg.Wait()

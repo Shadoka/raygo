@@ -103,3 +103,23 @@ func TestSmoothTriangleInterpolatedNormal(t *testing.T) {
 	fmt.Println(n)
 	assert.Assert(t, n.Equals(v(-0.5547, 0.83205, 0.0)))
 }
+
+func TestRandomEmptyInverseBug(t *testing.T) {
+	p1 := math.CreatePoint(2.2383, 6.6632, 12.4922)
+	p2 := math.CreatePoint(3.248, 6.2428, 12.4922)
+	p3 := math.CreatePoint(3.2866, 6.317, 12.4725)
+	n1 := math.CreateVector(-0.0059, -0.0178, 0.9998)
+	n2 := math.CreateVector(-0.0087, -0.0167, 0.9998)
+	n3 := math.CreateVector(0.1764, 0.3448, 0.922)
+	tri := CreateSmoothTriangle(p1, p2, p3, n1, n2, n3)
+	tri.CalculateInverseTransform()
+
+	b := tri.Bounds()
+	assert.Assert(t, b != nil)
+
+	inv := tri.GetInverseTransform()
+	assert.Assert(t, inv.Equals(math.IdentityMatrix()))
+
+	inv2 := tri.GetInverseTransform()
+	assert.Assert(t, inv2.Equals(math.IdentityMatrix()))
+}

@@ -18,6 +18,8 @@ type FileType int
 const (
 	OBJ FileType = iota
 	YAML
+	PNG
+	PPM
 	UNKNOWN
 )
 
@@ -33,7 +35,7 @@ func Run(args []string) {
 			handleObjStats(fp)
 		case YAML:
 			handleRendering(args, fp)
-		case UNKNOWN:
+		default:
 			fmt.Printf("encountered input file with unfamiliar file ending: '%v'\n", fp)
 		}
 	}
@@ -48,7 +50,11 @@ func handleRendering(args []string, fp string) {
 	startTime := time.Now()
 
 	outputFilename := getOutputFilename(args)
-	writePng := checkPngFlag(args)
+	outputFiletype := determineFileType(outputFilename)
+	switch outputFiletype {
+	case YAML, OBJ, UNKNOWN:
+		outputFiletype = PNG
+	}
 	antialias := checkAntialiasFlag(args)
 
 	progress.Step("Parsing Yaml")
@@ -72,7 +78,7 @@ func handleRendering(args []string, fp string) {
 	c := camera.Render(world, true)
 	progress.Step("Writing output file")
 	if len(c) == 1 {
-		if writePng {
+		if outputFiletype == PNG {
 			c[0].WritePng(fmt.Sprintf("%v.png", outputFilename))
 		} else {
 			c[0].WritePPM(fmt.Sprintf("%v.ppm", outputFilename))
@@ -115,13 +121,6 @@ func getOutputFilename(args []string) string {
 	return outputFilename
 }
 
-func checkPngFlag(args []string) bool {
-	if outputFlagIndex := slices.Index(args, "--png"); outputFlagIndex != -1 {
-		return true
-	}
-	return false
-}
-
 func checkAntialiasFlag(args []string) bool {
 	if antialiasFlagIndex := slices.Index(args, "--aa"); antialiasFlagIndex != -1 {
 		return true
@@ -134,6 +133,10 @@ func determineFileType(file string) FileType {
 		return OBJ
 	} else if strings.HasSuffix(file, ".yaml") || strings.HasSuffix(file, ".yml") {
 		return YAML
+	} else if strings.HasSuffix(file, ".png") {
+		return PNG
+	} else if strings.HasSuffix(file, ".ppm") {
+		return PPM
 	} else {
 		return UNKNOWN
 	}

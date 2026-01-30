@@ -58,9 +58,11 @@ func TestColorAtObjectWithObjTransform(t *testing.T) {
 	black := math.CreateColor(0.0, 0.0, 0.0)
 
 	p := CreateStripePattern(white, black)
+	p.CalculateInverseTransform()
 
 	s := CreateSphere()
 	s.SetTransform(math.Scaling(2.0, 2.0, 2.0))
+	s.CalculateInverseTransform()
 
 	assert.Assert(t, white.Equals(p.ColorAtObject(math.CreatePoint(1.5, 0.0, 0.0), s)))
 }
@@ -71,8 +73,10 @@ func TestColorAtObjectWithPatternTransform(t *testing.T) {
 
 	p := CreateStripePattern(white, black)
 	p.SetTransform(math.Scaling(2.0, 2.0, 2.0))
+	p.CalculateInverseTransform()
 
 	s := CreateSphere()
+	s.CalculateInverseTransform()
 
 	assert.Assert(t, white.Equals(p.ColorAtObject(math.CreatePoint(1.5, 0.0, 0.0), s)))
 }
@@ -83,9 +87,11 @@ func TestColorAtObjectWithPatternAndObjTransform(t *testing.T) {
 
 	p := CreateStripePattern(white, black)
 	p.SetTransform(math.Translation(0.5, 0.0, 0.0))
+	p.CalculateInverseTransform()
 
 	s := CreateSphere()
 	s.SetTransform(math.Scaling(2.0, 2.0, 2.0))
+	s.CalculateInverseTransform()
 
 	assert.Assert(t, white.Equals(p.ColorAtObject(math.CreatePoint(2.5, 0.0, 0.0), s)))
 }

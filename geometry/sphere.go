@@ -13,16 +13,15 @@ type Sphere struct {
 	Transform        math.Matrix
 	Material         Material
 	Parent           *Group
-	InverseTransform *math.Matrix
+	InverseTransform math.Matrix
 }
 
 func CreateSphere() *Sphere {
 	return &Sphere{
-		Id:               uuid.NewString(),
-		Transform:        math.IdentityMatrix(),
-		Material:         DefaultMaterial(),
-		Parent:           nil,
-		InverseTransform: nil,
+		Id:        uuid.NewString(),
+		Transform: math.IdentityMatrix(),
+		Material:  DefaultMaterial(),
+		Parent:    nil,
 	}
 }
 
@@ -108,11 +107,15 @@ func (s *Sphere) Bounds() *Bounds {
 }
 
 func (s *Sphere) GetInverseTransform() math.Matrix {
-	if s.InverseTransform != nil {
-		return *s.InverseTransform
-	}
+	// if s.InverseTransform != nil {
+	// 	return *s.InverseTransform
+	// }
 
-	inverse := s.Transform.Inverse()
-	s.InverseTransform = &inverse
-	return *s.InverseTransform
+	// inverse := s.Transform.Inverse()
+	// s.InverseTransform = &inverse
+	return s.InverseTransform
+}
+
+func (s *Sphere) CalculateInverseTransform() {
+	s.InverseTransform = s.Transform.Inverse()
 }

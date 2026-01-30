@@ -10,15 +10,14 @@ type RingPattern struct {
 	ColorA           math.Color
 	ColorB           math.Color
 	Transform        math.Matrix
-	InverseTransform *math.Matrix
+	InverseTransform math.Matrix
 }
 
 func CreateRingPattern(a math.Color, b math.Color) *RingPattern {
 	return &RingPattern{
-		ColorA:           a,
-		ColorB:           b,
-		Transform:        math.IdentityMatrix(),
-		InverseTransform: nil,
+		ColorA:    a,
+		ColorB:    b,
+		Transform: math.IdentityMatrix(),
 	}
 }
 
@@ -56,11 +55,15 @@ func (rp *RingPattern) Equals(other Pattern) bool {
 }
 
 func (rp *RingPattern) GetInverseTransform() math.Matrix {
-	if rp.InverseTransform != nil {
-		return *rp.InverseTransform
-	}
+	// if rp.InverseTransform != nil {
+	// 	return *rp.InverseTransform
+	// }
 
-	inverse := rp.Transform.Inverse()
-	rp.InverseTransform = &inverse
-	return *rp.InverseTransform
+	// inverse := rp.Transform.Inverse()
+	// rp.InverseTransform = &inverse
+	return rp.InverseTransform
+}
+
+func (rp *RingPattern) CalculateInverseTransform() {
+	rp.InverseTransform = rp.Transform.Inverse()
 }
