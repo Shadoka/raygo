@@ -8,7 +8,10 @@ import (
 
 func PhongLighting(m g.Material, obj g.Shape, light Light, position math.Point, eyev math.Vector, normalv math.Vector, inShadow bool) math.Color {
 	color := m.Color
-	if m.Pattern != nil {
+	if m.Texture.Exists() {
+		u, v := obj.GetUvCoordinate(normalv)
+		color = m.Texture.ColorAt(u, v)
+	} else if m.Pattern != nil {
 		color = m.Pattern.ColorAtObject(position, obj)
 	}
 

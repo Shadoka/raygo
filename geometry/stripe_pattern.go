@@ -54,12 +54,6 @@ func (sp *StripePattern) Equals(other Pattern) bool {
 }
 
 func (sp *StripePattern) GetInverseTransform() math.Matrix {
-	// if sp.InverseTransform != nil {
-	// 	return *sp.InverseTransform
-	// }
-
-	// inverse := sp.Transform.Inverse()
-	// sp.InverseTransform = &inverse
 	return sp.InverseTransform
 }
 

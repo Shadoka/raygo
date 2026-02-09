@@ -79,6 +79,7 @@ type MaterialModel struct {
 	Color           string      `yaml:"color"`
 	RawColor        *ColorModel `yaml:"rawColor"`
 	Pattern         string      `yaml:"pattern"`
+	Texture         string      `yaml:"texture"`
 	Ambient         *float64    `yaml:"ambient"`
 	Diffuse         *float64    `yaml:"diffuse"`
 	Specular        *float64    `yaml:"specular"`

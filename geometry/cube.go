@@ -1,6 +1,7 @@
 package geometry
 
 import (
+	"log"
 	gomath "math"
 	"raygo/math"
 	"reflect"
@@ -139,15 +140,15 @@ func (c *Cube) ScaledBounds() *Bounds {
 }
 
 func (c *Cube) GetInverseTransform() math.Matrix {
-	// if c.InverseTransform != nil {
-	// 	return *c.InverseTransform
-	// }
-
-	// inverse := c.Transform.Inverse()
-	// c.InverseTransform = &inverse
 	return c.InverseTransform
 }
 
 func (c *Cube) CalculateInverseTransform() {
 	c.InverseTransform = c.Transform.Inverse()
+}
+
+// TODO: Cube Map textures?
+func (c *Cube) GetUvCoordinate(direction math.Vector) (float64, float64) {
+	log.Fatal("GetUvCoordinate NOP")
+	return 0, 0
 }

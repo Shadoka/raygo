@@ -18,6 +18,7 @@ type Shape interface {
 	Bounds() *Bounds
 	GetInverseTransform() math.Matrix
 	CalculateInverseTransform()
+	GetUvCoordinate(direction math.Vector) (float64, float64)
 }
 
 func GetCenter(s Shape) math.Point {

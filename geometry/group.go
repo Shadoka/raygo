@@ -1,6 +1,7 @@
 package geometry
 
 import (
+	"log"
 	"raygo/math"
 	"reflect"
 	"sync"
@@ -131,12 +132,6 @@ func (g *Group) Bounds() *Bounds {
 }
 
 func (g *Group) GetInverseTransform() math.Matrix {
-	// if g.InverseTransform != nil {
-	// 	return *g.InverseTransform
-	// }
-
-	// inverse := g.Transform.Inverse()
-	// g.InverseTransform = &inverse
 	return g.InverseTransform
 }
 
@@ -151,4 +146,9 @@ func (g *Group) CalculateInverseTransform() {
 	}
 
 	wg.Wait()
+}
+
+func (g *Group) GetUvCoordinate(direction math.Vector) (float64, float64) {
+	log.Fatal("GetUvCoordinate NOP")
+	return 0, 0
 }

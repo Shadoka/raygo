@@ -15,6 +15,7 @@ type Material struct {
 	Reflective      float64
 	Transparency    float64
 	RefractiveIndex float64
+	Texture         Texture
 }
 
 func CreateMaterial(c math.Color,
@@ -78,6 +79,12 @@ func (m *Material) SetTransparency(t float64) {
 
 func (m *Material) SetRefractiveIndex(ri float64) {
 	m.RefractiveIndex = ri
+}
+
+func (m *Material) SetTexture(file string) {
+	m.Texture = Texture{
+		File: file,
+	}
 }
 
 func (m Material) Equals(other Material) bool {

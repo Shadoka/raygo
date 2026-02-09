@@ -1,6 +1,7 @@
 package geometry
 
 import (
+	"log"
 	gomath "math"
 	"raygo/math"
 	"reflect"
@@ -202,17 +203,14 @@ func (t *Triangle) localIntersect(localRay Ray) []Intersection {
 }
 
 func (t *Triangle) GetInverseTransform() math.Matrix {
-	// t.mu.Lock()
-	// defer t.mu.Unlock()
-	// if t.InverseTransform != nil {
-	// 	return *t.InverseTransform
-	// }
-
-	// inverse := t.Transform.Inverse()
-	// t.InverseTransform = &inverse
 	return t.InverseTransform
 }
 
 func (t *Triangle) CalculateInverseTransform() {
 	t.InverseTransform = t.Transform.Inverse()
+}
+
+func (t *Triangle) GetUvCoordinate(direction math.Vector) (float64, float64) {
+	log.Fatal("GetUvCoordinate NOP")
+	return 0, 0
 }

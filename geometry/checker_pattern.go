@@ -55,12 +55,6 @@ func (c *CheckerPattern) Equals(other Pattern) bool {
 }
 
 func (c *CheckerPattern) GetInverseTransform() math.Matrix {
-	// if c.InverseTransform != nil {
-	// 	return *c.InverseTransform
-	// }
-
-	// inverse := c.Transform.Inverse()
-	// c.InverseTransform = &inverse
 	return c.InverseTransform
 }
 

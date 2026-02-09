@@ -1,6 +1,7 @@
 package geometry
 
 import (
+	"log"
 	gomath "math"
 	"raygo/math"
 	"reflect"
@@ -94,15 +95,14 @@ func (p *Plane) Bounds() *Bounds {
 }
 
 func (p *Plane) GetInverseTransform() math.Matrix {
-	// if p.InverseTransform != nil {
-	// 	return *p.InverseTransform
-	// }
-
-	// inverse := p.Transform.Inverse()
-	// p.InverseTransform = &inverse
 	return p.InverseTransform
 }
 
 func (p *Plane) CalculateInverseTransform() {
 	p.InverseTransform = p.Transform.Inverse()
+}
+
+func (p *Plane) GetUvCoordinate(direction math.Vector) (float64, float64) {
+	log.Fatal("GetUvCoordinate NOP")
+	return 0, 0
 }

@@ -107,15 +107,15 @@ func (s *Sphere) Bounds() *Bounds {
 }
 
 func (s *Sphere) GetInverseTransform() math.Matrix {
-	// if s.InverseTransform != nil {
-	// 	return *s.InverseTransform
-	// }
-
-	// inverse := s.Transform.Inverse()
-	// s.InverseTransform = &inverse
 	return s.InverseTransform
 }
 
 func (s *Sphere) CalculateInverseTransform() {
 	s.InverseTransform = s.Transform.Inverse()
+}
+
+func (s *Sphere) GetUvCoordinate(direction math.Vector) (float64, float64) {
+	u := 0.5 - gomath.Atan2(direction.Z, direction.X)/(2.*gomath.Pi)
+	v := 0.5 + gomath.Asin(direction.Y)/gomath.Pi
+	return u, v
 }
