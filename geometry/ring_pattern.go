@@ -55,12 +55,6 @@ func (rp *RingPattern) Equals(other Pattern) bool {
 }
 
 func (rp *RingPattern) GetInverseTransform() math.Matrix {
-	// if rp.InverseTransform != nil {
-	// 	return *rp.InverseTransform
-	// }
-
-	// inverse := rp.Transform.Inverse()
-	// rp.InverseTransform = &inverse
 	return rp.InverseTransform
 }
 

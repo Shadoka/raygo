@@ -297,6 +297,7 @@ func CreateWorld(yml *YamlDescription, directory string) *scene.World {
 	createRaygoTransformations()
 	createRaygoPatterns()
 	createRaygoMaterials()
+	loadTextures(directory)
 	createRaygoShapes(directory)
 
 	calculateInverseTransforms()
@@ -345,6 +346,14 @@ func calculateInverseTransforms() {
 	}
 
 	wg.Wait()
+}
+
+func loadTextures(directory string) {
+	for _, m := range raygoMaterials {
+		if m.Texture.Exists() {
+			m.Texture.LoadTexture(directory)
+		}
+	}
 }
 
 func createCameraAnimation(yamlAnimation *CircularCameraAnimation) *scene.CameraAnimation {
@@ -485,6 +494,12 @@ func createRaygoMaterials() {
 
 		if ym.Pattern != "" {
 			m.Pattern = raygoPatterns[ym.Pattern]
+		}
+
+		if ym.Texture != "" {
+			m.Texture = geometry.Texture{
+				File: ym.Texture,
+			}
 		}
 
 		raygoMaterials[name] = &m

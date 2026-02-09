@@ -304,7 +304,61 @@ Example for no antialiasing:
 
 Example with antialiasing turned on:
 
-![No antialiasing](examples/teapot_aa.png)
+![With antialiasing](examples/teapot_aa.png)
+
+### Texture mapping
+
+Raygo has support for basic texture UV mapping. Currently it is only implemented for spheres.
+
+![Spherical texture mapping](examples/sphere-texture.png)
+
+<details>
+
+<summary>YAML for spherical texture mapping</summary>
+
+```yaml
+width: 1920
+height: 1080
+
+materials:
+  - name: wood
+    texture: wood_floor.jpeg
+
+scene:
+  spheres:
+    - name: example
+      material: wood
+      transforms:
+        - type: scaling
+          x: 5
+          y: 5
+          z: 5
+
+camera:
+  from:
+    x: 0
+    y: 10
+    z: -20
+  to:
+    x: 0
+    y: 0
+    z: 0
+  up:
+    x: 0
+    y: 1
+    z: 0
+
+light:
+  p:
+    x: 0
+    y: 30
+    z: -20
+  intensity:
+    r: 255
+    g: 255
+    b: 255
+```
+</details>
 
 ### Calculation of inverse transforms
 

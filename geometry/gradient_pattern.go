@@ -54,12 +54,6 @@ func (gp *GradientPattern) Equals(other Pattern) bool {
 }
 
 func (gp *GradientPattern) GetInverseTransform() math.Matrix {
-	// if gp.InverseTransform != nil {
-	// 	return *gp.InverseTransform
-	// }
-
-	// inverse := gp.Transform.Inverse()
-	// gp.InverseTransform = &inverse
 	return gp.InverseTransform
 }
 

@@ -1,6 +1,7 @@
 package geometry
 
 import (
+	"log"
 	gomath "math"
 	"raygo/math"
 	"reflect"
@@ -178,15 +179,14 @@ func (c *Cone) Bounds() *Bounds {
 }
 
 func (c *Cone) GetInverseTransform() math.Matrix {
-	// if c.InverseTransform != nil {
-	// 	return *c.InverseTransform
-	// }
-
-	// inverse := c.Transform.Inverse()
-	// c.InverseTransform = &inverse
 	return c.InverseTransform
 }
 
 func (c *Cone) CalculateInverseTransform() {
 	c.InverseTransform = c.Transform.Inverse()
+}
+
+func (c *Cone) GetUvCoordinate(direction math.Vector) (float64, float64) {
+	log.Fatal("GetUvCoordinate NOP")
+	return 0, 0
 }

@@ -1,0 +1,46 @@
+width: 1920
+height: 1080
+
+materials:
+  - name: wood
+    texture: wood_floor.jpeg
+  - name: floor_mat
+    reflective: 0
+    rawColor:
+      r: 100
+      g: 112
+      b: 200
+
+scene:
+  spheres:
+    - name: example
+      material: wood
+      transforms:
+        - type: scaling
+          x: 5
+          y: 5
+          z: 5
+
+camera:
+  from:
+    x: 0
+    y: 10
+    z: -20
+  to:
+    x: 0
+    y: 0
+    z: 0
+  up:
+    x: 0
+    y: 1
+    z: 0
+
+light:
+  p:
+    x: 0
+    y: 30
+    z: -20
+  intensity:
+    r: 255
+    g: 255
+    b: 255
