@@ -1,7 +1,6 @@
 package geometry
 
 import (
-	"log"
 	gomath "math"
 	"raygo/math"
 	"reflect"
@@ -148,7 +147,40 @@ func (c *Cube) CalculateInverseTransform() {
 }
 
 // TODO: Cube Map textures?
-func (c *Cube) GetUvCoordinate(direction math.Vector) (float64, float64) {
-	log.Fatal("GetUvCoordinate NOP")
-	return 0, 0
+func (c *Cube) GetUvCoordinate(point math.Point, direction math.Vector) Texel {
+	absP := point.Abs()
+	u, v := 0.0, 0.0
+	f := UNDEFINED
+
+	if absP.X >= absP.Y && absP.X >= absP.Z {
+		u = (point.Z + 1) / 2.0
+		v = (point.Y + 1) / 2.0
+		f = RIGHT
+		if point.X < 0 {
+			u = 1 - u
+			f = LEFT
+		}
+	} else if absP.Y >= absP.Z {
+		u = (point.X + 1) / 2.0
+		v = (point.Z + 1) / 2.0
+		f = TOP
+		if point.Y < 0 {
+			v = 1 - v
+			f = BOTTOM
+		}
+	} else {
+		u = (point.X + 1) / 2.0
+		v = (point.Y + 1) / 2.0
+		f = FRONT
+		if point.Z < 0 {
+			u = 1 - u
+			f = BACK
+		}
+	}
+
+	return Texel{
+		U: u,
+		V: v,
+		F: f,
+	}
 }

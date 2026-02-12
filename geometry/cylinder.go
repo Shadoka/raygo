@@ -174,7 +174,7 @@ func (c *Cylinder) CalculateInverseTransform() {
 	c.InverseTransform = c.Transform.Inverse()
 }
 
-func (c *Cylinder) GetUvCoordinate(direction math.Vector) (float64, float64) {
+func (c *Cylinder) GetUvCoordinate(point math.Point, direction math.Vector) Texel {
 	log.Fatal("GetUvCoordinate NOP")
-	return 0, 0
+	return Texel{}
 }

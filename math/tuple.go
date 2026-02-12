@@ -156,6 +156,15 @@ func (v Vector) Reflect(n Vector) Vector {
 	return v.Subtract(n.Mul(2.0).Mul(v.Dot(n)))
 }
 
+func (t Tuple) Abs() Tuple {
+	return Tuple{
+		X: gomath.Abs(t.X),
+		Y: gomath.Abs(t.Y),
+		Z: gomath.Abs(t.Z),
+		W: gomath.Abs(t.W),
+	}
+}
+
 func (p Point) ToString() string {
 	return fmt.Sprintf("(%v, %v, %v)", p.X, p.Y, p.Z)
 }

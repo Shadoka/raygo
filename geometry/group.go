@@ -148,7 +148,7 @@ func (g *Group) CalculateInverseTransform() {
 	wg.Wait()
 }
 
-func (g *Group) GetUvCoordinate(direction math.Vector) (float64, float64) {
+func (g *Group) GetUvCoordinate(point math.Point, direction math.Vector) Texel {
 	log.Fatal("GetUvCoordinate NOP")
-	return 0, 0
+	return Texel{}
 }

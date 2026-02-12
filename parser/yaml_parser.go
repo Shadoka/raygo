@@ -351,7 +351,7 @@ func calculateInverseTransforms() {
 func loadTextures(directory string) {
 	for _, m := range raygoMaterials {
 		if m.Texture.Exists() {
-			m.Texture.LoadTexture(directory)
+			m.Texture.InitTexture(directory)
 		}
 	}
 }
@@ -496,9 +496,10 @@ func createRaygoMaterials() {
 			m.Pattern = raygoPatterns[ym.Pattern]
 		}
 
-		if ym.Texture != "" {
+		if ym.Texture != nil {
 			m.Texture = geometry.Texture{
-				File: ym.Texture,
+				File:    ym.Texture.File,
+				Cubemap: ym.Texture.Cubemap,
 			}
 		}
 

@@ -102,7 +102,7 @@ func (p *Plane) CalculateInverseTransform() {
 	p.InverseTransform = p.Transform.Inverse()
 }
 
-func (p *Plane) GetUvCoordinate(direction math.Vector) (float64, float64) {
+func (p *Plane) GetUvCoordinate(point math.Point, direction math.Vector) Texel {
 	log.Fatal("GetUvCoordinate NOP")
-	return 0, 0
+	return Texel{}
 }
