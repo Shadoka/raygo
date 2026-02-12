@@ -1,0 +1,42 @@
+width: 1920
+height: 1080
+
+materials:
+  - name: wood
+    texture: 
+      file: skybox-texture.png
+      cubemap: true
+
+scene:
+  cubes:
+    - name: example
+      material: wood
+      transforms:
+        - type: scaling
+          x: 15
+          y: 15
+          z: 15
+
+camera:
+  from:
+    x: 0
+    y: 10
+    z: -10
+  to:
+    x: 0
+    y: 0
+    z: 0
+  up:
+    x: 0
+    y: 1
+    z: 0
+
+light:
+  p:
+    x: 0
+    y: 0
+    z: 0
+  intensity:
+    r: 255
+    g: 255
+    b: 255
