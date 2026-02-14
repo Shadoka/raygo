@@ -46,6 +46,24 @@ const (
 	UNDEFINED
 )
 
+func (f Face) Invert() Face {
+	switch f {
+	case TOP:
+		return BOTTOM
+	case BOTTOM:
+		return TOP
+	case LEFT:
+		return RIGHT
+	case RIGHT:
+		return LEFT
+	case FRONT:
+		return BACK
+	case BACK:
+		return FRONT
+	}
+	return UNDEFINED
+}
+
 func (t *Texture) InitTexture(directory string) {
 	actualFile := fmt.Sprintf("%v%v", directory, t.File)
 	fileReader, err := os.Open(actualFile)
@@ -70,64 +88,34 @@ func (t *Texture) initCubeMapInfo() {
 	bb := (*t.Data).Bounds()
 	faceWidth := float64(bb.Size().X / 4)
 	faceHeight := float64(bb.Size().Y / 3)
-	// top := Texel{
-	// 	U: faceWidth,
-	// 	V: 0.0,
-	// 	F: TOP,
-	// }
-	// back := Texel{
-	// 	U: 0.0,
-	// 	V: faceHeight,
-	// 	F: BACK,
-	// }
-	// left := Texel{
-	// 	U: faceWidth,
-	// 	V: faceHeight,
-	// 	F: LEFT,
-	// }
-	// front := Texel{
-	// 	U: faceWidth * 2,
-	// 	V: faceHeight,
-	// 	F: FRONT,
-	// }
-	// right := Texel{
-	// 	U: faceWidth * 3,
-	// 	V: faceHeight,
-	// 	F: RIGHT,
-	// }
-	// bottom := Texel{
-	// 	U: faceWidth,
-	// 	V: faceHeight * 2,
-	// 	F: BOTTOM,
-	// }
 	top := Texel{
 		U: faceWidth,
-		V: faceHeight,
+		V: 0.0,
 		F: TOP,
 	}
 	back := Texel{
 		U: 0.0,
-		V: faceHeight * 2,
+		V: faceHeight,
 		F: BACK,
 	}
 	left := Texel{
 		U: faceWidth,
-		V: faceHeight * 2,
+		V: faceHeight,
 		F: LEFT,
 	}
 	front := Texel{
 		U: faceWidth * 2,
-		V: faceHeight * 2,
+		V: faceHeight,
 		F: FRONT,
 	}
 	right := Texel{
 		U: faceWidth * 3,
-		V: faceHeight * 2,
+		V: faceHeight,
 		F: RIGHT,
 	}
 	bottom := Texel{
 		U: faceWidth,
-		V: faceHeight * 3,
+		V: faceHeight * 2,
 		F: BOTTOM,
 	}
 	info := CubeMapInfo{
@@ -188,8 +176,8 @@ func (t *Texture) getCubeMapCoordinate(texel Texel) (float64, float64) {
 		log.Fatal("cannot get an offset texel for undefined face")
 	}
 
-	x = texel.U*float64(t.CubeInfo.FaceWidth) + offsetTexel.U
-	y = texel.V*float64(t.CubeInfo.FaceHeight) + offsetTexel.V
+	x = texel.U*t.CubeInfo.FaceWidth + offsetTexel.U
+	y = texel.V*t.CubeInfo.FaceHeight + offsetTexel.V
 
 	return x, y
 }
