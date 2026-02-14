@@ -76,22 +76,27 @@ type NamedTransformModel struct {
 }
 
 type MaterialModel struct {
-	Color           string      `yaml:"color"`
-	RawColor        *ColorModel `yaml:"rawColor"`
-	Pattern         string      `yaml:"pattern"`
-	Texture         string      `yaml:"texture"`
-	Ambient         *float64    `yaml:"ambient"`
-	Diffuse         *float64    `yaml:"diffuse"`
-	Specular        *float64    `yaml:"specular"`
-	Shininess       *float64    `yaml:"shininess"`
-	Reflective      *float64    `yaml:"reflective"`
-	Transparency    *float64    `yaml:"transparency"`
-	RefractiveIndex *float64    `yaml:"refractiveIndex"`
+	Color           string        `yaml:"color"`
+	RawColor        *ColorModel   `yaml:"rawColor"`
+	Pattern         string        `yaml:"pattern"`
+	Texture         *TextureModel `yaml:"texture"`
+	Ambient         *float64      `yaml:"ambient"`
+	Diffuse         *float64      `yaml:"diffuse"`
+	Specular        *float64      `yaml:"specular"`
+	Shininess       *float64      `yaml:"shininess"`
+	Reflective      *float64      `yaml:"reflective"`
+	Transparency    *float64      `yaml:"transparency"`
+	RefractiveIndex *float64      `yaml:"refractiveIndex"`
 }
 
 type NamedMaterialModel struct {
 	MaterialModel `yaml:",inline"`
 	Name          string `yaml:"name"`
+}
+
+type TextureModel struct {
+	File    string `yaml:"file"`
+	Cubemap bool   `yaml:"cubemap"`
 }
 
 type PointModel struct {

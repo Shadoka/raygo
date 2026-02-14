@@ -210,7 +210,7 @@ func (t *Triangle) CalculateInverseTransform() {
 	t.InverseTransform = t.Transform.Inverse()
 }
 
-func (t *Triangle) GetUvCoordinate(direction math.Vector) (float64, float64) {
+func (t *Triangle) GetUvCoordinate(point math.Point, direction math.Vector) Texel {
 	log.Fatal("GetUvCoordinate NOP")
-	return 0, 0
+	return Texel{}
 }

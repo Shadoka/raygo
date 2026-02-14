@@ -73,9 +73,9 @@ func (w *World) ShadeHit(comp g.IntersectionComputations, remainingReflections i
 		return surfaceColor.
 			Add(reflectedColor.Mul(reflectance)).
 			Add(refractedColor.Mul(1.0 - reflectance))
-	} else {
-		return surfaceColor.Add(reflectedColor).Add(refractedColor)
 	}
+
+	return surfaceColor.Add(reflectedColor).Add(refractedColor)
 }
 
 func (w *World) ColorAt(r g.Ray, remainingReflections int) math.Color {

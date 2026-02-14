@@ -114,8 +114,12 @@ func (s *Sphere) CalculateInverseTransform() {
 	s.InverseTransform = s.Transform.Inverse()
 }
 
-func (s *Sphere) GetUvCoordinate(direction math.Vector) (float64, float64) {
+func (s *Sphere) GetUvCoordinate(_ math.Point, direction math.Vector) Texel {
 	u := 0.5 - gomath.Atan2(direction.Z, direction.X)/(2.*gomath.Pi)
 	v := 0.5 + gomath.Asin(direction.Y)/gomath.Pi
-	return u, v
+	return Texel{
+		U: u,
+		V: v,
+		F: UNDEFINED,
+	}
 }

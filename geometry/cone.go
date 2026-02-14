@@ -186,7 +186,7 @@ func (c *Cone) CalculateInverseTransform() {
 	c.InverseTransform = c.Transform.Inverse()
 }
 
-func (c *Cone) GetUvCoordinate(direction math.Vector) (float64, float64) {
+func (c *Cone) GetUvCoordinate(point math.Point, direction math.Vector) Texel {
 	log.Fatal("GetUvCoordinate NOP")
-	return 0, 0
+	return Texel{}
 }

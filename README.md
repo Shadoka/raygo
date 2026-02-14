@@ -308,7 +308,7 @@ Example with antialiasing turned on:
 
 ### Texture mapping
 
-Raygo has support for basic texture UV mapping. Currently it is only implemented for spheres.
+Raygo has support for basic texture UV mapping. It is currently only implemented for spheres and cubes.
 
 ![Spherical texture mapping](examples/sphere-texture.png)
 
@@ -337,6 +337,61 @@ scene:
 camera:
   from:
     x: 0
+    y: 10
+    z: -20
+  to:
+    x: 0
+    y: 0
+    z: 0
+  up:
+    x: 0
+    y: 1
+    z: 0
+
+light:
+  p:
+    x: 0
+    y: 30
+    z: -20
+  intensity:
+    r: 255
+    g: 255
+    b: 255
+```
+</details>
+
+![Cubical texture mapping](examples/cube-texture.png)
+
+You can also apply cube maps to the cube object. You simple have to annotate the texture as such in the yaml.
+See the commented out line in the example.
+
+<details>
+
+<summary>YAML for cubical texture mapping</summary>
+
+```yaml
+width: 1920
+height: 1080
+
+materials:
+  - name: wood
+    texture:
+      file: wood_floor.jpeg
+#     cubemap: true
+
+scene:
+  cubes:
+    - name: example
+      material: wood
+      transforms:
+        - type: scaling
+          x: 5
+          y: 5
+          z: 5
+
+camera:
+  from:
+    x: 10
     y: 10
     z: -20
   to:
