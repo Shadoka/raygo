@@ -5,7 +5,6 @@ import (
 	gomath "math"
 	"raygo/math"
 	"reflect"
-	"sync"
 
 	"github.com/google/uuid"
 )
@@ -23,12 +22,16 @@ type Triangle struct {
 	Parent           *Group
 	CachedBounds     *Bounds
 	InverseTransform math.Matrix
-	mu               sync.Mutex
 	// smooth triangle fields
 	N1     math.Vector
 	N2     math.Vector
 	N3     math.Vector
 	Smooth bool
+	// texture information
+	T1         math.Point
+	T2         math.Point
+	T3         math.Point
+	HasTexture bool
 }
 
 func CreateTriangle(p1 math.Point, p2 math.Point, p3 math.Point) *Triangle {
@@ -47,6 +50,7 @@ func CreateTriangle(p1 math.Point, p2 math.Point, p3 math.Point) *Triangle {
 		Parent:       nil,
 		CachedBounds: nil,
 		Smooth:       false,
+		HasTexture:   false,
 	}
 }
 
@@ -66,11 +70,26 @@ func CreateSmoothTriangle(p1 math.Point, p2 math.Point, p3 math.Point,
 		Material:     DefaultMaterial(),
 		Parent:       nil,
 		CachedBounds: nil,
+		HasTexture:   false,
 		Smooth:       true,
 		N1:           n1,
 		N2:           n2,
 		N3:           n3,
 	}
+}
+
+func (t *Triangle) AddTextureInformation(t1 math.Point, t2 math.Point, t3 math.Point) {
+	t.T1 = t1
+	t.T2 = t2
+	t.T3 = t3
+	t.HasTexture = true
+}
+
+func (t *Triangle) AddSmoothingInformation(n1 math.Vector, n2 math.Vector, n3 math.Vector) {
+	t.N1 = n1
+	t.N2 = n2
+	t.N3 = n3
+	t.Smooth = true
 }
 
 func (t *Triangle) Equals(other Shape) bool {
@@ -123,9 +142,8 @@ func (t *Triangle) GetMaterial() *Material {
 func (t *Triangle) NormalAt(p math.Point, hit Intersection) math.Vector {
 	if t.Smooth {
 		return t.localTriangleNormalAt(hit).Normalize()
-	} else {
-		return t.Normal
 	}
+	return t.Normal
 }
 
 func (t *Triangle) localTriangleNormalAt(hit Intersection) math.Vector {

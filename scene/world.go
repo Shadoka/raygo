@@ -103,7 +103,7 @@ func (w *World) IsShadowed(p math.Point) bool {
 	xs := w.Intersect(r)
 
 	h := g.Hit(xs)
-	return h != nil && h.IntersectionAt < distance
+	return h != nil && h.IntersectionAt > math.EPSILON && h.IntersectionAt < distance
 }
 
 func (w *World) ReflectedColor(precomps g.IntersectionComputations, remainingReflections int) math.Color {

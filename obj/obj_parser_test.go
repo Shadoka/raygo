@@ -105,6 +105,12 @@ vn 0.0 0.0 0.0
 vn 0.0 0.0 0.0
 vn 0.0 0.0 0.0
 
+vt 1.0 1.0 1.0
+vt 1.0 1.0 1.0
+vt 1.0 2.0 3.0
+vt 9.9 1.1
+vt 1.0
+
 f 1/2/3 2/3/4 3/4/5
 f 1/2/3 3/4/5 4/5/6
 `
@@ -113,7 +119,7 @@ f 1/2/3 3/4/5 4/5/6
 
 	assert.Assert(t, len(objData.Vertices) == 4)
 	assert.Assert(t, len(objData.Faces) == 2)
-	assert.Assert(t, objData.IgnoredLines == 4)
+	assert.Assert(t, objData.IgnoredLines == 5)
 
 	object := objData.ToGroup(false)
 
@@ -138,15 +144,20 @@ vn -1.0 0.0 0.0
 vn 1.0 0.0 0.0
 vn 0.0 1.0 0.0
 
+vt 1.0 1.0 1.0
+vt 1.0 2.0 3.0
+vt 9.9 1.1
+vt 1.0
+
 f 1//3 2//1 3//2
-f 1/0/3 2/102/1 3/14/2
+f 1/1/3 2/3/1 3/4/2
 `
 	objData := CreateObjData()
 	ParseData(objData, input)
 
 	assert.Assert(t, len(objData.Vertices) == 3)
 	assert.Assert(t, len(objData.Faces) == 2)
-	assert.Assert(t, objData.IgnoredLines == 4)
+	assert.Assert(t, objData.IgnoredLines == 5)
 
 	object := objData.ToGroup(false)
 
@@ -252,4 +263,29 @@ vn 1 2 3
 	assert.Assert(t, objData.GetN(1).Equals(expected1))
 	assert.Assert(t, objData.GetN(2).Equals(expected2))
 	assert.Assert(t, objData.GetN(3).Equals(expected3))
+}
+
+func TestTextureCoordinates(t *testing.T) {
+	input := `
+vt 0 0 1
+vt 0.707 0 -0.707
+vt 1 2 3
+vt 1.2 2.1
+vt 2.5
+`
+	expected1 := math.CreatePoint(0.0, 0.0, 1.0)
+	expected2 := math.CreatePoint(0.707, 0.0, -0.707)
+	expected3 := math.CreatePoint(1.0, 2.0, 3.0)
+	expected4 := math.CreatePoint(1.2, 2.1, 0.0)
+	expected5 := math.CreatePoint(2.5, 0.0, 0.0)
+
+	objData := CreateObjData()
+	ParseData(objData, input)
+
+	assert.Assert(t, len(objData.TextureCoordinates) == 5)
+	assert.Assert(t, objData.GetT(1).Equals(expected1))
+	assert.Assert(t, objData.GetT(2).Equals(expected2))
+	assert.Assert(t, objData.GetT(3).Equals(expected3))
+	assert.Assert(t, objData.GetT(4).Equals(expected4))
+	assert.Assert(t, objData.GetT(5).Equals(expected5))
 }

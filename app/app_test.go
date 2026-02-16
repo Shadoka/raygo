@@ -1,5 +1,7 @@
 package app
 
-//func TestRun(t *testing.T) {
-//	Run([]string{"-f", "../local/cube-texture.yaml", "-o", "cube"})
-//}
+import "testing"
+
+func TestRun(t *testing.T) {
+	Run([]string{"-f", "../local/penguin-scene.yaml", "-o", "penguin"})
+}

@@ -14,20 +14,23 @@ const VERTEX_PREFIX = "v "
 const FACE_PREFIX = "f "
 const GROUP_PREFIX = "g "
 const NORMAL_PREFIX = "vn "
+const TEXTURE_PREFIX = "vt "
 
 var currentGroup *ObjGroup
 
 type ObjData struct {
-	Vertices     []math.Point
-	Faces        []*Face
-	Normals      []math.Vector
-	Groups       []*ObjGroup
-	IgnoredLines int
+	Vertices           []math.Point
+	Faces              []*Face
+	Normals            []math.Vector
+	TextureCoordinates []math.Point
+	Groups             []*ObjGroup
+	IgnoredLines       int
 }
 
 type Face struct {
-	VertIndices   []int
-	NormalIndices []int
+	VertIndices    []int
+	TextureIndices []int
+	NormalIndices  []int
 }
 
 type ObjGroup struct {
@@ -42,6 +45,10 @@ func (o *ObjData) GetN(index int) math.Vector {
 	return o.Normals[index-1]
 }
 
+func (o *ObjData) GetT(index int) math.Vector {
+	return o.TextureCoordinates[index-1]
+}
+
 func CreateObjData() *ObjData {
 	return &ObjData{
 		Vertices:     make([]math.Point, 0, 300),
@@ -54,8 +61,9 @@ func CreateObjData() *ObjData {
 
 func CreateFace(cap int) *Face {
 	return &Face{
-		VertIndices:   make([]int, 0, cap),
-		NormalIndices: make([]int, 0, cap),
+		VertIndices:    make([]int, 0, cap),
+		TextureIndices: make([]int, 0, cap),
+		NormalIndices:  make([]int, 0, cap),
 	}
 }
 
@@ -70,6 +78,7 @@ func (o *ObjData) PrintStats() {
 	fmt.Printf("Vertices: %v\n", len(o.Vertices))
 	fmt.Printf("Faces(root): %v\n", len(o.Faces))
 	fmt.Printf("Normals: %v\n", len(o.Normals))
+	fmt.Printf("Texture Coordinates: %v\n", len(o.TextureCoordinates))
 	fmt.Printf("Groups: %v\n", len(o.Groups))
 	fmt.Printf("Bounds:\n")
 	fmt.Printf("\tMin: %v\n", objBounds.Minimum.ToString())
@@ -78,7 +87,7 @@ func (o *ObjData) PrintStats() {
 
 func (o *ObjData) ToGroup(preCalcBB bool) *geometry.Group {
 	root := geometry.EmptyGroup()
-	root.GetMaterial().SetShininess(50.0)
+	root.GetMaterial().SetShininess(50.0) // ???
 
 	for _, face := range o.Faces {
 		for _, t := range face.ToTriangles(o) {
@@ -110,14 +119,20 @@ func (f *Face) ToTriangles(o *ObjData) []*geometry.Triangle {
 		p2 := o.GetV(f.VertIndices[i])
 		p3 := o.GetV(f.VertIndices[i+1])
 
-		if len(f.NormalIndices) == 0 {
-			triangles = append(triangles, geometry.CreateTriangle(p1, p2, p3))
-		} else {
+		triangle := geometry.CreateTriangle(p1, p2, p3)
+		if len(f.NormalIndices) > 0 {
 			n1 := o.GetN(f.NormalIndices[0])
 			n2 := o.GetN(f.NormalIndices[i])
 			n3 := o.GetN(f.NormalIndices[i+1])
-			triangles = append(triangles, geometry.CreateSmoothTriangle(p1, p2, p3, n1, n2, n3))
+			triangle.AddSmoothingInformation(n1, n2, n3)
 		}
+		if len(f.TextureIndices) > 0 {
+			t1 := o.GetT(f.TextureIndices[0])
+			t2 := o.GetT(f.TextureIndices[i])
+			t3 := o.GetT(f.TextureIndices[i+1])
+			triangle.AddTextureInformation(t1, t2, t3)
+		}
+		triangles = append(triangles, triangle)
 	}
 	return triangles
 }
@@ -148,6 +163,8 @@ func ParseLine(objData *ObjData, line *string) {
 		processFace(objData, line, currentGroup)
 	} else if strings.HasPrefix(*line, NORMAL_PREFIX) {
 		processNormal(objData, line)
+	} else if strings.HasPrefix(*line, TEXTURE_PREFIX) {
+		processTextureCoordinates(objData, line)
 	} else if strings.HasPrefix(*line, GROUP_PREFIX) {
 		currentGroup = CreateObjGroup()
 		objData.Groups = append(objData.Groups, currentGroup)
@@ -175,8 +192,11 @@ func processFace(objData *ObjData, line *string, currentGroup *ObjGroup) {
 		if index == 0 {
 			continue
 		}
-		vertexIndex, normalIndex := extractVertexAndNormalIndex(faceComponents[index])
+		vertexIndex, textureIndex, normalIndex := extractFaceIndices(faceComponents[index])
 		face.VertIndices = append(face.VertIndices, vertexIndex)
+		if textureIndex != -1 {
+			face.TextureIndices = append(face.TextureIndices, textureIndex)
+		}
 		if normalIndex != -1 {
 			face.NormalIndices = append(face.NormalIndices, normalIndex)
 		}
@@ -189,20 +209,40 @@ func processFace(objData *ObjData, line *string, currentGroup *ObjGroup) {
 	}
 }
 
+func processTextureCoordinates(objData *ObjData, line *string) {
+	textureComponents := strings.Split(*line, " ")
+	textureComponents = slices.DeleteFunc(textureComponents, isEmptyString)
+	// only u is mandatory, v and w default to 0
+	textureU := getStringAsFloat(textureComponents[1])
+	textureV := 0.0
+	textureW := 0.0
+	if len(textureComponents) > 2 {
+		textureV = getStringAsFloat(textureComponents[2])
+	}
+	if len(textureComponents) > 3 {
+		textureW = getStringAsFloat(textureComponents[3])
+	}
+
+	objData.TextureCoordinates = append(objData.TextureCoordinates, math.CreatePoint(textureU, textureV, textureW))
+}
+
 // input => 1/3/5
-func extractVertexAndNormalIndex(face string) (int, int) {
+func extractFaceIndices(face string) (int, int, int) {
 	// face format: vertexIndex/textureIndex/vertexNormal
 	indices := strings.Split(face, "/")
 	vertexIndex := -1
+	textureIndex := -1
 	normalIndex := -1
 	for i, stringIndex := range indices {
 		if i == 0 {
 			vertexIndex, _ = strconv.Atoi(stringIndex)
+		} else if i == 1 && stringIndex != "" {
+			textureIndex, _ = strconv.Atoi(stringIndex)
 		} else if i == 2 {
 			normalIndex, _ = strconv.Atoi(stringIndex)
 		}
 	}
-	return vertexIndex, normalIndex
+	return vertexIndex, textureIndex, normalIndex
 }
 
 func isEmptyString(s string) bool {
