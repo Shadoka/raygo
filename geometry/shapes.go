@@ -15,6 +15,8 @@ type Shape interface {
 	NormalAt(p math.Point, hit Intersection) math.Vector
 	GetParent() *Group
 	SetParent(g *Group)
+	GetName() string
+	SetName(name string)
 	Bounds() *Bounds
 	GetInverseTransform() math.Matrix
 	CalculateInverseTransform()

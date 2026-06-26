@@ -75,7 +75,7 @@ func handleRendering(args []string, fp string) {
 	camera := parser.CreateCamera(yml)
 	camera.Antialias = antialias
 
-	c := camera.Render(world, true)
+	c := camera.Render(world, false)
 	progress.Step("Writing output file")
 	if len(c) == 1 {
 		if outputFiletype == PNG {

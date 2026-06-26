@@ -18,6 +18,7 @@ type Cone struct {
 	Closed           bool
 	Parent           *Group
 	InverseTransform math.Matrix
+	Name             string
 }
 
 func CreateCone() *Cone {
@@ -29,6 +30,7 @@ func CreateCone() *Cone {
 		Maximum:   gomath.Inf(1),
 		Closed:    false,
 		Parent:    nil,
+		Name:      "",
 	}
 }
 
@@ -58,6 +60,20 @@ func (c *Cone) GetParent() *Group {
 
 func (c *Cone) SetParent(g *Group) {
 	c.Parent = g
+}
+
+func (c *Cone) GetName() string {
+	if c.Name != "" {
+		return c.Name
+	}
+	if c.Parent != nil {
+		return c.GetParent().GetName()
+	}
+	return c.Name
+}
+
+func (c *Cone) SetName(name string) {
+	c.Name = name
 }
 
 func (c *Cone) Equals(other Shape) bool {

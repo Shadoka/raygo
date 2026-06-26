@@ -17,6 +17,7 @@ type Group struct {
 	Parent            *Group
 	CachedBoundingBox *Bounds
 	InverseTransform  math.Matrix
+	Name              string
 }
 
 func EmptyGroup() *Group {
@@ -27,6 +28,7 @@ func EmptyGroup() *Group {
 		Children:          make([]Shape, 0),
 		Parent:            nil,
 		CachedBoundingBox: nil,
+		Name:              "",
 	}
 }
 
@@ -71,6 +73,20 @@ func (g *Group) GetParent() *Group {
 
 func (gr *Group) SetParent(g *Group) {
 	gr.Parent = g
+}
+
+func (gr *Group) GetName() string {
+	if gr.Name != "" {
+		return gr.Name
+	}
+	if gr.Parent != nil {
+		return gr.GetParent().GetName()
+	}
+	return gr.Name
+}
+
+func (gr *Group) SetName(name string) {
+	gr.Name = name
 }
 
 func (g *Group) AddChild(child Shape) *Group {

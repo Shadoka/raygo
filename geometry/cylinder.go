@@ -18,6 +18,7 @@ type Cylinder struct {
 	Closed           bool
 	Parent           *Group
 	InverseTransform math.Matrix
+	Name             string
 }
 
 func CreateCylinder() *Cylinder {
@@ -29,6 +30,7 @@ func CreateCylinder() *Cylinder {
 		Maximum:   gomath.Inf(1.0),
 		Closed:    false,
 		Parent:    nil,
+		Name:      "",
 	}
 }
 
@@ -50,6 +52,20 @@ func (c *Cylinder) GetMaterial() *Material {
 
 func (c *Cylinder) SetMaterial(m Material) {
 	c.Material = m
+}
+
+func (c *Cylinder) GetName() string {
+	if c.Name != "" {
+		return c.Name
+	}
+	if c.Parent != nil {
+		return c.GetParent().GetName()
+	}
+	return c.Name
+}
+
+func (c *Cylinder) SetName(name string) {
+	c.Name = name
 }
 
 func (c *Cylinder) GetParent() *Group {

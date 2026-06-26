@@ -15,6 +15,7 @@ type Plane struct {
 	Material         Material
 	Parent           *Group
 	InverseTransform math.Matrix
+	Name             string
 }
 
 func CreatePlane() *Plane {
@@ -23,6 +24,7 @@ func CreatePlane() *Plane {
 		Transform: math.IdentityMatrix(),
 		Material:  DefaultMaterial(),
 		Parent:    nil,
+		Name:      "",
 	}
 }
 
@@ -44,6 +46,20 @@ func (p *Plane) GetMaterial() *Material {
 
 func (p *Plane) SetMaterial(m Material) {
 	p.Material = m
+}
+
+func (p *Plane) GetName() string {
+	if p.Name != "" {
+		return p.Name
+	}
+	if p.Parent != nil {
+		return p.GetParent().GetName()
+	}
+	return p.Name
+}
+
+func (p *Plane) SetName(name string) {
+	p.Name = name
 }
 
 func (p *Plane) Equals(other Shape) bool {

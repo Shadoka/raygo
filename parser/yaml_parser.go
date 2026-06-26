@@ -524,6 +524,7 @@ func createRaygoShapes(directory string) {
 func createRaygoPlanes() {
 	for name, yp := range yamlPlanes {
 		plane := geometry.CreatePlane()
+		plane.SetName(name)
 		if yp.Transform != "" {
 			plane.Transform = raygoTransforms[name]
 		} else {
@@ -541,6 +542,7 @@ func createRaygoPlanes() {
 func createRaygoSpheres() {
 	for name, ys := range yamlSpheres {
 		sphere := geometry.CreateSphere()
+		sphere.SetName(name)
 
 		if ys.Transform != "" {
 			sphere.Transform = raygoTransforms[name]
@@ -559,6 +561,8 @@ func createRaygoSpheres() {
 func createRaygoCubes() {
 	for name, yc := range yamlCubes {
 		cube := geometry.CreateCube()
+		cube.SetName(name)
+
 		if yc.Transform != "" {
 			cube.Transform = raygoTransforms[name]
 		} else {
@@ -576,6 +580,8 @@ func createRaygoCubes() {
 func createRaygoCylinders() {
 	for name, yc := range yamlCylinders {
 		cylinder := geometry.CreateCylinder()
+		cylinder.SetName(name)
+
 		if yc.Transform != "" {
 			cylinder.Transform = raygoTransforms[name]
 		} else {
@@ -601,6 +607,8 @@ func createRaygoCylinders() {
 func createRaygoCones() {
 	for name, yc := range yamlCones {
 		cone := geometry.CreateCone()
+		cone.SetName(name)
+
 		if yc.Transform != "" {
 			cone.Transform = raygoTransforms[name]
 		} else {
@@ -626,6 +634,8 @@ func createRaygoCones() {
 func createRaygoTriangles() {
 	for name, yt := range yamlTriangles {
 		triangle := geometry.CreateTriangle(mapPoint(yt.P1), mapPoint(yt.P2), mapPoint(yt.P3))
+		triangle.SetName(name)
+
 		if yt.Transform != "" {
 			triangle.Transform = raygoTransforms[name]
 		} else {
@@ -644,6 +654,7 @@ func createRaygoObjects(directory string) {
 	for name, yo := range yamlObjects {
 		objData := obj.ParseFile(fmt.Sprintf("%v%v", directory, yo.File))
 		objGroup := objData.ToGroup(true)
+		objGroup.SetName(name)
 
 		if yo.Transform != "" {
 			objGroup.Transform = raygoTransforms[name]
@@ -662,6 +673,8 @@ func createRaygoObjects(directory string) {
 func createRaygoGroups() {
 	for name, yg := range yamlGroups {
 		group := geometry.EmptyGroup()
+		group.SetName(name)
+
 		if yg.Transform != "" {
 			group.Transform = raygoTransforms[name]
 		} else {

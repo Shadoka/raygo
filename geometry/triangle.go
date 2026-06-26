@@ -22,6 +22,7 @@ type Triangle struct {
 	Parent           *Group
 	CachedBounds     *Bounds
 	InverseTransform math.Matrix
+	Name             string
 	// smooth triangle fields
 	N1     math.Vector
 	N2     math.Vector
@@ -51,6 +52,7 @@ func CreateTriangle(p1 math.Point, p2 math.Point, p3 math.Point) *Triangle {
 		CachedBounds: nil,
 		Smooth:       false,
 		HasTexture:   false,
+		Name:         "",
 	}
 }
 
@@ -75,6 +77,7 @@ func CreateSmoothTriangle(p1 math.Point, p2 math.Point, p3 math.Point,
 		N1:           n1,
 		N2:           n2,
 		N3:           n3,
+		Name:         "",
 	}
 }
 
@@ -137,6 +140,20 @@ func (t *Triangle) SetMaterial(m Material) {
 
 func (t *Triangle) GetMaterial() *Material {
 	return &t.Material
+}
+
+func (t *Triangle) GetName() string {
+	if t.Name != "" {
+		return t.Name
+	}
+	if t.Parent != nil {
+		return t.GetParent().GetName()
+	}
+	return t.Name
+}
+
+func (t *Triangle) SetName(name string) {
+	t.Name = name
 }
 
 func (t *Triangle) NormalAt(p math.Point, hit Intersection) math.Vector {

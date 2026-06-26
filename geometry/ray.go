@@ -82,7 +82,7 @@ func Hit(xs []Intersection) *Intersection {
 	var result *Intersection
 	minT := gomath.MaxFloat64
 	for _, v := range xs {
-		if v.IntersectionAt > 0.0 && v.IntersectionAt <= minT {
+		if v.IntersectionAt > math.EPSILON && v.IntersectionAt <= minT {
 			result = &v
 			minT = v.IntersectionAt
 		}
@@ -107,6 +107,7 @@ func (i Intersection) PrepareComputation(r Ray, xs []Intersection) IntersectionC
 	normal := i.Object.NormalAt(p, i)
 	eye := r.Direction.Negate()
 
+	// debug here to see the normal and eye vector
 	inside := false
 	if normal.Dot(eye) < 0.0 {
 		inside = true

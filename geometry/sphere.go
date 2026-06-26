@@ -14,6 +14,7 @@ type Sphere struct {
 	Material         Material
 	Parent           *Group
 	InverseTransform math.Matrix
+	Name             string
 }
 
 func CreateSphere() *Sphere {
@@ -22,6 +23,7 @@ func CreateSphere() *Sphere {
 		Transform: math.IdentityMatrix(),
 		Material:  DefaultMaterial(),
 		Parent:    nil,
+		Name:      "",
 	}
 }
 
@@ -61,6 +63,20 @@ func (s *Sphere) GetMaterial() *Material {
 
 func (s *Sphere) SetMaterial(m Material) {
 	s.Material = m
+}
+
+func (s *Sphere) GetName() string {
+	if s.Name != "" {
+		return s.Name
+	}
+	if s.Parent != nil {
+		return s.GetParent().GetName()
+	}
+	return s.Name
+}
+
+func (s *Sphere) SetName(name string) {
+	s.Name = name
 }
 
 func (s *Sphere) GetParent() *Group {

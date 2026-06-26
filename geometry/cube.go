@@ -14,6 +14,7 @@ type Cube struct {
 	Material         Material
 	Parent           *Group
 	InverseTransform math.Matrix
+	Name             string
 }
 
 func CreateCube() *Cube {
@@ -22,6 +23,7 @@ func CreateCube() *Cube {
 		Transform: math.IdentityMatrix(),
 		Material:  DefaultMaterial(),
 		Parent:    nil,
+		Name:      "",
 	}
 }
 
@@ -43,6 +45,20 @@ func (c *Cube) GetMaterial() *Material {
 
 func (c *Cube) SetMaterial(m Material) {
 	c.Material = m
+}
+
+func (c *Cube) GetName() string {
+	if c.Name != "" {
+		return c.Name
+	}
+	if c.Parent != nil {
+		return c.GetParent().GetName()
+	}
+	return c.Name
+}
+
+func (c *Cube) SetName(name string) {
+	c.Name = name
 }
 
 func (c *Cube) GetParent() *Group {
