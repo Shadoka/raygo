@@ -81,7 +81,7 @@ func handleRendering(args []string, fp string) {
 		if outputFiletype == PNG {
 			c[0].WritePng(fmt.Sprintf("%v.png", outputFilename))
 		} else {
-			c[0].WritePPM(fmt.Sprintf("%v.ppm", outputFilename))
+			c[0].WritePPM(fmt.Sprintf("%v", outputFilename))
 		}
 	} else {
 		canvas.WriteGif(c, yml.Camera.Animation.Time, fmt.Sprintf("%v.gif", outputFilename))
