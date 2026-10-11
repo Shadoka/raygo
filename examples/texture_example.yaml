@@ -1,9 +1,10 @@
-width: 1920
-height: 1080
+width: 3840
+height: 2160
 
 materials:
   - name: wood
-    texture: wood_floor.jpeg
+    texture:
+      file: wood_floor.jpeg
   - name: floor_mat
     reflective: 0
     rawColor:
