@@ -8,6 +8,7 @@ import (
 	"raygo/obj"
 	"raygo/parser"
 	"raygo/progress"
+	"runtime/pprof"
 	"slices"
 	"strings"
 	"time"
@@ -47,6 +48,18 @@ func handleObjStats(fp string) {
 }
 
 func handleRendering(args []string, fp string) {
+	if enableCpuProfiling(args) {
+		f, err := os.Create("cpu.pprof")
+		if err != nil {
+			panic(err)
+		}
+		defer f.Close()
+
+		if err := pprof.StartCPUProfile(f); err != nil {
+			panic(err)
+		}
+		defer pprof.StopCPUProfile()
+	}
 	startTime := time.Now()
 
 	outputFilename := getOutputFilename(args)
@@ -75,7 +88,8 @@ func handleRendering(args []string, fp string) {
 	camera := parser.CreateCamera(yml)
 	camera.Antialias = antialias
 
-	c := camera.Render(world, true)
+	singleThreaded := useSingleThread(args)
+	c := camera.Render(world, !singleThreaded)
 	progress.Step("Writing output file")
 	if len(c) == 1 {
 		if outputFiletype == PNG {
@@ -123,6 +137,20 @@ func getOutputFilename(args []string) string {
 
 func checkAntialiasFlag(args []string) bool {
 	if antialiasFlagIndex := slices.Index(args, "--aa"); antialiasFlagIndex != -1 {
+		return true
+	}
+	return false
+}
+
+func enableCpuProfiling(args []string) bool {
+	if cpuProfiling := slices.Index(args, "--cpu"); cpuProfiling != -1 {
+		return true
+	}
+	return false
+}
+
+func useSingleThread(args []string) bool {
+	if singleThread := slices.Index(args, "--st"); singleThread != -1 {
 		return true
 	}
 	return false

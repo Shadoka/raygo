@@ -8,7 +8,7 @@ materials:
 scene:
   objects:
     - name: teapot
-      file: ../resources/teapot_high.obj
+      file: ../resources/teapot_low.obj
       material: teapot_mat
       transforms:
         - type: rotation
